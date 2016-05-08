@@ -13,10 +13,10 @@ DROP TABLE IF EXISTS Subscriber;
 
 /* recreate the tables from scratch */
 CREATE TABLE Subscriber(
-    username varchar(15) primary key,
+    username varchar(30) primary key,
     first_name varchar(30) NOT NULL,
     last_name varchar(30) NOT NULL,
-    password varchar(20) NOT NULL,
+    password varchar(30) NOT NULL,
     born_date date NOT NULL,
     credit integer NOT NULL
 );
