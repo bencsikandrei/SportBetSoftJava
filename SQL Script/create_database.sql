@@ -84,6 +84,7 @@ DROP FUNCTION IF EXISTS delete_individual_competitor(integer);
 DROP FUNCTION IF EXISTS delete_competition(integer);
 DROP FUNCTION IF EXISTS delete_bet(integer);
 DROP FUNCTION IF EXISTS add_to_team(integer, integer);
+DROP FUNCTION IF EXISTS competitions_for_competitor(integer);
 
 /***************************************************************
     create the functions for easy insertion and deletion 
@@ -305,6 +306,21 @@ BEGIN
     WHERE id = player_id;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION competitions_for_competitor(competitor_id int)
+RETURNS TABLE (
+    competition varchar(50)
+) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT name_competition FROM Participant
+	WHERE competitor_id = id_competitor;
+END;
+$$ LANGUAGE plpgsql;
+
+select competitions_for_competitor(8);
 
 /***************************************************************
     insert some subscribers 
