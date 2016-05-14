@@ -1,5 +1,7 @@
 package dev4a.subscriber;
+import dev4a.bets.*;
 /**
+ * 
  * 
  * @author Group 4A
  * @version 0.1 (BETA)
@@ -97,6 +99,15 @@ public class Subscriber {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
+	
+	/* cancel a bet */
+	public long cancelBet(Bet betToCancel) {
+		return 0l;
+	}
+	
+	@Override
+	public String toString() {
+		return this.userName;
+	}
 		
 }

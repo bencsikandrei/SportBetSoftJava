@@ -116,4 +116,18 @@ public class Competition {
 		this.betType = betType;
 	}
 	
+	public long getTotalNumberOfTokens() {
+		return 0l;
+	}
+	
+	public int getTotalNumberOfBets() {
+		return 0;
+	}
+	
+	@Override
+	public String toString() {
+		/* return only the name */
+		return this.name;
+	}
+	
 }
