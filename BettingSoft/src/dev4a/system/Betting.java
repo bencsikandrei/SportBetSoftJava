@@ -1,14 +1,15 @@
-package fr.uv1.bettingServices;
+package dev4a.system;
 
 import java.util.*;
 
-import fr.uv1.bettingServices.exceptions.AuthenticationException;
-import fr.uv1.bettingServices.exceptions.BadParametersException;
-import fr.uv1.bettingServices.exceptions.CompetitionException;
-import fr.uv1.bettingServices.exceptions.ExistingCompetitionException;
-import fr.uv1.bettingServices.exceptions.ExistingCompetitorException;
-import fr.uv1.bettingServices.exceptions.ExistingSubscriberException;
-import fr.uv1.bettingServices.exceptions.SubscriberException;
+import dev4a.competition.CompetitionException;
+import dev4a.competitor.Competitor;
+import dev4a.competitor.ExistingCompetitionException;
+import dev4a.competitor.ExistingCompetitorException;
+import dev4a.exceptions.AuthenticationException;
+import dev4a.exceptions.BadParametersException;
+import dev4a.subscriber.ExistingSubscriberException;
+import dev4a.subscriber.SubscriberException;
 
 /**
  * 
