@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.rmi.CORBA.Util;
+import javax.xml.transform.Templates;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class System implements Betting {
 	/* the list of all competitors in the System */
 	private List<Competitor> allCompetitors = new ArrayList();
 	/* all the competitions in the system */
-	private List<Competition> allCompetitions = new ArrayList();
+	private Map<String,Competition> allCompetitions = new HashMap();
 	/* all the subscribers in the System */
 	private Map<String,Subscriber> allSubscribers = new HashMap();
 	/* all the bets in the system */
@@ -50,7 +51,7 @@ public class System implements Betting {
 		this.mgrPassword = mgrPassword; 
 	}
 	
-	public String getMgrPassword() {
+	private String getMgrPassword() {
 		return mgrPassword;
 	}
 
@@ -79,6 +80,9 @@ public class System implements Betting {
 		// TODO Auto-generated method stub
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
+		/* valid name ? */
+		if ( ! (utility.checkValidSubscriberName(lastName) && utility.checkValidSubscriberName(firstName) ) )
+			throw new BadParametersException();
 		/* then check for the username (which is unique) */
 		if ( getSubscriberByUserName(username) != null )
 			throw new ExistingSubscriberException();
@@ -126,45 +130,109 @@ public class System implements Betting {
 			throw new ExistingSubscriberException("The user does not exist!");
 		/* remove him from the collection */
 		removeSubscriberFromList(username);
-		
+		/* return the number of tokens he had left */
 		return toBeRemoved.getNumberOfTokens();
 	}
 
-	
-
 	@Override
 	public List<List<String>> listSubscribers(String managerPwd) throws AuthenticationException {
-		// TODO Auto-generated method stub
-		return null;
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* iterate the container and get all names and attributes */
+		List<List<String>> printableSubs = new ArrayList();
+		for( Subscriber sub : this.allSubscribers.values() ) {
+			/* store the details for each subscriber */
+			List<String> subDetails = new ArrayList();
+			/* */
+			subDetails.add(sub.getFirstName());
+			subDetails.add(sub.getLastName());
+			subDetails.add(sub.getBornDate());
+			subDetails.add( String.valueOf( sub.getNumberOfTokens() ) );
+			/* insert it in the big list */
+			printableSubs.add(subDetails);
+		}
+		return printableSubs;
+	}
+	
+	public void printSubscribers(String mgrPassword) throws AuthenticationException {
+		this.utility.printList(this.listSubscribers(mgrPassword));
 	}
 
 	@Override
 	public void addCompetition(String competition, Calendar closingDate, Collection<Competitor> competitors,
 			String managerPwd) throws AuthenticationException, ExistingCompetitionException, CompetitionException,
 					BadParametersException {
-		// TODO Auto-generated method stub
-		
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* now check if it exists */
+		Competition tempCompetition = getCompetitionByName(competition);
+		/* the test */
+		if( tempCompetition != null )
+			throw new ExistingCompetitionException();
+		/* does not exist ? create it ! */
+		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED);
+		/* freshly created add it to our collection */
+		addCompetitionToList(tempCompetition);		
+	}
+	
+	private void addCompetitionToList(Competition tempCompetition) {
+		// hide the implementation
+		this.allCompetitions.put(tempCompetition.getName(), tempCompetition);
+	}
+	
+
+	private void removeCompetitionFromList(String compName) {
+		// hide the implementation
+		this.allCompetitions.remove(compName);
+	}
+
+	private Competition getCompetitionByName(String competition) {
+		// hide the implementation
+		return this.allCompetitions.get(competition);
 	}
 
 	@Override
 	public void cancelCompetition(String competition, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
-		// TODO Auto-generated method stub
-		
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* now check if it exists */
+		Competition toBeCanceled = getCompetitionByName(competition);
+		/* check if it exists */
+		if( toBeCanceled == null )
+			/* does not exist */
+			throw new CompetitionException();
+		/* it exists -> remove it */
+		toBeCanceled.setInProgress(Competition.STATE.CANCELED);
+		/* TODO take care of all the ongoing bets ! */
 	}
+
 
 	@Override
 	public void deleteCompetition(String competition, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
-		// TODO Auto-generated method stub
-		
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* now check if it exists */
+		Competition toBeRemoved = getCompetitionByName(competition);
+		/* check if it exists */
+		if( toBeRemoved == null )
+			/* does not exist */
+			throw new CompetitionException();
+		/* check if the competition is in a proper state */
+		else if(!toBeRemoved.getInProgress().equals(Competition.STATE.SOLDOUT)) {
+			throw new CompetitionException();
+		}
+		/* now we can safely delete */
+		removeCompetitionFromList(competition);
 	}
 
 	@Override
 	public void addCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
 			ExistingCompetitorException, BadParametersException {
-		// TODO Auto-generated method stub
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
 		
 	}
 

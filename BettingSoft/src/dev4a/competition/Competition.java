@@ -14,6 +14,8 @@ import dev4a.competitor.*;
  * 
  */
 public class Competition {
+	
+	public static States STATE;
 	/* the name of the competition 
 	 * UTF-8 string
 	 */
@@ -26,10 +28,8 @@ public class Competition {
 	 * 
 	 */
 	private Calendar closingDate;
-	/* the status of the competition 
-	 * UTF-8 string
-	 */
-	private boolean inProgress;
+	/* the progress status -> @ENUM States */
+	private States progress;
 	/* the sport played in the competition 
 	 * UTF-8 string
 	 */
@@ -53,11 +53,11 @@ public class Competition {
 		 */
 	}
 	/* constructor with all params */
-	public Competition(String name, Calendar startDate, Calendar closingDate, boolean inProgress){
+	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress){
 		this.name = name;
 		this.startDate = startDate;
 		this.closingDate = closingDate;
-		this.inProgress = inProgress;
+		this.progress = this.STATE.STARTED;
 	}
 	/* getters and setters */
 	public String getName() {
@@ -84,12 +84,12 @@ public class Competition {
 		this.closingDate = closingDate;
 	}
 	
-	public boolean isInProgress() {
-		return inProgress;
+	public States getInProgress() {
+		return this.progress;
 	}
 	
-	public void setInProgress(boolean inProgress) {
-		this.inProgress = inProgress;
+	public void setInProgress(States newProgress) {
+		this.progress = newProgress;
 	}
 	
 	public String getSport() {
