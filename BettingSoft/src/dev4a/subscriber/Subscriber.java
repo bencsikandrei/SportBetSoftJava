@@ -29,7 +29,7 @@ public class Subscriber {
 	/* The password of the Subscriber 
 	 * UTF-8 String TODO HASH this!!
 	 */
-	private String password;
+	private String password = "";
 	/* The date of birth of the Subscriber 
 	 * UTF-8 String ! Serves for checking age restrictions
 	 */
@@ -50,6 +50,32 @@ public class Subscriber {
 		this.firstName = firstName;
 		this.userName = userName;
 		this.bornDate = bornDate;
+		this.numberOfTokens = 0l;
+		this.password = "";
+	}
+	/* account balancing functions */
+	public long credit(long amount) {
+		if (amount > 0) 
+			this.numberOfTokens += amount;
+		else 
+			System.out.println("Wrong amount. Account unchanged.");
+		return this.numberOfTokens;
+	}
+	/* debiting */
+	public long debit(long amount) {
+		if (amount > 0 && amount <= this.numberOfTokens ) 
+			this.numberOfTokens -= amount;
+		
+		return this.numberOfTokens;
+	}
+	/* password management */
+	public boolean changePassword(String oldPassword, String newPassword) {
+		/* check validity of old pass */
+		if ( oldPassword != getPassword() )
+			return false;
+		/* now set the new one */
+		setPassword(newPassword);
+		return true;
 	}
 	/* getters and setters REQUIRED for the POJO  (hibernate as well) */
 	public String getLastName() {
@@ -89,14 +115,15 @@ public class Subscriber {
 	}
 	
 	public void setNumberOfTokens(long numberOfTokens) {
-		this.numberOfTokens = numberOfTokens;
+		if( numberOfTokens > 0)
+			this.numberOfTokens = numberOfTokens;
 	}
 	
-	public String getPassword() {
+	private String getPassword() {
 		return password;
 	}
 	
-	public void setPassword(String password) {
+	private void setPassword(String password) {
 		this.password = password;
 	}
 	

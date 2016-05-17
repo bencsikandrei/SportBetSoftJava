@@ -3,8 +3,8 @@ package dev4a.system;
 import java.util.*;
 
 import dev4a.competition.CompetitionException;
+import dev4a.competition.ExistingCompetitionException;
 import dev4a.competitor.Competitor;
-import dev4a.competitor.ExistingCompetitionException;
 import dev4a.competitor.ExistingCompetitorException;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;

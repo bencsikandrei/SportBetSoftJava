@@ -70,7 +70,7 @@ public class Utils {
 	 * @param name
 	 * @return
 	 */
-	public boolean checkValidSubscriberName(String name) {
+	public boolean checkValidName(String name) {
 		/* the pattern to be respected by the string */
 		String pattern = "^[A-Za-z][A-Za-z-]*";
 		/* */

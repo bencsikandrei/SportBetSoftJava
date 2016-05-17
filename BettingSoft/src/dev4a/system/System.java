@@ -69,11 +69,6 @@ public class System implements Betting {
 		}
 	}
 	
-	private String generateRandomPassword(int len) {
-		/* use the utility method */
-		return utility.randomString(len);		
-	}
-	
 	@Override
 	public String subscribe(String lastName, String firstName, String username, String borndate, String managerPwd)
 			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
@@ -81,7 +76,7 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* valid name ? */
-		if ( ! (utility.checkValidSubscriberName(lastName) && utility.checkValidSubscriberName(firstName) ) )
+		if ( ! (utility.checkValidName(lastName) && utility.checkValidName(firstName) ) )
 			throw new BadParametersException();
 		/* then check for the username (which is unique) */
 		if ( getSubscriberByUserName(username) != null )
@@ -89,11 +84,12 @@ public class System implements Betting {
 		/* if he does not exist, we can create him */
 		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate);
 		/* generate a password */
-		temporarySubscriber.setPassword( this.generateRandomPassword(8) );		
+		String password = utility.randomString(8);
+		temporarySubscriber.changePassword("", password );		
 		/* we created him, now add him to the collection */
 		addSubscriberToList(temporarySubscriber);		
 		/* return the new password */
-		return temporarySubscriber.getPassword();
+		return password;
 	}
 
 	private void addSubscriberToList(Subscriber temporarySubscriber) {
@@ -231,23 +227,46 @@ public class System implements Betting {
 	public void addCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
 			ExistingCompetitorException, BadParametersException {
-		/* first authenticate the manager */
-		authenticateMngr(managerPwd);
+		
 		
 	}
 
 	@Override
 	public Competitor createCompetitor(String lastName, String firstName, String borndate, String managerPwd)
 			throws AuthenticationException, BadParametersException {
-		// TODO Auto-generated method stub
-		return null;
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* check validity of the name */
+		if( (utility.checkValidName(lastName) && utility.checkValidName(firstName) ) ) {
+			throw new BadParametersException();
+		}
+		/* create the competitor */
+		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
+		/* add him to the list */
+		addCompetitorToList(tempCompetitor);
+		
+		
+		return tempCompetitor;
+	}
+
+	private void addCompetitorToList(Competitor competitor) {
+		/* hide implementation */
+		this.allCompetitors.add(competitor);
+		
 	}
 
 	@Override
 	public Competitor createCompetitor(String name, String managerPwd)
 			throws AuthenticationException, BadParametersException {
-		// TODO Auto-generated method stub
-		return null;
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* check validity of the name */
+		// TODO
+		/* create the competitor */
+		Competitor tempCompetitor = new Team(name);
+		/* add him to the list */
+		addCompetitorToList(tempCompetitor);
+		return tempCompetitor;
 	}
 
 	@Override
@@ -261,15 +280,46 @@ public class System implements Betting {
 	@Override
 	public void creditSubscriber(String username, long numberTokens, String managerPwd)
 			throws AuthenticationException, ExistingSubscriberException, BadParametersException {
-		// TODO Auto-generated method stub
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* check existence */
+		Subscriber tempSubscriber = getSubscriberByUserName(username);
+		/* if he does not exist */
+		if ( tempSubscriber == null ){
+			/* does not exist */
+			throw new ExistingSubscriberException("Subscriber does not exist!");
+			
+		}
+		if ( numberTokens < 0 ) {
+			/* can't credit with negative value */
+			throw new BadParametersException();
+		}
+		/* credit the money */
+		tempSubscriber.credit(numberTokens);
 		
 	}
 
 	@Override
 	public void debitSubscriber(String username, long numberTokens, String managerPwd)
 			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
-		// TODO Auto-generated method stub
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* check existence */
+		Subscriber tempSubscriber = getSubscriberByUserName(username);
+		/* if he does not exist */
+		if ( tempSubscriber == null ){
+			/* does not exist */
+			throw new ExistingSubscriberException("Subscriber does not exist!");
+			
+		}
+		if ( numberTokens < 0 || numberTokens > tempSubscriber.getNumberOfTokens()) {
+			/* can't credit with negative value */
+			throw new BadParametersException();
+		}
 		
+		
+		/* credit the money */
+		tempSubscriber.debit(numberTokens);		
 	}
 
 	@Override
