@@ -1,10 +1,16 @@
 package dev4a.competitor;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import dev4a.competition.Competition;
 import dev4a.exceptions.BadParametersException;
 
 public class Team implements Competitor {
 	/* attributes */
 	private String name;
+	/* competitions where this competitor participates */
+	private Map<String,Competition> competitions = new HashMap();
 	
 	/* constructor */
 	public Team(){
@@ -36,6 +42,21 @@ public class Team implements Competitor {
 	public void deleteMember(Competitor member) throws BadParametersException, ExistingCompetitorException {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void addCompetitionsToList(Competition temporaryCompetition) {
+
+		this.competitions.put(temporaryCompetition.getName(), temporaryCompetition);
+	}
+	
+	private void removeCompetitionFromList(String competitionName) {
+
+		this.competitions.remove(competitionName);
+	}
+	
+	private Competition getCompetitionByName(String competitionName) {
+
+		return this.competitions.get(competitionName);
 	}
 	
 	@Override 

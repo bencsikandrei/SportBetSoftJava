@@ -1,6 +1,8 @@
 package dev4a.competition;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
 import dev4a.competitor.*;
 /**
  * 
@@ -34,6 +36,10 @@ public class Competition {
 	 * UTF-8 string
 	 */
 	private String sport;
+	/* the competitors of this competition
+	 * 
+	 */
+	private List<Competitor> allCompetitors = new ArrayList();
 	/* the winners of this competition
 	 * 
 	 */

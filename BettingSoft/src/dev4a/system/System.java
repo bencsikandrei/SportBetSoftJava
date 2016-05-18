@@ -227,10 +227,28 @@ public class System implements Betting {
 	public void addCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
 			ExistingCompetitorException, BadParametersException {
-		
-		
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* competition where the competitor is to be added */
+		Competition myCompetition = getCompetitionByName(competition);
+		/* check if it exists */
+		if( myCompetition == null )
+			/* does not exist */
+			throw new CompetitionException();
+		/* check if the competition is in a proper state */
+		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
+			throw new CompetitionException();
+		}
+		/* check if the competitor exists */
+		if(!this.allCompetitors.contains(competitor)){
+			throw new ExistingCompetitorException();
+		}
+		/* check if the competitor is already in the competition */
+		// TODO
+		///////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
+		
 	@Override
 	public Competitor createCompetitor(String lastName, String firstName, String borndate, String managerPwd)
 			throws AuthenticationException, BadParametersException {
