@@ -26,7 +26,7 @@ public class WinnerBet extends Bet {
 		
 		this.betDate = betDate;
 		
-		this.state = betstate.INPROGRESS;		
+		this.state = Betstate.INPROGRESS;		
 				
 	}
 	

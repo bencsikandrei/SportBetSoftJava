@@ -37,5 +37,16 @@ public class Team implements Competitor {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override 
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	@Override 
+	public String toString() {
+		/* just return the name of the team */
+		return this.name;
+	}
 
 }

@@ -26,7 +26,7 @@ public class PodiumBet extends Bet {
 		
 		this.betDate = betDate;
 		
-		this.state = betstate.INPROGRESS;		
+		this.state = Betstate.INPROGRESS;		
 				
 	}
 	

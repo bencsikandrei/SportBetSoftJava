@@ -53,5 +53,10 @@ public class IndividualCompetitor implements Competitor {
 		
 	}
 	
+	@Override 
+	public String toString() {
+		/* return the full name */
+		return this.firstName + " " + this.lastName;
+	}
 	
 }

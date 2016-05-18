@@ -316,8 +316,6 @@ public class System implements Betting {
 			/* can't credit with negative value */
 			throw new BadParametersException();
 		}
-		
-		
 		/* credit the money */
 		tempSubscriber.debit(numberTokens);		
 	}

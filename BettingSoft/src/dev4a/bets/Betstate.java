@@ -1,5 +1,5 @@
 package dev4a.bets;
 
-public enum betstate {
+public enum Betstate {
 	INPROGRESS, SOLDOUT
 }

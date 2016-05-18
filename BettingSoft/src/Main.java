@@ -7,29 +7,21 @@ import dev4a.subscriber.SubscriberException;
 import dev4a.system.System;
 
 public class Main {
-	
-	
-	
+		
 	public static void main(String[] args) {
 		System bettingSystem = new System("1234");
 		
 		addSubscribers(bettingSystem);
-		
-		
-		
+			
 		addCompetitions(bettingSystem);
-		
-		
-		
-		
+				
 	}
 
 	private static void addCompetitions(System bettingSystem) {
 		try {
 			bettingSystem.addCompetition("Real Madrid - Barcelona Primera Division", Calendar.getInstance(), new java.util.ArrayList<dev4a.competitor.Competitor>(), "1234");
 			// bettingSystem.addCompetition("Real Madrid - Barcelona Primera Division", Calendar.getInstance(), new java.util.ArrayList<dev4a.competitor.Competitor>(), "1234");
-		
-		
+				
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

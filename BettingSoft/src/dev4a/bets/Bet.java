@@ -17,7 +17,7 @@ public abstract class Bet {
 	/* state in which the bet is 
 	 * sold out, in progress, won , lost
 	 */
-	protected betstate state;
+	protected Betstate state;
 	/* how many tokens have been bet on this */
 	protected long numberOfTokens;
 	/* the date it was placed on */
@@ -31,10 +31,10 @@ public abstract class Bet {
 	public void setIdentifier(int identifier) {
 		this.identifier = identifier;
 	}
-	public betstate getState() {
+	public Betstate getState() {
 		return state;
 	}
-	public void betstate(betstate state) {
+	public void betstate(Betstate state) {
 		this.state = state;
 	}
 	public long getNumberOfTokens() {
