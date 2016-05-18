@@ -53,6 +53,9 @@ public class Subscriber {
 		this.numberOfTokens = 0l;
 		this.password = "";
 	}
+	public  Subscriber( String lastName, String firstName, String userName ) {
+		this(lastName, firstName, userName, null);
+	}
 	/* account balancing functions */
 	public long credit(long amount) {
 		if (amount > 0) 
@@ -136,5 +139,5 @@ public class Subscriber {
 	public String toString() {
 		return this.userName;
 	}
-		
+	
 }
