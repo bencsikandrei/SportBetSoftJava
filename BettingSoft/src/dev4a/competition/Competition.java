@@ -1,9 +1,11 @@
 package dev4a.competition;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import dev4a.competitor.*;
+import dev4a.bets.*;
 /**
  * 
  * @author Group 4A
@@ -52,6 +54,11 @@ public class Competition {
 	 * 			- wp: both winner and podium allowed
 	 */
 	private String betType;
+	/* the bets done in this competition
+	 * 
+	 */
+	private List<Bet> bets;
+	
 	/* constructors */
 	public Competition() {
 		/**
@@ -59,11 +66,12 @@ public class Competition {
 		 */
 	}
 	/* constructor with all params */
-	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress){
+	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress, List<Competitor> allCompetitors){
 		this.name = name;
 		this.startDate = startDate;
 		this.closingDate = closingDate;
 		this.progress = this.STATE.STARTED;
+		this.allCompetitors = allCompetitors;
 	}
 	/* getters and setters */
 	public String getName() {
@@ -130,6 +138,18 @@ public class Competition {
 		this.winners = winners;
 	}
 	
+	public List<Bet> getBets() {
+		return bets;
+	}
+	
+	public void addBet(Bet bet){
+		this.bets.add(bet);
+	}
+	
+	public void removeBet(Bet bet){
+		this.bets.remove(bet);
+	}
+	
 	public String getBetType() {
 		return betType;
 	}
@@ -139,11 +159,15 @@ public class Competition {
 	}
 	
 	public long getTotalNumberOfTokens() {
-		return 0l;
+		long sum = 0;
+		for (int i = 0; i<bets.size(); i++){
+			sum += bets.get(i).getNumberOfTokens();
+		}
+		return sum;
 	}
 	
 	public int getTotalNumberOfBets() {
-		return 0;
+		return bets.size();
 	}
 	
 	@Override
