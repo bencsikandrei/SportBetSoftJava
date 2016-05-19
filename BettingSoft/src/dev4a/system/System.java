@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.rmi.CORBA.Util;
 import javax.xml.transform.Templates;
@@ -169,12 +171,18 @@ public class System implements Betting {
 		if( tempCompetition != null )
 			throw new ExistingCompetitionException();
 		/* More information ! */
-		//java.lang.System.out.println("Sport of the competition " + competition + " ? ");
-		
+		if (closingDate.before(Calendar.getInstance()) || competitors.size()<2){
+			throw new CompetitionException();
+		}
+		Set<Competitor> set = new HashSet<Competitor>(competitors);
+		if (set.size() < competitors.size()){
+			throw new CompetitionException();
+		}		
 		/* does not exist ? create it ! */
 		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED, new ArrayList(competitors));
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);		
+		//TODO check BadParametresException
 	}
 	
 	private void addCompetitionToList(Competition tempCompetition) {
@@ -254,9 +262,7 @@ public class System implements Betting {
 			throw new CompetitionException();
 		}
 		/* now we can add the competitor */  
-		/*competitor.addCompetitionToList(competition); */
 		myCompetition.addCompetitor(competitor); 
-		// TODO (complete)
 	}
 
 		
@@ -310,23 +316,17 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new CompetitionException();
+			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
-		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
+		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED) || myCompetition.getAllCompetitors().size() == 2) {
 			throw new CompetitionException();
-		}
-		/* check if the competitor exists */
-		if(!this.allCompetitors.contains(competitor)){
-			throw new ExistingCompetitorException();
 		}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.isCompetitor(competitor)){
-			throw new CompetitionException();
+			throw new ExistingCompetitorException();
 		}
 		/* now we can delete the competitor */  
-		/*competitor.removeCompetitionFromList(competition); */
 		myCompetition.removeCompetitor(competitor); 
-		// TODO (complete)
 		// TODO return tokens
 	}
 
