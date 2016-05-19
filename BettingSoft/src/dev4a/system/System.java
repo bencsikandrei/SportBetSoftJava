@@ -1,4 +1,5 @@
 package dev4a.system;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -20,6 +21,7 @@ import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.*;
 import dev4a.utils.Utils;
+import dev4a.db.SubscribersManager;
 /**
  * 
  * @author Group 4A
@@ -83,11 +85,15 @@ public class System implements Betting {
 		/* then check for the username (which is unique) */
 		if ( getSubscriberByUserName(username) != null )
 			throw new ExistingSubscriberException();
-		/* if he does not exist, we can create him */
-		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate);
-		/* generate a password */
+		/* give him a new password */
 		String password = utility.randomString(8);
-		temporarySubscriber.changePassword("", password );		
+		/* if he does not exist, we can create him */
+		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate); 
+		try {
+			SubscribersManager.persist(temporarySubscriber, password);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		/* we created him, now add him to the collection */
 		addSubscriberToList(temporarySubscriber);		
 		/* return the new password */

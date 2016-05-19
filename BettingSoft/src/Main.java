@@ -9,6 +9,7 @@ import dev4a.competitor.ExistingCompetitorException;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.ExistingSubscriberException;
+import dev4a.subscriber.Subscriber;
 import dev4a.subscriber.SubscriberException;
 import dev4a.system.System;
 
@@ -41,7 +42,9 @@ public class Main {
 
 	private static void addSubscribers(System bettingSystem) {
 		try {
-			java.lang.System.out.println( "Password : " + bettingSystem.subscribe("Andrei", "Bencsik", "afbencsi", "1992-08-12", "1234") );
+			
+			bettingSystem.subscribe("Andrei", "Bencsik", "afbencsi", "1992-08-12", "1234");
+			
 			bettingSystem.creditSubscriber("afbencsi", 100, "1234");
 			bettingSystem.debitSubscriber("afbencsi", 10,"1234");
 			java.lang.System.out.println( "Password : " + bettingSystem.subscribe("Ahmed", "Sami-Mohamed", "asamimoh", "1992-08-12", "1234") );

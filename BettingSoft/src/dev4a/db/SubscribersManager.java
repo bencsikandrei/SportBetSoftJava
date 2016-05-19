@@ -64,7 +64,5 @@ public class SubscribersManager {
 		conn.close();
 
 		return subscriber;
-
-		return null;
 	}
 }
