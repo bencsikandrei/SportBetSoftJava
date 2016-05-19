@@ -160,13 +160,19 @@ public class System implements Betting {
 					BadParametersException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
+		/* valid name, date ? */
+		if ( ! (utility.checkValidCompetition(competition) ) ) 
+			throw new BadParametersException();
 		/* now check if it exists */
 		Competition tempCompetition = getCompetitionByName(competition);
 		/* the test */
 		if( tempCompetition != null )
 			throw new ExistingCompetitionException();
+		/* More information ! */
+		//java.lang.System.out.println("Sport of the competition " + competition + " ? ");
+		
 		/* does not exist ? create it ! */
-		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED);
+		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED, new ArrayList(competitors));
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);		
 	}
@@ -244,8 +250,13 @@ public class System implements Betting {
 			throw new ExistingCompetitorException();
 		}
 		/* check if the competitor is already in the competition */
-		// TODO
-		///////////////////////////////////////////////////////////////////////////////////////////////////////
+		if(myCompetition.isCompetitor(competitor)){
+			throw new CompetitionException();
+		}
+		/* now we can add the competitor */  
+		/*competitor.addCompetitionToList(competition); */
+		myCompetition.addCompetitor(competitor); 
+		// TODO (complete)
 	}
 
 		
@@ -255,14 +266,13 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* check validity of the name */
-		if( (utility.checkValidName(lastName) && utility.checkValidName(firstName) ) ) {
+		if( !(utility.checkValidName(lastName) && utility.checkValidName(firstName) && utility.checkValidDate(borndate) ) ) {
 			throw new BadParametersException();
 		}
 		/* create the competitor */
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
 		/* add him to the list */
 		addCompetitorToList(tempCompetitor);
-		
 		
 		return tempCompetitor;
 	}
@@ -279,7 +289,9 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* check validity of the name */
-		// TODO
+		if( (utility.checkValidName(name) ) ) {
+			throw new BadParametersException();
+		}
 		/* create the competitor */
 		Competitor tempCompetitor = new Team(name);
 		/* add him to the list */
@@ -291,8 +303,31 @@ public class System implements Betting {
 	public void deleteCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
 			ExistingCompetitorException {
-		// TODO Auto-generated method stub
-		
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* competition to remove competitor from */
+		Competition myCompetition = getCompetitionByName(competition);
+		/* check if it exists */
+		if( myCompetition == null )
+			/* does not exist */
+			throw new CompetitionException();
+		/* check if the competition is in a proper state */
+		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
+			throw new CompetitionException();
+		}
+		/* check if the competitor exists */
+		if(!this.allCompetitors.contains(competitor)){
+			throw new ExistingCompetitorException();
+		}
+		/* check if the competitor is in the competition */
+		if(!myCompetition.isCompetitor(competitor)){
+			throw new CompetitionException();
+		}
+		/* now we can delete the competitor */  
+		/*competitor.removeCompetitionFromList(competition); */
+		myCompetition.removeCompetitor(competitor); 
+		// TODO (complete)
+		// TODO return tokens
 	}
 
 	@Override
@@ -341,6 +376,9 @@ public class System implements Betting {
 	@Override
 	public void settleWinner(String competition, Competitor winner, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		
 		// TODO Auto-generated method stub
 		
 	}
@@ -348,6 +386,8 @@ public class System implements Betting {
 	@Override
 	public void settlePodium(String competition, Competitor winner, Competitor second, Competitor third,
 			String managerPwd) throws AuthenticationException, ExistingCompetitionException, CompetitionException {
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
 		// TODO Auto-generated method stub
 		
 	}
