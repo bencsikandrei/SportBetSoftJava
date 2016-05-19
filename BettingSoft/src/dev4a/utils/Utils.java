@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 public class Utils {
 	/* create a string with all alphanumerical chars and some symbols */
@@ -86,6 +88,41 @@ public class Utils {
 		String pattern = "^[A-Za-z][A-Za-z-]*";
 		/* */
 		return regexpParser(pattern, uname);
+	}
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public boolean checkValidDate(String date) {
+		/* the pattern to be respected by the string */
+		String pattern = "^((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$";
+		/* */
+		return regexpParser(pattern, date);
+	}
+	/**
+	 * 
+	 * @param competition
+	 * @return
+	 */
+	public boolean checkValidCompetition(String competition) {
+		/* the pattern to be respected by the string */
+		String pattern = "^[A-Za-z0-9_-]{1,50}$";
+		/* */
+		return regexpParser(pattern, competition);
+	}
+	/**
+	 * 
+	 * @param competition
+	 * @return
+	 */
+	public boolean checkValidCalendar(Calendar date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD");  
+		String stringDate = formatter.format(date); 
+		/* the pattern to be respected by the string */
+		String pattern = "^((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$";
+		/* */
+		return regexpParser(pattern, stringDate);
 	}
 	
 }
