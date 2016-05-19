@@ -106,6 +106,22 @@ public class Competition {
 		this.sport = sport;
 	}
 	
+	public List<Competitor> getAllCompetitors() {
+		return allCompetitors;
+	}
+	
+	public void setAllCompetitors(List<Competitor> allCompetitors) {
+		this.allCompetitors = allCompetitors;
+	}
+	
+	public void addCompetitor(Competitor competitor){
+		this.allCompetitors.add(competitor);
+	}
+	
+	public void removeCompetitor(Competitor competitor){
+		this.allCompetitors.remove(competitor);
+	}
+	
 	public List<Competitor> getWinners() {
 		return winners;
 	}
