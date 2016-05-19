@@ -60,17 +60,17 @@ public class IndividualCompetitor implements Competitor {
 		
 	}
 	
-	private void addCompetitionsToList(Competition temporaryCompetition) {
+	public void addCompetitionToList(Competition temporaryCompetition) {
 
 		this.competitions.put(temporaryCompetition.getName(), temporaryCompetition);
 	}
 	
-	private void removeCompetitionFromList(String competitionName) {
+	public void removeCompetitionFromList(String competitionName) {
 
 		this.competitions.remove(competitionName);
 	}
 	
-	private Competition getCompetitionByName(String competitionName) {
+	public Competition getCompetitionByName(String competitionName) {
 
 		return this.competitions.get(competitionName);
 	}
