@@ -32,7 +32,9 @@ public class Competition {
 	 * 
 	 */
 	private Calendar closingDate;
-	/* the progress status -> @ENUM States */
+	/* the progress status -> @ENUM States 
+	 * 
+	 */
 	private States progress;
 	/* the sport played in the competition 
 	 * UTF-8 string
@@ -65,7 +67,7 @@ public class Competition {
 		 * Empty constructor for hibernate
 		 */
 	}
-	/* constructor with all params */
+	/* constructor with some params */
 	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress, List<Competitor> allCompetitors){
 		this.name = name;
 		this.startDate = startDate;
@@ -73,6 +75,17 @@ public class Competition {
 		this.progress = this.STATE.STARTED;
 		this.allCompetitors = allCompetitors;
 	}
+	/* constructor with all params */
+	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress, String sport, List<Competitor> allCompetitors, String betType){
+		this.name = name;
+		this.startDate = startDate;
+		this.closingDate = closingDate;
+		this.progress = this.STATE.STARTED;
+		this.sport = sport;
+		this.allCompetitors = allCompetitors;
+		this.betType = betType;
+	}
+	
 	/* getters and setters */
 	public String getName() {
 		return name;
@@ -168,6 +181,12 @@ public class Competition {
 	
 	public int getTotalNumberOfBets() {
 		return bets.size();
+	}
+	/*
+	 * Checks if a competitor is in the competition 
+	 */
+	public boolean isCompetitor(Competitor competitor) {
+		return this.allCompetitors.contains(competitor);
 	}
 	
 	@Override
