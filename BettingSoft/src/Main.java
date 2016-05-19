@@ -1,5 +1,9 @@
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
+import dev4a.competition.CompetitionException;
+import dev4a.competition.ExistingCompetitionException;
+import dev4a.competitor.ExistingCompetitorException;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.ExistingSubscriberException;
@@ -15,11 +19,12 @@ public class Main {
 			
 		addCompetitions(bettingSystem);
 				
+		addCompetitor(bettingSystem);
 	}
 
 	private static void addCompetitions(System bettingSystem) {
 		try {
-			bettingSystem.addCompetition("Real Madrid - Barcelona Primera Division", Calendar.getInstance(), new java.util.ArrayList<dev4a.competitor.Competitor>(), "1234");
+			bettingSystem.addCompetition("Real_Madrid_-_Barcelona_Primera_Division", Calendar.getInstance(), new java.util.ArrayList<dev4a.competitor.Competitor>(), "1234");
 			// bettingSystem.addCompetition("Real Madrid - Barcelona Primera Division", Calendar.getInstance(), new java.util.ArrayList<dev4a.competitor.Competitor>(), "1234");
 				
 		} catch (Exception ex) {
@@ -61,6 +66,23 @@ public class Main {
 		} catch (Exception ex) {
 			
 		}
+	}
+	
+	private static void addCompetitor(System bettingSystem){
+		try{
+			bettingSystem.addCompetitor("Real_Madrid_-_Barcelona_Primera_Division",bettingSystem.createCompetitor("Messi","Lionel", "1987-06-24", "1234"),"1234");
+		
+		} catch (AuthenticationException auth){
+			auth.printStackTrace();
+		} catch (ExistingCompetitionException compEx){
+			compEx.printStackTrace();
+		} catch (CompetitionException comp){
+			comp.printStackTrace();
+		} catch (ExistingCompetitorException comptrEx){
+			comptrEx.printStackTrace();
+		} catch (BadParametersException ex){
+			ex.printStackTrace();
+		}	
 	}
 	
 }
