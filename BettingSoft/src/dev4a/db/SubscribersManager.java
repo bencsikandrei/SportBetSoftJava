@@ -91,7 +91,7 @@ public class SubscribersManager {
 	}
 	
 	/** 
-	 * Find a subscriber by his username 
+	 * This method finds a subscriber by his username 
 	 * @param username
 	 * @return
 	 * @throws SQLException
@@ -128,7 +128,7 @@ public class SubscribersManager {
 	}
 
 	/**
-	 * 
+	 * This method finds all the subscribers in the system
 	 * @return
 	 * @throws SQLException
 	 */
@@ -161,5 +161,47 @@ public class SubscribersManager {
 		conn.close();
 
 		return subs;
+	}
+	/**
+	 * This method updates the subscriber in the db
+	 * @param sub
+	 * @param newPassword
+	 * @throws SQLException
+	 */
+	public static void update(Subscriber sub, String newPassword) throws SQLException {
+		/* open the connection */
+		Connection conn = DatabaseConnection.getConnection();
+		/* create the update query */
+		PreparedStatement psUpdate = conn
+				.prepareStatement("UPDATE subscriber SET first_name=?, last_name=?, password=?, born_date=?, credit=? where username=?");
+		/* update all necessary fields */
+		psUpdate.setString(1, sub.getUserName());
+		psUpdate.setString(2, sub.getFirstName());
+		psUpdate.setString(3, sub.getLastName());
+		psUpdate.setString(4, newPassword );			
+		psUpdate.setDate(5, java.sql.Date.valueOf(sub.getBornDate()));
+		psUpdate.setLong(6, sub.getNumberOfTokens());	
+		/* execute the query */
+		psUpdate.executeUpdate();
+		/* clean up */
+		psUpdate.close();
+		conn.close();
+	}
+	/**
+	 * This method does the delete
+	 * @param sub
+	 * @throws SQLException
+	 */
+	public static void delete(Subscriber sub) throws SQLException {
+		/* open the connection */
+		Connection conn = DatabaseConnection.getConnection();
+		/* create the delete query */
+		PreparedStatement psUpdate = conn
+				.prepareStatement("DELETE FROM subscriber WHERE username=?");
+		psUpdate.setString(1, sub.getUserName());
+		/* clean up */
+		psUpdate.executeUpdate();
+		psUpdate.close();
+		conn.close();
 	}
 }
