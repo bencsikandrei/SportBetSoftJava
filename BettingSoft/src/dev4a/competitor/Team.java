@@ -9,8 +9,6 @@ import dev4a.exceptions.BadParametersException;
 public class Team implements Competitor {
 	/* attributes */
 	private String name;
-	/* competitions where this competitor participates */
-	private Map<String,Competition> competitions = new HashMap();
 	
 	/* constructor */
 	public Team(){
@@ -42,21 +40,6 @@ public class Team implements Competitor {
 	public void deleteMember(Competitor member) throws BadParametersException, ExistingCompetitorException {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void addCompetitionToList(Competition temporaryCompetition) {
-
-		this.competitions.put(temporaryCompetition.getName(), temporaryCompetition);
-	}
-	
-	public void removeCompetitionFromList(String competitionName) {
-
-		this.competitions.remove(competitionName);
-	}
-	
-	public Competition getCompetitionByName(String competitionName) {
-
-		return this.competitions.get(competitionName);
 	}
 	
 	@Override 

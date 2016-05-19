@@ -12,9 +12,7 @@ public class IndividualCompetitor implements Competitor {
 	private String lastName;
 	private String firstName;
 	private String bornDate;
-	/* competitions where this competitor participates */
-	private Map<String,Competition> competitions = new HashMap();
-	
+		
 	/* constructor */
 	public IndividualCompetitor(){
 		/* empty for hibernate */
@@ -60,21 +58,7 @@ public class IndividualCompetitor implements Competitor {
 		
 	}
 	
-	public void addCompetitionToList(Competition temporaryCompetition) {
-
-		this.competitions.put(temporaryCompetition.getName(), temporaryCompetition);
-	}
-	
-	public void removeCompetitionFromList(String competitionName) {
-
-		this.competitions.remove(competitionName);
-	}
-	
-	public Competition getCompetitionByName(String competitionName) {
-
-		return this.competitions.get(competitionName);
-	}
-	
+			
 	@Override 
 	public String toString() {
 		/* return the full name */
