@@ -19,9 +19,9 @@ public class Main {
 		
 		addSubscribers(bettingSystem);
 			
-		addCompetitions(bettingSystem);
+		//addCompetitions(bettingSystem);
 				
-		addCompetitor(bettingSystem);
+		//addCompetitor(bettingSystem);
 	}
 
 	private static void addCompetitions(System bettingSystem) {

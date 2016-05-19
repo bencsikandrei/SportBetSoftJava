@@ -13,12 +13,6 @@ import dev4a.bets.*;
  * 
  */
 public class Subscriber {
-	
-	/* The id of the Subscriber 
-	 * Integer
-	 */
-	private int id;
-
 	/* The last name of the Subscriber 
 	 * UTF-8 String 
 	 */
@@ -54,12 +48,6 @@ public class Subscriber {
 		/*
 		 * Empty constructor for Hibernate
 		 */
-	}
-
-	public Subscriber( int id, String lastName, String firstName, String userName, String bornDate) {
-		/* the constructor with all params */
-		this.id = id;
-		this(lastName, firstName, userName, bornDate);
 	}
 
 	public Subscriber( String lastName, String firstName, String userName, String bornDate) {
@@ -100,14 +88,6 @@ public class Subscriber {
 	}
 
 	/* getters and setters REQUIRED for the POJO  (hibernate as well) */
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public String getLastName() {
 		return lastName;
 	}
@@ -165,7 +145,17 @@ public class Subscriber {
 	
 	@Override
 	public String toString() {
+		/* simply return the username, since it is unique */
 		return this.userName;
 	}
 	
+	@Override 
+	public boolean equals(Object obj) {
+		/* check if it's instance of the subscriber class */
+		if (!(obj instanceof Subscriber))
+			return false;
+		if ( ((Subscriber) obj).getUserName() == this.getUserName() )
+			return true;
+		return false;
+	}
 }
