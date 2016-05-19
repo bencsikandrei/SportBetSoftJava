@@ -117,9 +117,15 @@ public class System implements Betting {
 		this.allSubscribers.remove(username);
 	}
 	
-	private Subscriber getSubscriberByUserName(String username) {
+	public Subscriber getSubscriberByUserName(String username) {
 		// TODO make a method to get the sub from the List
-		return this.allSubscribers.get(username);
+		Subscriber sub = null;
+		try {
+			sub = SubscribersManager.findSubscriberByUserName(username);
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		return sub;
 	}
 
 	@Override
@@ -144,6 +150,12 @@ public class System implements Betting {
 		authenticateMngr(managerPwd);
 		/* iterate the container and get all names and attributes */
 		List<List<String>> printableSubs = new ArrayList();
+		/* get the updated list */
+		try {
+			this.allSubscribers = SubscribersManager.findAll();
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		for( Subscriber sub : this.allSubscribers.values() ) {
 			/* store the details for each subscriber */
 			List<String> subDetails = new ArrayList();

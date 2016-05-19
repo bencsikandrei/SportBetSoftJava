@@ -45,6 +45,7 @@ public class Main {
 			
 			bettingSystem.subscribe("Andrei", "Bencsik", "afbencsi", "1992-08-12", "1234");
 			
+			java.lang.System.out.println(bettingSystem.getSubscriberByUserName("afbencsi").toString());
 			bettingSystem.creditSubscriber("afbencsi", 100, "1234");
 			bettingSystem.debitSubscriber("afbencsi", 10,"1234");
 			java.lang.System.out.println( "Password : " + bettingSystem.subscribe("Ahmed", "Sami-Mohamed", "asamimoh", "1992-08-12", "1234") );

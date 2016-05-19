@@ -62,6 +62,11 @@ public class Subscriber {
 	public  Subscriber( String lastName, String firstName, String userName ) {
 		this(lastName, firstName, userName, null);
 	}
+	public  Subscriber( String lastName, String firstName, String userName, String password, String bornDate, long credit) {
+		this(lastName, firstName, userName, bornDate);
+		this.setNumberOfTokens(credit);
+		this.changePassword(this.password, password);
+	}
 	/* account balancing functions */
 	public long credit(long amount) {
 		if (amount > 0) 
