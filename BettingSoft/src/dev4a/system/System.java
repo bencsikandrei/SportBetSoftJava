@@ -253,10 +253,6 @@ public class System implements Betting {
 		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
 			throw new CompetitionException();
 		}
-		/* check if the competitor exists */
-		if(!this.allCompetitors.contains(competitor)){
-			throw new ExistingCompetitorException();
-		}
 		/* check if the competitor is already in the competition */
 		if(myCompetition.isCompetitor(competitor)){
 			throw new CompetitionException();
@@ -378,9 +374,25 @@ public class System implements Betting {
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
-		
-		// TODO Auto-generated method stub
-		
+		/* competition where the competitor should be winner */
+		Competition myCompetition = getCompetitionByName(competition);
+		/* check if it exists */
+		if( myCompetition == null )
+			/* does not exist */
+			throw new CompetitionException();
+		/* check if the competition is in a proper state */
+		else if(!myCompetition.getInProgress().equals(Competition.STATE.FINISHED)) {
+			throw new CompetitionException();
+		}
+		/* check if the competitor is in the competition */
+		if(!myCompetition.isCompetitor(winner)){
+			throw new CompetitionException();
+		}
+		/* now we can set the winner */  
+		ArrayList<Competitor> listOfWinners = new ArrayList<Competitor>();
+		listOfWinners.add(winner);
+		myCompetition.setWinners(listOfWinners); 
+		// TODO check type of competition?		
 	}
 
 	@Override
@@ -388,7 +400,27 @@ public class System implements Betting {
 			String managerPwd) throws AuthenticationException, ExistingCompetitionException, CompetitionException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
-		// TODO Auto-generated method stub
+		/* competition where the competitor should be winner */
+		Competition myCompetition = getCompetitionByName(competition);
+		/* check if it exists */
+		if( myCompetition == null )
+			/* does not exist */
+			throw new CompetitionException();
+		/* check if the competition is in a proper state */
+		else if(!myCompetition.getInProgress().equals(Competition.STATE.FINISHED)) {
+			throw new CompetitionException();
+		}
+		/* check if the competitor is in the competition */
+		if(!myCompetition.isCompetitor(winner) || !myCompetition.isCompetitor(second) || !myCompetition.isCompetitor(third)){
+			throw new CompetitionException();
+		}
+		/* now we can set the winner */  
+		ArrayList<Competitor> listOfWinners = new ArrayList<Competitor>();
+		listOfWinners.add(winner);
+		listOfWinners.add(second);
+		listOfWinners.add(third);
+		myCompetition.setWinners(listOfWinners); 
+		// TODO check type of competition?
 		
 	}
 
