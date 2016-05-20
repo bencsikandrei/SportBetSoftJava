@@ -178,7 +178,7 @@ public class BetsManager {
 		Connection conn = DatabaseConnection.getConnection();
 		
 		PreparedStatement psSelect = conn
-				.prepareStatement("SELECT * FROM bet WHERE username=? order by username");
+				.prepareStatement("SELECT * FROM bet WHERE username=? ORDER BY username");
 		
 		psSelect.setString(1, subscriber.getUserName());
 		
