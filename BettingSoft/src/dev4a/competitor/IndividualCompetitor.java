@@ -1,29 +1,48 @@
 package dev4a.competitor;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import dev4a.competition.Competition;
 import dev4a.exceptions.BadParametersException;
-import dev4a.subscriber.Subscriber;
 
 public class IndividualCompetitor implements Competitor {
+
 	/* attributes */
+	private int id;
+	private int type;
 	private String lastName;
 	private String firstName;
 	private String bornDate;
+	private int id_team;
 		
 	/* constructor */
 	public IndividualCompetitor(){
 		/* empty for hibernate */
 	}
 	/* proper constructor */
-	public IndividualCompetitor(String firstName, String lastName, String bornDate){
+	public IndividualCompetitor(int id, int type, String firstName, String lastName, String bornDate, int id_team){
 		/* initialize */
+		this.id = id;
+		this.type = type;
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.bornDate = bornDate;
+		this.id_team = id_team;
 	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getType() {
+		return type;
+	}
+	
+	public void setType(int type) {
+		this.type = type;
+	}
+	
 	public String getLastName() {
 		return lastName;
 	}
@@ -41,6 +60,12 @@ public class IndividualCompetitor implements Competitor {
 	}
 	public void setBornDate(String bornDate) {
 		this.bornDate = bornDate;
+	}
+	public int getIdTeam() {
+		return id_team;
+	}
+	public void setIdTeam(int id_team) {
+		this.id_team = id_team;
 	}
 	@Override
 	public boolean hasValidName() {
