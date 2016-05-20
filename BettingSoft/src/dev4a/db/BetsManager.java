@@ -16,8 +16,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 import dev4a.bets.*;
 import dev4a.competitor.Competitor;
@@ -35,30 +38,28 @@ public class BetsManager {
 		 */
 		/* get the connection */
 		Connection c = DatabaseConnection.getConnection();
-		/*
-		 * 	id serial PRIMARY KEY,
-	username VARCHAR(30) REFERENCES Subscriber(username),
-	name_comp VARCHAR(50) REFERENCES Competition(name),    
-	type integer,
-	id_winner integer references Competitor(id),
-	id_second integer references Competitor(id),
-	id_third integer references Competitor(id),
-	nb_tokens integer,    
-	status integer,
-	earnings integer
-		 */
+		
 		try {
 			c.setAutoCommit(false);
 			PreparedStatement psPersist = c
-					.prepareStatement("insert into bets(id, username, "
+					.prepareStatement("insert into bet(username, "
 							+ "name_comp, type, id_winner, "
 							+ "id_second, id_third, nb_tokens, "
 							+ "status, earnings)  "
-							+ "values (?, ?, ? , ? , ? , ?, ?, ? , ? , ?)");
+							+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-			psPersist.setInt(1, bet.getIdentifier());
-			psPersist.setString(2, "" );
-			
+			/* */
+			psPersist.setString(1, bet.getUserName());
+			psPersist.setString(2, bet.competitionName());
+			psPersist.setString(3, bet.getType());
+			/* */
+			psPersist.setInt(4, bet.getWinner());
+			psPersist.setInt(5, bet.getSecond());
+			psPersist.setInt(6, bet.getThird());
+			psPersist.setLong(7, bet.getNumberOfTokens());
+			psPersist.setInt(8, bet.getState());
+			psPersist.setLong(9, bet.getEarnings());
+						
 			/* do the updare */
 			psPersist.executeUpdate();
 			/* */
@@ -67,16 +68,22 @@ public class BetsManager {
 			// Retrieving the value of the id with a request on the
 			// sequence (subscribers_id_seq).
 			PreparedStatement psIdValue = c
-					.prepareStatement("select currval('bets_id_seq') as value_id");
+					.prepareStatement("SELECT currval('bets_id_seq') AS value_id");
+			
 			ResultSet resultSet = psIdValue.executeQuery();
+			
 			Integer id = null;
+			
 			while (resultSet.next()) {
-				id = resultSet.getInt("value_id");
+				id = resultSet.getInt("id");
 			}
+			
 			resultSet.close();
 			psIdValue.close();
 			c.commit();
+			
 			bet.setIdentifier(id);
+			
 		} catch (SQLException e) {
 			try {
 				c.rollback();
@@ -114,18 +121,7 @@ public class BetsManager {
 		ResultSet resultSet = psSelect.executeQuery();
 		
 		Bet bet = null;
-		/*
-		 * 	id serial PRIMARY KEY,
-			username VARCHAR(30) REFERENCES Subscriber(username),
-			name_comp VARCHAR(50) REFERENCES Competition(name),    
-			type integer,
-			id_winner integer references Competitor(id),
-			id_second integer references Competitor(id),
-			id_third integer references Competitor(id),
-			nb_tokens integer,    
-			status integer,
-			earnings integer
-		 */
+		
 		while (resultSet.next()) {
 			/* the id */
 			int tempId = resultSet.getInt("id");
@@ -133,6 +129,8 @@ public class BetsManager {
 			String tempUserName = resultSet.getString("username");
 			
 			String tempCompName = resultSet.getString("comp_name");
+			
+			String tempDate = (resultSet.getDate("bet_date")).toString();
 			
 			int tempType = resultSet.getInt("type");
 			
@@ -146,7 +144,7 @@ public class BetsManager {
 			
 			if( tempType == 1 ) {
 				/* this is a winner bet */
-				bet = new WinnerBet(tempNbTokens, tempCompName, CompetitorsManager.findById(tempIdWinner), tempUserName, betDate));
+				bet = new WinnerBet(tempNbTokens, tempCompName, CompetitorsManager.findById(tempIdWinner), tempUserName, tempDate);
 				/* */
 				
 			} 
@@ -155,6 +153,8 @@ public class BetsManager {
 				int tempSecond = resultSet.getInt("id_second");
 				/**/
 				int tempThird = resultSet.getInt("id_third");
+				
+				bet = new PodiumBet(tempNbTokens, tempCompName, CompetitorsManager.findById(tempIdWinner), CompetitorsManager.findById(tempSecond), CompetitorsManager.findById(tempThird), tempUserName, tempDate);
 			}			
 		}
 		/* clean up */
@@ -172,22 +172,29 @@ public class BetsManager {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<Bet> findBySubscriber(Subscriber subscriber)
+	public static Map<Integer, Bet> findBySubscriber(Subscriber subscriber)
 			throws SQLException {
-		Connection c = DatabaseConnection.getConnection();
-		PreparedStatement psSelect = c
-				.prepareStatement("select * from bets where id_subscriber=? order by id");
-		psSelect.setInt(1, subscriber.getId());
+		
+		Connection conn = DatabaseConnection.getConnection();
+		
+		PreparedStatement psSelect = conn
+				.prepareStatement("SELECT * FROM bet WHERE username=? order by username");
+		
+		psSelect.setString(1, subscriber.getUserName());
+		
 		ResultSet resultSet = psSelect.executeQuery();
-		List<Bet> bets = new ArrayList<Bet>();
+		
+		Map<Integer, Bet> bets = new HashMap();
+		
 		while (resultSet.next()) {
-			bets.add(new Bet(resultSet.getInt("id"), resultSet
-					.getInt("number_of_tokens"), resultSet
-					.getInt("id_subscriber")));
+			
+			
+			
+			bets.put(, );
 		}
 		resultSet.close();
 		psSelect.close();
-		c.close();
+		conn.close();
 
 		return bets;
 	}
@@ -199,7 +206,7 @@ public class BetsManager {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<Bet> findAll() throws SQLException {
+	public static Map<Integer, Bet> findAll() throws SQLException {
 		Connection c = DatabaseConnection.getConnection();
 		PreparedStatement psSelect = c
 				.prepareStatement("select * from bets order by id_subscriber,id");
@@ -246,13 +253,16 @@ public class BetsManager {
 	 * @throws SQLException
 	 */
 	public static void delete(Bet bet) throws SQLException {
-		Connection c = DatabaseConnection.getConnection();
-		PreparedStatement psUpdate = c
-				.prepareStatement("delete from bets where id=?");
-		psUpdate.setInt(1, bet.getId());
+		/* open the connection */
+		Connection conn = DatabaseConnection.getConnection();
+		/* */
+		PreparedStatement psUpdate = conn
+				.prepareStatement("DELETE FROM bet WHERE id=?");
+		psUpdate.setInt(1, bet.getIdentifier());
+		/* clean up */
 		psUpdate.executeUpdate();
 		psUpdate.close();
-		c.close();
+		conn.close();
 	}
 	// -----------------------------------------------------------------------------
 }
