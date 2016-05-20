@@ -232,9 +232,21 @@ public class System implements Betting {
 		if( toBeCanceled == null )
 			/* does not exist */
 			throw new CompetitionException();
-		/* it exists -> remove it */
+		/* take care of all the ongoing bets ! */
+		List<Bet> listBets = toBeCanceled.getBets();
+		for (int i = 0; i<listBets.size(); i++){
+			Subscriber subscriber = getSubscriberByUserName(listBets.get(i).getUserName());
+			/* returns tokens */
+			subscriber.credit(listBets.get(i).getNumberOfTokens());
+			/* deletes the bets from subscriber */
+			subscriber.getBets().remove(listBets.get(i));
+		}
+		/* deletes the bets from System */
+		allBets.removeAll(listBets);
+		/* deletes the bets from Competition */
+		toBeCanceled.getBets().removeAll(listBets);
+		/* cancels it */
 		toBeCanceled.setInProgress(Competition.STATE.CANCELED);
-		/* TODO take care of all the ongoing bets ! */
 	}
 
 
