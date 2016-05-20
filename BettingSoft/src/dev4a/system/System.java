@@ -283,7 +283,7 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new CompetitionException();
+			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
 		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
 			throw new CompetitionException();
@@ -512,9 +512,29 @@ public class System implements Betting {
 	}
 
 	@Override
-	public ArrayList<String> consultBetsCompetition(String competition) throws ExistingCompetitionException {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<String> consultBetsCompetition(String competition) 
+			throws ExistingCompetitionException {
+		/* competition where the competitor is to be added */
+		Competition myCompetition = getCompetitionByName(competition);
+		/* check if it exists */
+		if( myCompetition == null )
+			/* does not exist */
+			throw new ExistingCompetitionException();
+		ArrayList<String> listOfStrings = new ArrayList<String>();
+		List<Bet> listOfBets = getCompetitionByName(competition).getBets();
+		String string = "";
+		String names = "";
+		for(Bet b:listOfBets){
+			if (b.getType()==1){ //type winner
+				names = "the winner: " + b.getWinner().toString();
+			}
+			if (b.getType()==2){ //type podium
+				names = "the podium: " + b.getWinner().toString() + ", " + b.getSecond().toString() + " and " + b.getThird().toString();
+			}
+			string = b.getUserName() + " has bet " + b.getNumberOfTokens() + " tokens on " + names + " in " + competition;
+			listOfStrings.add(string);
+		}
+		return listOfStrings;
 	}
 
 	@Override
