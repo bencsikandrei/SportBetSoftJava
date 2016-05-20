@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import dev4a.competitor.Competitor;
 import dev4a.competitor.IndividualCompetitor;
@@ -49,26 +51,23 @@ public class CompetitorsManager {
 				+ "values (?, ?, ?, ?, ?, ?)");
 
 			psPersist.setInt(1, competitor.getType());
-			
 			if (competitor.getType() == Competitor.TYPE_INDIVIDUAL) {
 				psPersist.setString(2, ((IndividualCompetitor) competitor).getFirstName());
 				psPersist.setString(3, ((IndividualCompetitor) competitor).getLastName());
-				psPersist.setString(4, ((IndividualCompetitor) competitor).getBornDate());
+				psPersist.setDate(4, Date.valueOf(((IndividualCompetitor) competitor).getBornDate()));
+				psPersist.setString(5, null);
+				psPersist.setInt(6, ((Team) competitor).getIdTeam());
 			} else if (competitor.getType() == Competitor.TYPE_TEAM) {
-				psPersist.setString(2, ((Team) competitor).getName());
-				psPersist.setInt(3, ((Team) competitor).getIdTeam());
+				psPersist.setString(2, null);
+				psPersist.setString(3, null);
+				psPersist.setString(4, null);
+				psPersist.setString(5, ((Team) competitor).getName());
+				psPersist.setInt(6, 0); // 0 for null
 			}
-
-			/* all fields in order */			
-			psPersist.setDate(5, Date.valueOf(competitor.getBornDate()));
-			psPersist.setLong(6, competitor.getNumberOfTokens());			
-			/* do the update */
+		
 			psPersist.executeUpdate();
-			/* run the prepared statement that contains the subscribers data */
 			psPersist.close();
-			/* now commit the changes we made */
 			conn.commit();
-			
 		} catch (SQLException e) {
 			try {
 				/* if something occured do not commit anything and rollback !*/
@@ -100,7 +99,7 @@ public class CompetitorsManager {
 		{
 			if(resultSet.getInt("type") == Competitor.TYPE_INDIVIDUAL) {
 				competitor = new IndividualCompetitor(id, resultSet.getInt("type"), resultSet.getString("first_name"), 
-					resultSet.getString("last_name"), resultSet.getDate("born_date").toString());
+					resultSet.getString("last_name"), resultSet.getDate("born_date").toString(), resultSet.getInt("id_team"));
 			} else if(resultSet.getInt("type") == Competitor.TYPE_TEAM) {
 				competitor = new Team(id, resultSet.getInt("type"), resultSet.getString("team_name"));
 			}
@@ -114,39 +113,68 @@ public class CompetitorsManager {
 	}
 
 		/**
-		 * This method finds all the subscribers in the system
+		 * This method finds all the individual competitors in the system
 		 * @return
 		 * @throws SQLException
 		 */
-		public static Map<int, Subscriber> findAll() throws SQLException {
+		public static Map<Integer, IndividualCompetitor> findAllIndividualCompetitors() throws SQLException {
 			/* open the connection */
 			Connection conn = DatabaseConnection.getConnection();
 			/* prepare the query */
 			PreparedStatement psSelect = conn
-			.prepareStatement("SELECT * FROM subscriber ORDER BY username, first_name, last_name");
+			.prepareStatement("SELECT * FROM competitor ORDER BY id WHERE type=" + Integer.toString(Competitor.TYPE_INDIVIDUAL));
 			/* the results are here */
 			ResultSet resultSet = psSelect.executeQuery();
 			/* a container for them all */
-			Map<String,Subscriber> subs = new HashMap();
-			/* refference for temp subscriber */
-			Subscriber sub = null;
+			Map<Integer, IndividualCompetitor> competitors = new HashMap<Integer, IndividualCompetitor>();
+			
+			/* reference for temporary competitor */
+			IndividualCompetitor competitor = null;
 			while (resultSet.next()) {
-				sub = new Subscriber(
-					resultSet.getString("username"),
-					resultSet.getString("first_name"),
-					resultSet.getString("last_name"),
-					resultSet.getString("password"),
-					resultSet.getDate("born_date").toString(),
-					resultSet.getLong("credit")
-					);
-				subs.put(sub.getUserName(), sub);
+				competitor = new IndividualCompetitor(resultSet.getInt("id"),
+						resultSet.getInt("type"), resultSet.getString("first_name"), 
+						resultSet.getString("last_name"), resultSet.getDate("born_date").toString(),
+						resultSet.getInt("id_team"));
+				competitors.put(competitor.getId(), competitor);
 			}
+			
 			/* clean up */
 			resultSet.close();
 			psSelect.close();
 			conn.close();
 
-			return subs;
+			return competitors;
+		}
+		
+		/**
+		 * This method finds all the teams in the system
+		 * @return
+		 * @throws SQLException
+		 */
+		public static Map<Integer, Team> findAllTeams() throws SQLException {
+			/* open the connection */
+			Connection conn = DatabaseConnection.getConnection();
+			/* prepare the query */
+			PreparedStatement psSelect = conn
+			.prepareStatement("SELECT * FROM competitor ORDER BY id WHERE type=" + Integer.toString(Competitor.TYPE_TEAM));
+			/* the results are here */
+			ResultSet resultSet = psSelect.executeQuery();
+			/* a container for them all */
+			Map<Integer, Team> competitors = new HashMap<Integer, Team>();
+			
+			/* reference for temporary competitor */
+			Team competitor = null;
+			while (resultSet.next()) {
+				competitor = new Team(resultSet.getInt("id"), resultSet.getInt("type"), resultSet.getString("team_name"));
+				competitors.put(competitor.getId(), competitor);
+			}
+			
+			/* clean up */
+			resultSet.close();
+			psSelect.close();
+			conn.close();
+
+			return competitors;
 		}
 
 	}
