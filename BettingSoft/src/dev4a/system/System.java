@@ -181,22 +181,24 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* valid name, date ? */
-		if ( ! (utility.checkValidCompetition(competition) ) ) 
+		if ( ! (utility.checkValidCompetition(competition) ) || competitors == null ) 
+			// we do not validate competitor because we already did it when we created it.
 			throw new BadParametersException();
 		/* now check if it exists */
 		Competition tempCompetition = getCompetitionByName(competition);
 		/* the test */
 		if( tempCompetition != null )
 			throw new ExistingCompetitionException();
-		/* More information ! */
+		/* check if the date is correct */
 		if (closingDate.before(Calendar.getInstance()) || competitors.size()<2){
 			throw new CompetitionException();
 		}
+		/* are there repeated competitors? */
 		Set<Competitor> set = new HashSet<Competitor>(competitors);
 		if (set.size() < competitors.size()){
 			throw new CompetitionException();
 		}		
-		/* does not exist ? create it ! */
+		/* create it ! */
 		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED, new ArrayList(competitors));
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);		
