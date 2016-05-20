@@ -58,7 +58,8 @@ CREATE TABLE Bet
 (
 	id serial PRIMARY KEY,
 	username VARCHAR(30) REFERENCES Subscriber(username),
-	name_comp VARCHAR(50) REFERENCES Competition(name),    
+	name_comp VARCHAR(50) REFERENCES Competition(name),
+	bet_date date,
 	type integer,
 	id_winner integer references Competitor(id),
 	id_second integer references Competitor(id),

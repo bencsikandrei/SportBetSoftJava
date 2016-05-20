@@ -20,6 +20,7 @@ import java.util.List;
 
 import dev4a.utils.DatabaseConnection;
 import dev4a.bets.*;
+import dev4a.competitor.Competitor;
 
 public class BetsManager {
 
@@ -102,19 +103,64 @@ public class BetsManager {
 	 * @throws SQLException
 	 */
 	public static Bet findById(Integer id) throws SQLException {
-		Connection c = DatabaseConnection.getConnection();
-		PreparedStatement psSelect = c
-				.prepareStatement("select * from bets where id=?");
+		/* open the connection */
+		Connection conn = DatabaseConnection.getConnection();
+		
+		PreparedStatement psSelect = conn
+				.prepareStatement("SELECT * FROM bet WHERE id=?");
+		
+		psSelect.setInt(1, id.intValue());
+		
 		ResultSet resultSet = psSelect.executeQuery();
+		
 		Bet bet = null;
+		/*
+		 * 	id serial PRIMARY KEY,
+			username VARCHAR(30) REFERENCES Subscriber(username),
+			name_comp VARCHAR(50) REFERENCES Competition(name),    
+			type integer,
+			id_winner integer references Competitor(id),
+			id_second integer references Competitor(id),
+			id_third integer references Competitor(id),
+			nb_tokens integer,    
+			status integer,
+			earnings integer
+		 */
 		while (resultSet.next()) {
-			bet = new Bet(resultSet.getInt("id"),
-					resultSet.getInt("number_of_tokens"),
-					resultSet.getInt("id_subscriber"));
+			/* the id */
+			int tempId = resultSet.getInt("id");
+			
+			String tempUserName = resultSet.getString("username");
+			
+			String tempCompName = resultSet.getString("comp_name");
+			
+			int tempType = resultSet.getInt("type");
+			
+			long tempNbTokens = resultSet.getLong("nb_tokens");
+			
+			int tempStatus = resultSet.getInt("status");
+			
+			long tempEarnings = resultSet.getLong("earnings");
+			
+			int tempIdWinner = resultSet.getInt("id_winner");
+			
+			if( tempType == 1 ) {
+				/* this is a winner bet */
+				bet = new WinnerBet(tempNbTokens, tempCompName, CompetitorsManager.findById(tempIdWinner), tempUserName, betDate));
+				/* */
+				
+			} 
+			else {
+				/* */
+				int tempSecond = resultSet.getInt("id_second");
+				/**/
+				int tempThird = resultSet.getInt("id_third");
+			}			
 		}
+		/* clean up */
 		resultSet.close();
 		psSelect.close();
-		c.close();
+		conn.close();
 
 		return bet;
 	}
