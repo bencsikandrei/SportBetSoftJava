@@ -30,10 +30,10 @@ public class Main {
 			ex.printStackTrace();
 		}
 		addSubscribers(bettingSystem);
-		/*
+		
 		addCompetitions(bettingSystem);
 
-		addCompetitor(bettingSystem);*/
+		addCompetitor(bettingSystem);
 	}
 
 	private static void initializeDatabase() throws SQLException {
@@ -71,9 +71,9 @@ public class Main {
 	private static void addSubscribers(System bettingSystem) {
 		try {
 
-			//bettingSystem.subscribe("Andrei", "Bencsik", "afbencsi", "1992-08-12", "1234");
+			bettingSystem.subscribe("Andrei", "Bencsik", "afbencsi", "1992-08-12", "1234");
 
-			//java.lang.System.out.println(bettingSystem.getSubscriberByUserName("afbencsi").toString());
+			java.lang.System.out.println(bettingSystem.getSubscriberByUserName("afbencsi").toString());
 			
 			bettingSystem.creditSubscriber("afbencsi", 100, "1234");
 			bettingSystem.debitSubscriber("afbencsi", 10,"1234");
@@ -94,9 +94,9 @@ public class Main {
 		}
 
 		try {
-			//java.lang.System.out.println( bettingSystem.unsubscribe("afbencsi", "1234") );
+			java.lang.System.out.println( bettingSystem.unsubscribe("afbencsi", "1234") );
 
-			//java.lang.System.out.println( "Password : " + bettingSystem.subscribe("Florian", "Dumbovski", "fdumbov", "1992-08-12", "1234") );
+			java.lang.System.out.println( "Password : " + bettingSystem.subscribe("Florian", "Dumbovski", "fdumbov", "1992-08-12", "1234") );
 
 		} catch(Exception ex) {
 			ex.printStackTrace();

@@ -89,11 +89,6 @@ public class System implements Betting {
 		String password = utility.randomString(8);
 		/* if he does not exist, we can create him */
 		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate); 
-		try {
-			SubscribersManager.persist(temporarySubscriber, password);
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
-		}
 		/* we created him, now add him to the collection */
 		addSubscriberToList(temporarySubscriber, password);		
 		/* return the new password */
