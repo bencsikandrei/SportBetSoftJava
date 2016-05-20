@@ -171,16 +171,24 @@ public class Competition {
 		this.betType = betType;
 	}
 	
-	public long getTotalNumberOfTokens() {
+	/* return the number of tokens of a given type bet on this competition */
+	public long getTotalNumberOfTokens(int betType) {
 		long sum = 0;
-		for (int i = 0; i<bets.size(); i++){
-			sum += bets.get(i).getNumberOfTokens();
+		for(Bet b:this.bets){
+			if(b.getType()==betType)
+				sum += b.getNumberOfTokens();
 		}
 		return sum;
 	}
 	
-	public int getTotalNumberOfBets() {
-		return bets.size();
+	/* return the number of bets of a given type bet on this competition */
+	public int getTotalNumberOfBets(int betType) {
+		int count = 0;
+		for(Bet b:this.bets){
+			if(b.getType()==betType)
+				count++;
+		}
+		return count;
 	}
 	/*
 	 * Checks if a competitor is in the competition 
