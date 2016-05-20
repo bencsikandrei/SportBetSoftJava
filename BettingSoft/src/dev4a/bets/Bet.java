@@ -22,6 +22,8 @@ public abstract class Bet {
 	protected long numberOfTokens;
 	/* the date it was placed on */
 	protected Date betDate;
+	/* the username of the subscriber */
+	protected String userName;
 	
 	/* getters and setters */
 	
@@ -46,8 +48,10 @@ public abstract class Bet {
 	public Date getBetDate() {
 		return betDate;
 	}
+	public String getUserName() {
+		return userName;
+	}
 	public void setBetDate(Date betDate) {
 		this.betDate = betDate;
 	}
-	
 }
