@@ -1,5 +1,6 @@
 package dev4a.subscriber;
 import dev4a.bets.*;
+import java.util.List;
 /**
  * 
  * 
@@ -43,7 +44,11 @@ public class Subscriber {
 	 * a long integer ( he can be really rich if he bets right )
 	 */
 	private long numberOfTokens;
-
+	/* list of bets
+	 */
+	private List<Bet> bets;
+	
+	
 	/* Constructors of this class */
 	public Subscriber(){
 		/*
@@ -143,6 +148,14 @@ public class Subscriber {
 		this.password = password;
 	}
 	
+	public List<Bet> getBets() {
+		return bets;
+	}
+
+	public void setBets(List<Bet> bets) {
+		this.bets = bets;
+	}
+	
 	/* cancel a bet */
 	public long cancelBet(Bet betToCancel) {
 
@@ -164,4 +177,6 @@ public class Subscriber {
 			return true;
 		return false;
 	}
+
+
 }
