@@ -1,24 +1,36 @@
 package dev4a.competitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import dev4a.competition.Competition;
+import dev4a.competition.ExistingCompetitionException;
 import dev4a.exceptions.BadParametersException;
 
 public class Team implements Competitor {
+	
 	/* attributes */
+	private static AtomicInteger uniqueId = new AtomicInteger();
+	/* Id for the DB */
 	private int id;
-	private int type;
+	/* Name of the team */
 	private String name;
-	private int id_team;
+	/* type = 1 --> IndividualCompetitor */
+	private int type;
+	/* Competitors */
+	private List<Competitor> members = new ArrayList();
 	
 	/* constructor */
 	public Team(){
 		/* empty for hibernate */
 	}
 	/* proper constructor */
-	public Team(int id, int type, String name) {
+	public Team(String name) {
+		this.id = uniqueId.getAndIncrement();
+		this.type = TYPE_TEAM;
 		this.name = name;
 	}
 	
@@ -45,29 +57,34 @@ public class Team implements Competitor {
 		this.name = name;
 	}
 	
-	public int getIdTeam() {
-		return id_team;
-	}
-	public void setIdTeam(int id_team) {
-		this.id_team = id_team;
-	}
-	
 	@Override
 	public boolean hasValidName() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public void addMember(Competitor member) throws ExistingCompetitorException, BadParametersException {
-		// TODO Auto-generated method stub
-		
+		/* Member instanciated? */
+		if( member == null )
+			throw new BadParametersException();
+		/* Member already in team? */
+		if( this.members.contains(member) )
+			throw new ExistingCompetitorException();
+		/* Adding it ! */
+		this.members.add(member);
 	}
 
 	@Override
 	public void deleteMember(Competitor member) throws BadParametersException, ExistingCompetitorException {
-		// TODO Auto-generated method stub
-		
+		/* Member instanciated? */
+		if( member == null )
+			throw new BadParametersException();
+		/* Member not in team? */
+		if( !this.members.contains(member) )
+			throw new ExistingCompetitorException();
+		/* Delete it ! */
+		this.members.remove(member);		
 	}
 	
 	@Override 
