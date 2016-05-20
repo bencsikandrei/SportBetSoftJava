@@ -1,5 +1,6 @@
 package dev4a.bets;
 import dev4a.competitor.*;
+
 import java.util.Date;
 /**
  * 
@@ -13,9 +14,14 @@ import java.util.Date;
  * 
  */
 public class WinnerBet extends Bet {
+	
+	/* the winner competitor of the competition */
+	protected Competitor winner;
+	
 	/* all getters and setters are form the supper class
 	 * we need a constructor
 	 */
+	
 	/* constructor */
 	public WinnerBet(long nbOfTokens, String competition, 
 			Competitor winner, 
@@ -32,6 +38,15 @@ public class WinnerBet extends Bet {
 				
 	}
 	
+	/* getters and setters */
+	
+	public Competitor getWinner() {
+		return winner;
+	}
+	public void setWinner(Competitor winner) {
+		this.winner = winner;
+	}
+
 	@Override
 	public String toString() {
 		/* generate a complete string for the bet */
