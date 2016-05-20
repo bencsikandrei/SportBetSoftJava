@@ -520,4 +520,41 @@ public class System implements Betting {
 		return null;
 	}
 	
+	private void pay(Competition competition){
+		List<Bet> listOfBets = competition.getBets();
+		List<Subscriber> winningSubscribersOnWinner = new ArrayList<Subscriber>();
+		List<Long> tokensBetOnWinner = new ArrayList();
+		List<Subscriber> winningSubscribersOnPodium = new ArrayList<Subscriber>();
+		List<Long> tokensBetOnPodium = new ArrayList();
+		long winningTokensOnWinner=0;
+		long winningTokensOnPodium=0;
+		long payMe;
+		for (Bet b:listOfBets){
+			if(b.getType()==1){ // type winner
+				if(competition.getWinners()==b.getWinner()){
+					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
+					tokensBetOnWinner.add(b.getNumberOfTokens());
+					winningTokensOnWinner += b.getNumberOfTokens();
+				}				
+			}
+			else if(b.getType()==2){
+				if(competition.getWinners().get(0)==b.getWinner() && 
+						competition.getWinners().get(1)==b.getSecond() && 
+						competition.getWinners().get(2)==b.getThird()){
+					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
+					tokensBetOnPodium.add(b.getNumberOfTokens());
+					winningTokensOnPodium += b.getNumberOfTokens();
+				}
+			}
+		}
+		for (int i=0; i<winningSubscribersOnWinner.size();i++){
+			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
+			winningSubscribersOnWinner.get(i).credit(payMe);
+		}
+		
+		for (int i=0; i<winningSubscribersOnPodium.size();i++){
+			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
+			winningSubscribersOnPodium.get(i).credit(payMe);
+		}
+	}
 }
