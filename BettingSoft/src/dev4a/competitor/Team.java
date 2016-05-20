@@ -28,8 +28,8 @@ public class Team implements Competitor {
 		/* empty for hibernate */
 	}
 	/* proper constructor */
-	public Team(String name) {
-		this.id = uniqueId.getAndIncrement();
+	public Team(int id, String name) {
+		this.id = id;
 		this.type = TYPE_TEAM;
 		this.name = name;
 	}

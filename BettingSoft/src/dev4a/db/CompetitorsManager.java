@@ -11,6 +11,7 @@ import java.util.Map;
 import dev4a.competitor.Competitor;
 import dev4a.competitor.IndividualCompetitor;
 import dev4a.competitor.Team;
+import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 
 public class CompetitorsManager {
@@ -33,16 +34,7 @@ public class CompetitorsManager {
 		try {
 			/* we need to leave the system in a stable state so we turn off autocommit */
 			conn.setAutoCommit(false);
-			/* the insert statement for the subscriber 
-			 *     	id integer primary key,
-			 		type integer NOT NULL,
-				    first_name varchar(30),
-				    last_name varchar(30),
-				    born_date date,
-				    team_name varchar(30),
-				    id_team integer foreign key
-			 * */
-			/* this statement prepares all the values to insert into the subscriber table 
+			/* this statement prepares all the values to insert into the competitors table 
 			 * the structure of this table is up above for easier access
 			 * */
 			PreparedStatement psPersist = conn
@@ -88,30 +80,51 @@ public class CompetitorsManager {
 		/* return if for convinience */
 		return competitor;
 	}
-
-	public static Competitor findByid(int id) throws SQLException
+	/**
+	 * This method gets a competitior by his id
+	 * @param id
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Competitor findById(int id) throws SQLException
 	{
+		/* open the connection */
 		Connection conn = DatabaseConnection.getConnection(); 
-		PreparedStatement psSelect = c.prepareStatement("select * from competitor where id=?");
-
+		/* get the select statement ready */
+		PreparedStatement psSelect = conn.prepareStatement("SELECT * FROM competitor WHERE id=?");
+		/* the query value */
 		psSelect.setInt(1, id);
+//		/* execute it */
 		ResultSet resultSet = psSelect.executeQuery();
-
+		/* declare the competitor if we don't fine him, return a null */
 		Competitor competitor = null;
+		/*  (int id, String firstName, String lastName, String bornDate, int idTeam) */
 		while(resultSet.next())
 		{
 			if(resultSet.getInt("type") == Competitor.TYPE_INDIVIDUAL) {
-				competitor = new IndividualCompetitor(id, resultSet.getInt("type"), resultSet.getString("first_name"), 
-					resultSet.getString("last_name"), resultSet.getDate("born_date").toString(), resultSet.getInt("id_team"));
-			} else if(resultSet.getInt("type") == Competitor.TYPE_TEAM) {
-				competitor = new Team(id, resultSet.getInt("type"), resultSet.getString("team_name"));
-			}
+				/* it's an individual */
+				competitor = new IndividualCompetitor(
+						id,
+						resultSet.getString("first_name"), 
+						resultSet.getString("last_name"), 
+						(resultSet.getDate("born_date")).toString(), 
+						resultSet.getInt("id_team")
+						);
+			} 
+			else 
+				/* it's a team */
+				if(resultSet.getInt("type") == Competitor.TYPE_TEAM) {
+					competitor = new Team(
+							id, 
+							resultSet.getString("team_name")
+							);
+				}
 		}
-
+		/* clean up */
 		resultSet.close();
 		psSelect.close();
-		c.close();
-
+		conn.close();
+		/* return the found (or null) */
 		return competitor;
 	}
 
@@ -125,7 +138,9 @@ public class CompetitorsManager {
 			Connection conn = DatabaseConnection.getConnection();
 			/* prepare the query */
 			PreparedStatement psSelect = conn
-			.prepareStatement("SELECT * FROM competitor ORDER BY id WHERE type=" + Integer.toString(Competitor.TYPE_INDIVIDUAL));
+			.prepareStatement("SELECT * FROM competitor ORDER BY id WHERE type=?");
+			/* set the value */
+			psSelect.setInt(1, Competitor.TYPE_INDIVIDUAL);
 			/* the results are here */
 			ResultSet resultSet = psSelect.executeQuery();
 			/* a container for them all */
@@ -133,11 +148,15 @@ public class CompetitorsManager {
 			
 			/* reference for temporary competitor */
 			IndividualCompetitor competitor = null;
+			/* (int id, String firstName, String lastName, String bornDate, int idTeam) */
 			while (resultSet.next()) {
-				competitor = new IndividualCompetitor(resultSet.getInt("id"),
-						resultSet.getInt("type"), resultSet.getString("first_name"), 
-						resultSet.getString("last_name"), resultSet.getDate("born_date").toString(),
+				competitor = new IndividualCompetitor(
+						resultSet.getInt("id"),
+						resultSet.getString("first_name"), 
+						resultSet.getString("last_name"), 
+						resultSet.getDate("born_date").toString(),
 						resultSet.getInt("id_team"));
+				
 				competitors.put(competitor.getId(), competitor);
 			}
 			
@@ -145,7 +164,7 @@ public class CompetitorsManager {
 			resultSet.close();
 			psSelect.close();
 			conn.close();
-
+			/* return the map */
 			return competitors;
 		}
 		
@@ -167,8 +186,12 @@ public class CompetitorsManager {
 			
 			/* reference for temporary competitor */
 			Team competitor = null;
+			/* loop through */
 			while (resultSet.next()) {
-				competitor = new Team(resultSet.getInt("id"), resultSet.getInt("type"), resultSet.getString("team_name"));
+				competitor = new Team(
+						resultSet.getInt("id"),
+						resultSet.getString("team_name")
+						);
 				competitors.put(competitor.getId(), competitor);
 			}
 			
@@ -176,8 +199,60 @@ public class CompetitorsManager {
 			resultSet.close();
 			psSelect.close();
 			conn.close();
-
+			/* return all of them */
 			return competitors;
 		}
 
+		
+		/**
+		 * This method updates the competitor in the db
+		 * @param sub
+		 * @param newPassword
+		 * @throws SQLException
+		 */
+		public static void update(Competitor competitor) throws SQLException {
+			/* open the connection */
+			Connection conn = DatabaseConnection.getConnection();
+			/* create the update query */
+			PreparedStatement psUpdate = conn
+					.prepareStatement("UPDATE competitor "
+							+ "SET first_name=?, last_name=?, born_date=?, team_name=?, team_id=? "
+							+ "WHERE id=?");
+			/* the two possible outcomes */
+			if (competitor.getType() == Competitor.TYPE_INDIVIDUAL) {
+				psUpdate.setString(1, ((IndividualCompetitor) competitor).getFirstName());
+				psUpdate.setString(2, ((IndividualCompetitor) competitor).getLastName());
+				psUpdate.setDate(3, Date.valueOf(((IndividualCompetitor) competitor).getBornDate()));
+				psUpdate.setString(4, null);
+				psUpdate.setInt(5, ((IndividualCompetitor) competitor).getIdTeam());
+			} 
+			else 
+				if (competitor.getType() == Competitor.TYPE_TEAM) {
+					psUpdate.setString(1, null);
+					psUpdate.setString(2, null);
+					psUpdate.setString(3, null);
+					psUpdate.setString(4, ((Team) competitor).getName());
+					psUpdate.setInt(5, -1); // 0 for null
+			}
+			/* execute the query */
+			psUpdate.executeUpdate();
+			/* clean up */
+			psUpdate.close();
+			conn.close();
+		}
+		
+		public static void delete(Competitor competitor) throws SQLException {
+			/* open the connection */
+			Connection conn = DatabaseConnection.getConnection();
+			/* create the delete query */
+			PreparedStatement psUpdate = conn
+					.prepareStatement("DELETE FROM competitor WHERE id=?");
+			psUpdate.setInt(1, competitor.getId());
+			/* clean up */
+			psUpdate.executeUpdate();
+			psUpdate.close();
+			conn.close();
+		}
+		
+		
 	}

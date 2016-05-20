@@ -19,7 +19,7 @@ public class IndividualCompetitor implements Competitor {
 	/* Competitor born date */
 	private String bornDate;
 	/* Id of the team, if the competitor belongs to a team */
-	private int id_team;
+	private int idTeam;
 		
 	/* constructor */
 	public IndividualCompetitor(){
@@ -42,7 +42,24 @@ public class IndividualCompetitor implements Competitor {
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.bornDate = bornDate;
-		this.id_team = id_team;
+		this.idTeam = id_team;
+	}
+	/*
+	 * id serial primary key,    
+	typeOf integer,
+	first_name varchar(30),
+	last_name varchar(30),
+	born_date date
+	team_name varchar(50),
+	id_team integer references COMPETITOR(id)
+	 */
+	public IndividualCompetitor(int id, String firstName, String lastName, String bornDate, int idTeam) {
+		this.id = id;
+		this.type = TYPE_INDIVIDUAL; 
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.bornDate = bornDate;
+		this.idTeam = idTeam;
 	}
 	
 	public int getId() {
@@ -72,10 +89,10 @@ public class IndividualCompetitor implements Competitor {
 		this.bornDate = bornDate;
 	}
 	public int getIdTeam() {
-		return id_team;
+		return idTeam;
 	}
 	public void setIdTeam(int id_team) {
-		this.id_team = id_team;
+		this.idTeam = id_team;
 	}
 	@Override
 	public boolean hasValidName() {
