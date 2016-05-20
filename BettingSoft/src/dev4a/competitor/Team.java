@@ -28,7 +28,7 @@ public class Team implements Competitor {
 		/* empty for hibernate */
 	}
 	/* proper constructor */
-	public Team(int id, String name) {
+	public Team(String name) {
 		this.id = id;
 		this.type = TYPE_TEAM;
 		this.name = name;

@@ -115,7 +115,6 @@ public class CompetitorsManager {
 				/* it's a team */
 				if(resultSet.getInt("type") == Competitor.TYPE_TEAM) {
 					competitor = new Team(
-							id, 
 							resultSet.getString("team_name")
 							);
 				}
@@ -189,7 +188,6 @@ public class CompetitorsManager {
 			/* loop through */
 			while (resultSet.next()) {
 				competitor = new Team(
-						resultSet.getInt("id"),
 						resultSet.getString("team_name")
 						);
 				competitors.put(competitor.getId(), competitor);
