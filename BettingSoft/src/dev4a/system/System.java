@@ -226,11 +226,14 @@ public class System implements Betting {
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
-		/* now check if it exists */
+		/* now checks if it exists */
 		Competition toBeCanceled = getCompetitionByName(competition);
-		/* check if it exists */
+		/* checks if it exists */
 		if( toBeCanceled == null )
 			/* does not exist */
+			throw new ExistingCompetitionException();
+		/* checks closing date */
+		if (toBeCanceled.getClosingDate().before(Calendar.getInstance()))
 			throw new CompetitionException();
 		/* take care of all the ongoing bets ! */
 		List<Bet> listBets = toBeCanceled.getBets();
@@ -260,11 +263,11 @@ public class System implements Betting {
 		/* check if it exists */
 		if( toBeRemoved == null )
 			/* does not exist */
-			throw new CompetitionException();
+			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
-		else if(!toBeRemoved.getInProgress().equals(Competition.STATE.SOLDOUT)) {
+		if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
 			throw new CompetitionException();
-		}
+		//if(!toBeRemoved.getInProgress().equals(Competition.STATE.SOLDOUT)) 
 		/* now we can safely delete */
 		removeCompetitionFromList(competition);
 	}
