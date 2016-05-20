@@ -40,13 +40,11 @@ public class System implements Betting {
 	/* the utilities */
 	Utils utility = new Utils();
 	/* the list of all competitors in the System */
-	private List<Competitor> allCompetitors = new ArrayList();
+	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
 	/* all the competitions in the system */
-	private Map<String,Competition> allCompetitions = new HashMap();
+	private Map<String,Competition> allCompetitions = new HashMap<>();
 	/* all the subscribers in the System */
-	private Map<String,Subscriber> allSubscribers = new HashMap();
-	/* all the bets in the system */
-	private List<Bet> allBets = new ArrayList();
+	private Map<String,Subscriber> allSubscribers = new HashMap<>();
 	
 	
 	/* constructor */
@@ -60,7 +58,7 @@ public class System implements Betting {
 	}
 
 	public void setMgrPassword(String mgrPassword) {
-		// TODO add some logic for the setting opf pswd -> maybe check OLD pass -> New PASS
+		// TODO add some logic for the setting of pswd -> maybe check OLD pass -> New PASS
 		this.mgrPassword = mgrPassword;
 		
 	}
@@ -89,32 +87,23 @@ public class System implements Betting {
 		String password = utility.randomString(8);
 		/* if he does not exist, we can create him */
 		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate); 
+		/* we created him, now add him to the collection */
+		addSubscriberToList(temporarySubscriber, password);		
+		/* return the new password */
+		return password;
+	}
+
+	private void addSubscriberToList(Subscriber temporarySubscriber, String password) {
+		/* 
+		 *  hide the implementation
+		 *  add the subscirber to any collection 
+		 */
 		try {
 			SubscribersManager.persist(temporarySubscriber, password);
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
-		/* we created him, now add him to the collection */
-		addSubscriberToList(temporarySubscriber);		
-		/* return the new password */
-		return password;
-	}
-
-	private void addSubscriberToList(Subscriber temporarySubscriber) {
-		/* 
-		 *  hide the implementation
-		 *  add the subscirber to any collection 
-		 */
-		
 		this.allSubscribers.put(temporarySubscriber.getUserName(), temporarySubscriber);
-	}
-	
-	private void removeSubscriberFromList(String username) {
-		/* 
-		 *  hide the implementation
-		 *  remove the subscirber from any collection 
-		 */
-		this.allSubscribers.remove(username);
 	}
 	
 	public Subscriber getSubscriberByUserName(String username) {
@@ -139,17 +128,31 @@ public class System implements Betting {
 		if ( toBeRemoved == null )
 			throw new ExistingSubscriberException("The user does not exist!");
 		/* remove him from the collection */
-		removeSubscriberFromList(username);
+		removeSubscriberFromList(toBeRemoved);
 		/* return the number of tokens he had left */
 		return toBeRemoved.getNumberOfTokens();
 	}
 
+	private void removeSubscriberFromList(Subscriber toRemove) {
+		/* 
+		 *  hide the implementation
+		 *  remove the subscirber from any collection 
+		 */
+		try {
+			SubscribersManager.delete(toRemove);
+		} catch (SQLException sqlex ) {
+			sqlex.printStackTrace();
+		}
+		
+		this.allSubscribers.remove(toRemove.getUserName());
+	}
+	
 	@Override
 	public List<List<String>> listSubscribers(String managerPwd) throws AuthenticationException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* iterate the container and get all names and attributes */
-		List<List<String>> printableSubs = new ArrayList();
+		List<List<String>> printableSubs = new ArrayList<>();
 		/* get the updated list */
 		try {
 			this.allSubscribers = SubscribersManager.findAll();
@@ -158,7 +161,7 @@ public class System implements Betting {
 		}
 		for( Subscriber sub : this.allSubscribers.values() ) {
 			/* store the details for each subscriber */
-			List<String> subDetails = new ArrayList();
+			List<String> subDetails = new ArrayList<>();
 			/* */
 			subDetails.add(sub.getFirstName());
 			subDetails.add(sub.getLastName());
@@ -199,7 +202,10 @@ public class System implements Betting {
 			throw new CompetitionException();
 		}		
 		/* create it ! */
-		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED, new ArrayList(competitors));
+		tempCompetition = new Competition(competition, 
+				Calendar.getInstance(), 
+				closingDate,Competition.STARTED, 
+				new Map<competitors));
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);		
 		//TODO check BadParametresException
