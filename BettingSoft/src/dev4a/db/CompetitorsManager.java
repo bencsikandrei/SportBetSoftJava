@@ -49,15 +49,17 @@ public class CompetitorsManager {
 			.prepareStatement("INSERT INTO competitor(type, first_name, "
 				+ "last_name, born_date, team_name, id_team)"
 				+ "values (?, ?, ?, ?, ?, ?)");
-
+			/*  */
 			psPersist.setInt(1, competitor.getType());
 			if (competitor.getType() == Competitor.TYPE_INDIVIDUAL) {
 				psPersist.setString(2, ((IndividualCompetitor) competitor).getFirstName());
 				psPersist.setString(3, ((IndividualCompetitor) competitor).getLastName());
 				psPersist.setDate(4, Date.valueOf(((IndividualCompetitor) competitor).getBornDate()));
 				psPersist.setString(5, null);
-				psPersist.setInt(6, ((Team) competitor).getIdTeam());
-			} else if (competitor.getType() == Competitor.TYPE_TEAM) {
+				psPersist.setInt(6, ((IndividualCompetitor) competitor).getIdTeam());
+			} 
+			else 
+				if (competitor.getType() == Competitor.TYPE_TEAM) {
 				psPersist.setString(2, null);
 				psPersist.setString(3, null);
 				psPersist.setString(4, null);
@@ -66,6 +68,7 @@ public class CompetitorsManager {
 			}
 		
 			psPersist.executeUpdate();
+			
 			psPersist.close();
 			conn.commit();
 		} catch (SQLException e) {
@@ -88,7 +91,7 @@ public class CompetitorsManager {
 
 	public static Competitor findByid(int id) throws SQLException
 	{
-		Connection c = DatabaseConnection.getConnection(); 
+		Connection conn = DatabaseConnection.getConnection(); 
 		PreparedStatement psSelect = c.prepareStatement("select * from competitor where id=?");
 
 		psSelect.setInt(1, id);
