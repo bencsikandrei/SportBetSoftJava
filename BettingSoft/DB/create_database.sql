@@ -37,8 +37,8 @@ COMMENT ON TABLE Competitor IS 'Competitors their names and if they are teams th
 
 CREATE TABLE Competition (    
 	name VARCHAR(50) PRIMARY KEY,    
-	starting_date timestamp,    
-	closing_date timestamp,    
+	starting_date date,    
+	closing_date date,    
 	status INT NOT NULL,    
     sport  VARCHAR(30)  NOT NULL,
     id_winner INT REFERENCES Competitor(id),

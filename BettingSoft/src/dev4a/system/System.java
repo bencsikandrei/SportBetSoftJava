@@ -47,14 +47,14 @@ public class System implements Betting {
 	private Map<String,Competition> allCompetitions = new HashMap<>();
 	/* all the subscribers in the System */
 	private Map<String,Subscriber> allSubscribers = new HashMap<>();
-	
-	
+
+
 	/* constructor */
 	public System(String mgrPassword) {
 		/* setting the pass */
 		this.mgrPassword = mgrPassword; 
 	}
-	
+
 	private String getMgrPassword() {
 		return mgrPassword;
 	}
@@ -62,7 +62,7 @@ public class System implements Betting {
 	public void setMgrPassword(String mgrPassword) {
 		// TODO add some logic for the setting of pswd -> maybe check OLD pass -> New PASS
 		this.mgrPassword = mgrPassword;
-		
+
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class System implements Betting {
 			throw new AuthenticationException();
 		}
 	}
-	
+
 	@Override
 	public String subscribe(String lastName, String firstName, String username, String borndate, String managerPwd)
 			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
@@ -107,7 +107,7 @@ public class System implements Betting {
 		}
 		this.allSubscribers.put(temporarySubscriber.getUserName(), temporarySubscriber);
 	}
-	
+
 	public Subscriber getSubscriberByUserName(String username) {
 		// TODO make a method to get the sub from the List
 		Subscriber sub = null;
@@ -145,10 +145,10 @@ public class System implements Betting {
 		} catch (SQLException sqlex ) {
 			sqlex.printStackTrace();
 		}
-		
+		java.lang.System.out.println("removing " + toRemove.getUserName());
 		this.allSubscribers.remove(toRemove.getUserName());
 	}
-	
+
 	@Override
 	public List<List<String>> listSubscribers(String managerPwd) throws AuthenticationException {
 		/* first authenticate the manager */
@@ -174,7 +174,7 @@ public class System implements Betting {
 		}
 		return printableSubs;
 	}
-	
+
 	public void printSubscribers(String mgrPassword) throws AuthenticationException {
 		this.utility.printList(this.listSubscribers(mgrPassword));
 	}
@@ -182,7 +182,7 @@ public class System implements Betting {
 	@Override
 	public void addCompetition(String competition, Calendar closingDate, Collection<Competitor> competitors,
 			String managerPwd) throws AuthenticationException, ExistingCompetitionException, CompetitionException,
-					BadParametersException {
+			BadParametersException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* valid name, date ? */
@@ -200,21 +200,21 @@ public class System implements Betting {
 		}
 		/* create the Map */
 		Map<Integer, Competitor> tempCompetitors = new HashMap<>();
-		
+
 		/* create it ! */
 		tempCompetition = new Competition(
-					competition,
-					Calendar.getInstance(),
-					closingDate,
-					"sport",
-					tempCompetitors,
-					"pw"
+				competition,
+				Calendar.getInstance(),
+				closingDate,
+				"sport",
+				tempCompetitors,
+				"pw"
 				);
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);		
 		//TODO check BadParametresException
 	}
-	
+
 	private void addCompetitionToList(Competition tempCompetition) {
 		// hide the implementation
 		try {
@@ -224,7 +224,7 @@ public class System implements Betting {
 		}
 		this.allCompetitions.put(tempCompetition.getName(), tempCompetition);
 	}
-	
+
 
 	private void removeCompetitionFromList(Competition competition) {
 		// hide the implementation
@@ -320,7 +320,7 @@ public class System implements Betting {
 		myCompetition.addCompetitor(competitor); 
 	}
 
-		
+
 	@Override
 	public Competitor createCompetitor(String lastName, String firstName, String borndate, String managerPwd)
 			throws AuthenticationException, BadParametersException {
@@ -334,7 +334,7 @@ public class System implements Betting {
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
 		/* add him to the list */
 		addCompetitorToList(tempCompetitor);
-		
+
 		return tempCompetitor;
 	}
 
@@ -346,7 +346,7 @@ public class System implements Betting {
 			sqlex.printStackTrace();
 		}
 		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
-		
+
 	}
 
 	@Override
@@ -401,7 +401,7 @@ public class System implements Betting {
 		if ( tempSubscriber == null ){
 			/* does not exist */
 			throw new ExistingSubscriberException("Subscriber does not exist!");
-			
+
 		}
 		if ( numberTokens < 0 ) {
 			/* can't credit with negative value */
@@ -409,7 +409,11 @@ public class System implements Betting {
 		}
 		/* credit the money */
 		tempSubscriber.credit(numberTokens);
-		
+		try {
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 	@Override
@@ -423,14 +427,19 @@ public class System implements Betting {
 		if ( tempSubscriber == null ){
 			/* does not exist */
 			throw new ExistingSubscriberException("Subscriber does not exist!");
-			
+
 		}
 		if ( numberTokens < 0 || numberTokens > tempSubscriber.getNumberOfTokens()) {
 			/* can't credit with negative value */
 			throw new BadParametersException();
 		}
 		/* credit the money */
-		tempSubscriber.debit(numberTokens);		
+		tempSubscriber.debit(numberTokens);
+		try {
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 	@Override
@@ -483,10 +492,10 @@ public class System implements Betting {
 		listOfWinners.put(new Integer(winner.getId()), winner);
 		listOfWinners.put(new Integer(second.getId()), winner);
 		listOfWinners.put(new Integer(third.getId()), winner);
-		
+
 		myCompetition.setWinners(listOfWinners); 
 		// TODO check type of competition?
-		
+
 	}
 
 	@Override
@@ -495,21 +504,22 @@ public class System implements Betting {
 			BadParametersException {
 		// TODO Auto-generated method stub
 		
+
 	}
 
 	@Override
 	public void betOnPodium(long numberTokens, String competition, Competitor winner, Competitor second,
 			Competitor third, String username, String pwdSubs) throws AuthenticationException, CompetitionException,
-					ExistingCompetitionException, SubscriberException, BadParametersException {
+			ExistingCompetitionException, SubscriberException, BadParametersException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void changeSubsPwd(String username, String newPwd, String currentPwd)
 			throws AuthenticationException, BadParametersException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -522,7 +532,7 @@ public class System implements Betting {
 	public void deleteBetsCompetition(String competition, String username, String pwdSubs)
 			throws AuthenticationException, CompetitionException, ExistingCompetitionException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -549,5 +559,5 @@ public class System implements Betting {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 }

@@ -101,7 +101,7 @@ public class CompetitionsManager {
 
 	  // 2 - Creating a Prepared Statement with the SQL instruction.
 	  //     The parameters are represented by question marks. 
-		PreparedStatement psSelect = c.prepareStatement("SELECT * FROM competitions WHERE name=?");
+		PreparedStatement psSelect = c.prepareStatement("SELECT * FROM competition WHERE name LIKE ?");
 
 	  // 3 - Supplying values for the prepared statement parameters (question marks).
 		psSelect.setString(1, name);

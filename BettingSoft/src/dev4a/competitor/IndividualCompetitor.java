@@ -9,7 +9,7 @@ public class IndividualCompetitor implements Competitor {
 	/* attributes */
 	private static AtomicInteger uniqueId = new AtomicInteger();
 	/* Id for the DB */
-	private int id;
+	private Integer id;
 	/* type = 1 --> IndividualCompetitor */
 	private int type;
 	/* Competitor surname */
@@ -28,7 +28,7 @@ public class IndividualCompetitor implements Competitor {
 	/* proper constructor for a competitor */
 	public IndividualCompetitor(String firstName, String lastName, String bornDate){
 		/* initialize */
-		this.id = uniqueId.getAndIncrement();
+		this.id = 0;
 		this.type = TYPE_INDIVIDUAL; 
 		this.lastName = lastName;
 		this.firstName = firstName;
@@ -37,7 +37,7 @@ public class IndividualCompetitor implements Competitor {
 	/* proper constructor for a competitor in team */
 	public IndividualCompetitor(String firstName, String lastName, String bornDate, int id_team){
 		/* initialize */
-		this.id = uniqueId.getAndIncrement();
+		this.id = 0;
 		this.type = TYPE_INDIVIDUAL; 
 		this.lastName = lastName;
 		this.firstName = firstName;
@@ -88,10 +88,10 @@ public class IndividualCompetitor implements Competitor {
 	public void setBornDate(String bornDate) {
 		this.bornDate = bornDate;
 	}
-	public int getIdTeam() {
+	public Integer getIdTeam() {
 		return idTeam;
 	}
-	public void setIdTeam(int id_team) {
+	public void setIdTeam(Integer id_team) {
 		this.idTeam = id_team;
 	}
 	@Override

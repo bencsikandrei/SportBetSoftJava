@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class CompetitorsManager {
 			 * the structure of this table is up above for easier access
 			 * */
 			PreparedStatement psPersist = conn
-			.prepareStatement("INSERT INTO competitor(type, first_name, "
+			.prepareStatement("INSERT INTO competitor(typeOf, first_name, "
 				+ "last_name, born_date, team_name, id_team)"
 				+ "values (?, ?, ?, ?, ?, ?)");
 			/*  */
@@ -48,7 +49,7 @@ public class CompetitorsManager {
 				psPersist.setString(3, ((IndividualCompetitor) competitor).getLastName());
 				psPersist.setDate(4, Date.valueOf(((IndividualCompetitor) competitor).getBornDate()));
 				psPersist.setString(5, null);
-				psPersist.setInt(6, ((IndividualCompetitor) competitor).getIdTeam());
+				psPersist.setNull(6, Types.INTEGER);//((IndividualCompetitor) competitor).getIdTeam());
 			} 
 			else 
 				if (competitor.getType() == Competitor.TYPE_TEAM) {
@@ -56,7 +57,7 @@ public class CompetitorsManager {
 				psPersist.setString(3, null);
 				psPersist.setString(4, null);
 				psPersist.setString(5, ((Team) competitor).getName());
-				psPersist.setInt(6, 0); // 0 for null
+				psPersist.setNull(6, Types.INTEGER); // 0 for null
 			}
 		
 			psPersist.executeUpdate();
