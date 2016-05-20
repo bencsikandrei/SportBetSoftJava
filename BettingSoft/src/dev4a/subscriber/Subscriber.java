@@ -57,9 +57,9 @@ public class Subscriber {
 	}
 
 	public Subscriber( int id, String lastName, String firstName, String userName, String bornDate) {
-		/* the constructor with all params */
-		this.id = id;
+		/* the constructor with all params */		
 		this(lastName, firstName, userName, bornDate);
+		this.id = id;
 	}
 
 	public Subscriber( String lastName, String firstName, String userName, String bornDate) {
@@ -99,11 +99,7 @@ public class Subscriber {
 		return true;
 	}
 
-	/* getters and setters REQUIRED for the POJO  (hibernate as well) */
-	public String getId() {
-		return id;
-	}
-	
+	/* getters and setters REQUIRED for the POJO  (hibernate as well) */	
 	public void setId(int id) {
 		this.id = id;
 	}
