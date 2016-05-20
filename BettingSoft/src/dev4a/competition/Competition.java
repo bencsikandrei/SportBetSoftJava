@@ -2,7 +2,9 @@ package dev4a.competition;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dev4a.competitor.*;
 import dev4a.bets.*;
@@ -19,10 +21,11 @@ import dev4a.bets.*;
  */
 public class Competition {
 	
-	public static States STATE;
-	/* the name of the competition 
-	 * UTF-8 string
-	 */
+	public static final int STARTED = 1;
+	public static final int FINISHED = 1;
+	public static final int SOLDOUT = 1;
+	public static final int CANCELED = 1;
+	
 	private String name;
 	/* the starting date of the competition 
 	 * 
@@ -35,7 +38,7 @@ public class Competition {
 	/* the progress status -> @ENUM States 
 	 * 
 	 */
-	private States inProgress;
+	private int status;
 	/* the sport played in the competition 
 	 * UTF-8 string
 	 */
@@ -43,11 +46,11 @@ public class Competition {
 	/* the competitors of this competition
 	 * 
 	 */
-	private List<Competitor> allCompetitors = new ArrayList();
+	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
 	/* the winners of this competition
 	 * 
 	 */
-	private List<Competitor> winners;
+	private Map<Integer, Competitor> winners = new HashMap<>();
 	/* the types of bets allowed of the competition 
 	 * UTF-8 string
 	 * possible values:
@@ -68,19 +71,19 @@ public class Competition {
 		 */
 	}
 	/* constructor with some params */
-	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress, List<Competitor> allCompetitors){
+	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress, Map<Integer, Competitor> allCompetitors){
 		this.name = name;
 		this.startDate = startDate;
 		this.closingDate = closingDate;
-		this.inProgress = this.STATE.STARTED;
+		this.status = STARTED;
 		this.allCompetitors = allCompetitors;
 	}
 	/* constructor with all params */
-	public Competition(String name, Calendar startDate, Calendar closingDate, States inProgress, String sport, List<Competitor> allCompetitors, String betType){
+	public Competition(String name, Calendar startDate, Calendar closingDate, String sport, Map<Integer, Competitor> allCompetitors, String betType){
 		this.name = name;
 		this.startDate = startDate;
 		this.closingDate = closingDate;
-		this.inProgress = this.STATE.STARTED;
+		this.status = STARTED;
 		this.sport = sport;
 		this.allCompetitors = allCompetitors;
 		this.betType = betType;
@@ -111,12 +114,12 @@ public class Competition {
 		this.closingDate = closingDate;
 	}
 	
-	public States getInProgress() {
-		return this.inProgress;
+	public int getStatus() {
+		return this.status;
 	}
 	
-	public void setInProgress(States newProgress) {
-		this.inProgress = newProgress;
+	public void setStatus(int newStatus) {
+		this.status = newStatus;
 	}
 	
 	public String getSport() {
@@ -127,27 +130,27 @@ public class Competition {
 		this.sport = sport;
 	}
 	
-	public List<Competitor> getAllCompetitors() {
+	public Map<Integer, Competitor> getAllCompetitors() {
 		return allCompetitors;
 	}
 	
-	public void setAllCompetitors(List<Competitor> allCompetitors) {
+	public void setAllCompetitors(Map<Integer, Competitor> allCompetitors) {
 		this.allCompetitors = allCompetitors;
 	}
 	
 	public void addCompetitor(Competitor competitor){
-		this.allCompetitors.add(competitor);
+		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
 	}
 	
 	public void removeCompetitor(Competitor competitor){
 		this.allCompetitors.remove(competitor);
 	}
 	
-	public List<Competitor> getWinners() {
+	public Map<Integer, Competitor> getWinners() {
 		return winners;
 	}
 	
-	public void setWinners(List<Competitor> winners) {
+	public void setWinners(Map<Integer, Competitor> winners) {
 		this.winners = winners;
 	}
 	
@@ -193,8 +196,8 @@ public class Competition {
 	/*
 	 * Checks if a competitor is in the competition 
 	 */
-	public boolean isCompetitor(Competitor competitor) {
-		return this.allCompetitors.contains(competitor);
+	public boolean hasCompetitor(Competitor competitor) {
+		return this.allCompetitors.containsValue(competitor);
 	}
 	
 	@Override

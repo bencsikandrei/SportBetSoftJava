@@ -15,35 +15,39 @@ import dev4a.competitor.*;
  * 
  */
 public class Bet {
+	public static final int INPROGRESS = 1;
+	public static final int WON = 2;
+	public static final int LOST = 3;
+
 	/* the id of this bet -> serves for DB */
-	protected int identifier;
-	/* state in which the bet is 
-	 * in progress, won , lost */
-	protected Betstate state;
+	private int identifier;
 	/* how many tokens have been bet on this */
-	protected long numberOfTokens;
+	private long numberOfTokens;
+	private int state;
 	/* the type of the bet in which is
 	 * 1 winner, 2 podium */
-	protected int type;
+	private int type;
 	/* the date it was placed on */
-	protected Date betDate;
+	private String betDate;
 	/* the username of the subscriber */
-	protected String userName;
+	private String userName;
 	/* the username of the subscriber */
-	protected String competition;
+	private String competition;
 	/* the winner competitor of the competition */
-	protected Competitor winner;
+	private Competitor winner;
 	/* the second competitor of the competition */
-	protected Competitor second;
+	private Competitor second;
 	/* the third competitor of the competition */
-	protected Competitor third;
+	private Competitor third;
 	
+	private long earnings;	
+
 	/* constructors */
 	/* winner bet */
 	public Bet(long nbOfTokens, String competition, 
 			Competitor winner,
-			String username, Date betDate) {
-		this.state = Betstate.INPROGRESS;
+			String username, String betDate) {
+		this.state = INPROGRESS;
 		this.numberOfTokens = nbOfTokens;
 		this.type = 1;
 		this.betDate = betDate;
@@ -54,8 +58,8 @@ public class Bet {
 	/* podium bet */
 	public Bet(long nbOfTokens, String competition, 
 			Competitor winner, Competitor second, Competitor third, 
-			String username, Date betDate) {
-		this.state = Betstate.INPROGRESS;
+			String username, String betDate) {
+		this.state = INPROGRESS;
 		this.numberOfTokens = nbOfTokens;
 		this.type = 2;
 		this.betDate = betDate;
@@ -74,10 +78,10 @@ public class Bet {
 	public void setIdentifier(int identifier) {
 		this.identifier = identifier;
 	}
-	public Betstate getState() {
+	public int getState() {
 		return state;
 	}
-	public void setState(Betstate state) {
+	public void setState(int state) {
 		this.state = state;
 	}
 	public int getType() {
@@ -98,10 +102,10 @@ public class Bet {
 	public void setNumberOfTokens(long numberOfTokens) {
 		this.numberOfTokens = numberOfTokens;
 	}
-	public Date getBetDate() {
+	public String getBetDate() {
 		return betDate;
 	}
-	public void setBetDate(Date betDate) {
+	public void setBetDate(String betDate) {
 		this.betDate = betDate;
 	}
 	public Competitor getWinner() {
@@ -127,6 +131,13 @@ public class Bet {
 	}
 	public void setCompetition(String competition) {
 		this.competition = competition;
+	}
+	
+	public long getEarnings() {
+		return earnings;
+	}
+	public void setEarnings(long earnings) {
+		this.earnings = earnings;
 	}
 	
 	/* get list of ID of competitior */

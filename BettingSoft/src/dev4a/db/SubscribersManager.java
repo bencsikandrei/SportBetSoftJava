@@ -111,9 +111,10 @@ public class SubscribersManager {
 		while (resultSet.next()) {
 			/* create the new sub */
 			sub = new Subscriber(
-					resultSet.getString("username"),
+					
 					resultSet.getString("first_name"),
 					resultSet.getString("last_name"),
+					resultSet.getString("username"),
 					resultSet.getString("password"),
 					resultSet.getDate("born_date").toString(),
 					resultSet.getLong("credit")
@@ -168,19 +169,18 @@ public class SubscribersManager {
 	 * @param newPassword
 	 * @throws SQLException
 	 */
-	public static void update(Subscriber sub, String newPassword) throws SQLException {
+	public static void update(Subscriber sub) throws SQLException {
 		/* open the connection */
 		Connection conn = DatabaseConnection.getConnection();
 		/* create the update query */
 		PreparedStatement psUpdate = conn
-				.prepareStatement("UPDATE subscriber SET first_name=?, last_name=?, password=?, born_date=?, credit=? where username=?");
+				.prepareStatement("UPDATE subscriber SET first_name=?, last_name=?, born_date=?, credit=? WHERE username LIKE ?");
 		/* update all necessary fields */
-		psUpdate.setString(1, sub.getUserName());
-		psUpdate.setString(2, sub.getFirstName());
-		psUpdate.setString(3, sub.getLastName());
-		psUpdate.setString(4, newPassword );			
-		psUpdate.setDate(5, java.sql.Date.valueOf(sub.getBornDate()));
-		psUpdate.setLong(6, sub.getNumberOfTokens());	
+		psUpdate.setString(5, sub.getUserName());
+		psUpdate.setString(1, sub.getFirstName());
+		psUpdate.setString(2, sub.getLastName());		
+		psUpdate.setDate(3, java.sql.Date.valueOf(sub.getBornDate()));
+		psUpdate.setLong(4, sub.getNumberOfTokens());	
 		/* execute the query */
 		psUpdate.executeUpdate();
 		/* clean up */
@@ -197,8 +197,9 @@ public class SubscribersManager {
 		Connection conn = DatabaseConnection.getConnection();
 		/* create the delete query */
 		PreparedStatement psUpdate = conn
-				.prepareStatement("DELETE FROM subscriber WHERE username=?");
-		psUpdate.setString(1, sub.getUserName());
+				.prepareStatement("DELETE FROM subscriber WHERE username LIKE ?");
+		psUpdate.setString(1, sub.getUserName() );
+		System.out.println("This guy is fried : " + sub.getLastName());
 		/* clean up */
 		psUpdate.executeUpdate();
 		psUpdate.close();

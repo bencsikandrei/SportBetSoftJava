@@ -29,7 +29,7 @@ public class Team implements Competitor {
 	}
 	/* proper constructor */
 	public Team(String name) {
-		this.id = uniqueId.getAndIncrement();
+		this.id = id;
 		this.type = TYPE_TEAM;
 		this.name = name;
 	}

@@ -21,6 +21,8 @@ import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.*;
 import dev4a.utils.Utils;
+import dev4a.db.CompetitionsManager;
+import dev4a.db.CompetitorsManager;
 import dev4a.db.SubscribersManager;
 /**
  * 
@@ -40,29 +42,27 @@ public class System implements Betting {
 	/* the utilities */
 	Utils utility = new Utils();
 	/* the list of all competitors in the System */
-	private List<Competitor> allCompetitors = new ArrayList();
+	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
 	/* all the competitions in the system */
-	private Map<String,Competition> allCompetitions = new HashMap();
+	private Map<String,Competition> allCompetitions = new HashMap<>();
 	/* all the subscribers in the System */
-	private Map<String,Subscriber> allSubscribers = new HashMap();
-	/* all the bets in the system */
-	private List<Bet> allBets = new ArrayList();
-	
-	
+	private Map<String,Subscriber> allSubscribers = new HashMap<>();
+
+
 	/* constructor */
 	public System(String mgrPassword) {
 		/* setting the pass */
 		this.mgrPassword = mgrPassword; 
 	}
-	
+
 	private String getMgrPassword() {
 		return mgrPassword;
 	}
 
 	public void setMgrPassword(String mgrPassword) {
-		// TODO add some logic for the setting opf pswd -> maybe check OLD pass -> New PASS
+		// TODO add some logic for the setting of pswd -> maybe check OLD pass -> New PASS
 		this.mgrPassword = mgrPassword;
-		
+
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class System implements Betting {
 			throw new AuthenticationException();
 		}
 	}
-	
+
 	@Override
 	public String subscribe(String lastName, String firstName, String username, String borndate, String managerPwd)
 			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
@@ -95,28 +95,24 @@ public class System implements Betting {
 			sqlex.printStackTrace();
 		}
 		/* we created him, now add him to the collection */
-		addSubscriberToList(temporarySubscriber);		
+		addSubscriberToList(temporarySubscriber, password);		
 		/* return the new password */
 		return password;
 	}
 
-	private void addSubscriberToList(Subscriber temporarySubscriber) {
+	private void addSubscriberToList(Subscriber temporarySubscriber, String password) {
 		/* 
 		 *  hide the implementation
 		 *  add the subscirber to any collection 
 		 */
-		
+		try {
+			SubscribersManager.persist(temporarySubscriber, password);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		this.allSubscribers.put(temporarySubscriber.getUserName(), temporarySubscriber);
 	}
-	
-	private void removeSubscriberFromList(String username) {
-		/* 
-		 *  hide the implementation
-		 *  remove the subscirber from any collection 
-		 */
-		this.allSubscribers.remove(username);
-	}
-	
+
 	public Subscriber getSubscriberByUserName(String username) {
 		// TODO make a method to get the sub from the List
 		Subscriber sub = null;
@@ -139,9 +135,23 @@ public class System implements Betting {
 		if ( toBeRemoved == null )
 			throw new ExistingSubscriberException("The user does not exist!");
 		/* remove him from the collection */
-		removeSubscriberFromList(username);
+		removeSubscriberFromList(toBeRemoved);
 		/* return the number of tokens he had left */
 		return toBeRemoved.getNumberOfTokens();
+	}
+
+	private void removeSubscriberFromList(Subscriber toRemove) {
+		/* 
+		 *  hide the implementation
+		 *  remove the subscirber from any collection 
+		 */
+		try {
+			SubscribersManager.delete(toRemove);
+		} catch (SQLException sqlex ) {
+			sqlex.printStackTrace();
+		}
+		java.lang.System.out.println("removing " + toRemove.getUserName());
+		this.allSubscribers.remove(toRemove.getUserName());
 	}
 
 	@Override
@@ -149,7 +159,7 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* iterate the container and get all names and attributes */
-		List<List<String>> printableSubs = new ArrayList();
+		List<List<String>> printableSubs = new ArrayList<>();
 		/* get the updated list */
 		try {
 			this.allSubscribers = SubscribersManager.findAll();
@@ -158,7 +168,7 @@ public class System implements Betting {
 		}
 		for( Subscriber sub : this.allSubscribers.values() ) {
 			/* store the details for each subscriber */
-			List<String> subDetails = new ArrayList();
+			List<String> subDetails = new ArrayList<>();
 			/* */
 			subDetails.add(sub.getFirstName());
 			subDetails.add(sub.getLastName());
@@ -169,7 +179,7 @@ public class System implements Betting {
 		}
 		return printableSubs;
 	}
-	
+
 	public void printSubscribers(String mgrPassword) throws AuthenticationException {
 		this.utility.printList(this.listSubscribers(mgrPassword));
 	}
@@ -177,7 +187,7 @@ public class System implements Betting {
 	@Override
 	public void addCompetition(String competition, Calendar closingDate, Collection<Competitor> competitors,
 			String managerPwd) throws AuthenticationException, ExistingCompetitionException, CompetitionException,
-					BadParametersException {
+			BadParametersException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* valid name, date ? */
@@ -190,35 +200,57 @@ public class System implements Betting {
 		if( tempCompetition != null )
 			throw new ExistingCompetitionException();
 		/* check if the date is correct */
-		if (closingDate.before(Calendar.getInstance()) || competitors.size()<2){
+		if (closingDate.before(Calendar.getInstance()) || competitors.size() < 2) {
 			throw new CompetitionException();
 		}
-		/* are there repeated competitors? */
-		Set<Competitor> set = new HashSet<Competitor>(competitors);
-		if (set.size() < competitors.size()){
-			throw new CompetitionException();
-		}		
+		/* create the Map */
+		Map<Integer, Competitor> tempCompetitors = new HashMap<>();
+
 		/* create it ! */
-		tempCompetition = new Competition(competition, Calendar.getInstance(), closingDate,Competition.STATE.STARTED, new ArrayList(competitors));
+		tempCompetition = new Competition(
+				competition,
+				Calendar.getInstance(),
+				closingDate,
+				"sport",
+				tempCompetitors,
+				"pw"
+				);
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);		
 		//TODO check BadParametresException
 	}
-	
+
 	private void addCompetitionToList(Competition tempCompetition) {
 		// hide the implementation
+		try {
+			CompetitionsManager.persist(tempCompetition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		this.allCompetitions.put(tempCompetition.getName(), tempCompetition);
 	}
 	
 
-	private void removeCompetitionFromList(String compName) {
+
+	private void removeCompetitionFromList(Competition competition) {
 		// hide the implementation
-		this.allCompetitions.remove(compName);
+		try {
+			CompetitionsManager.delete(competition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		this.allCompetitions.remove(competition.getName());
 	}
 
 	private Competition getCompetitionByName(String competition) {
 		// hide the implementation
-		return this.allCompetitions.get(competition);
+		Competition temp = null;
+		try {
+			temp = CompetitionsManager.findByName(competition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		return temp;
 	}
 
 	@Override
@@ -237,7 +269,7 @@ public class System implements Betting {
 			throw new CompetitionException();
 		/* take care of all the ongoing bets ! */
 		List<Bet> listBets = toBeCanceled.getBets();
-		for (int i = 0; i<listBets.size(); i++){
+		for (int i = 0; i < listBets.size(); i++){
 			Subscriber subscriber = getSubscriberByUserName(listBets.get(i).getUserName());
 			/* returns tokens */
 			subscriber.credit(listBets.get(i).getNumberOfTokens());
@@ -245,11 +277,10 @@ public class System implements Betting {
 			subscriber.getBets().remove(listBets.get(i));
 		}
 		/* deletes the bets from System */
-		allBets.removeAll(listBets);
 		/* deletes the bets from Competition */
 		toBeCanceled.getBets().removeAll(listBets);
 		/* cancels it */
-		toBeCanceled.setInProgress(Competition.STATE.CANCELED);
+		toBeCanceled.setStatus(Competition.CANCELED);
 	}
 
 
@@ -269,7 +300,7 @@ public class System implements Betting {
 			throw new CompetitionException();
 		//if(!toBeRemoved.getInProgress().equals(Competition.STATE.SOLDOUT)) 
 		/* now we can safely delete */
-		removeCompetitionFromList(competition);
+		removeCompetitionFromList(toBeRemoved);
 	}
 
 	@Override
@@ -283,20 +314,20 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new ExistingCompetitionException();
+			throw new CompetitionException();
 		/* check if the competition is in a proper state */
-		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
+		else if( !(myCompetition.getStatus() == Competition.STARTED) ) {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is already in the competition */
-		if(myCompetition.isCompetitor(competitor)){
+		if(myCompetition.hasCompetitor(competitor)){
 			throw new CompetitionException();
 		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
 	}
 
-		
+
 	@Override
 	public Competitor createCompetitor(String lastName, String firstName, String borndate, String managerPwd)
 			throws AuthenticationException, BadParametersException {
@@ -310,14 +341,19 @@ public class System implements Betting {
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
 		/* add him to the list */
 		addCompetitorToList(tempCompetitor);
-		
+
 		return tempCompetitor;
 	}
 
 	private void addCompetitorToList(Competitor competitor) {
 		/* hide implementation */
-		this.allCompetitors.add(competitor);
-		
+		try {
+			CompetitorsManager.persist(competitor);
+		} catch( SQLException sqlex ) {
+			sqlex.printStackTrace();
+		}
+		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
+
 	}
 
 	@Override
@@ -349,11 +385,11 @@ public class System implements Betting {
 			/* does not exist */
 			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
-		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED) || myCompetition.getAllCompetitors().size() == 2) {
+		else if( (myCompetition.getStatus() != Competition.STARTED) || myCompetition.getAllCompetitors().size() == 2) {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
-		if(!myCompetition.isCompetitor(competitor)){
+		if(!myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
 		}
 		/* now we can delete the competitor */  
@@ -372,7 +408,7 @@ public class System implements Betting {
 		if ( tempSubscriber == null ){
 			/* does not exist */
 			throw new ExistingSubscriberException("Subscriber does not exist!");
-			
+
 		}
 		if ( numberTokens < 0 ) {
 			/* can't credit with negative value */
@@ -380,7 +416,11 @@ public class System implements Betting {
 		}
 		/* credit the money */
 		tempSubscriber.credit(numberTokens);
-		
+		try {
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 	@Override
@@ -394,14 +434,19 @@ public class System implements Betting {
 		if ( tempSubscriber == null ){
 			/* does not exist */
 			throw new ExistingSubscriberException("Subscriber does not exist!");
-			
+
 		}
 		if ( numberTokens < 0 || numberTokens > tempSubscriber.getNumberOfTokens()) {
 			/* can't credit with negative value */
 			throw new BadParametersException();
 		}
 		/* credit the money */
-		tempSubscriber.debit(numberTokens);		
+		tempSubscriber.debit(numberTokens);
+		try {
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 	@Override
@@ -416,20 +461,20 @@ public class System implements Betting {
 			/* does not exist */
 			throw new CompetitionException();
 		/* check if the competition is in a proper state */
-		else if(!myCompetition.getInProgress().equals(Competition.STATE.FINISHED)) {
+		else if( myCompetition.getStatus() != Competition.FINISHED)  {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
-		if(!myCompetition.isCompetitor(winner)){
+		if(!myCompetition.hasCompetitor(winner)){
 			throw new CompetitionException();
 		}
 		/* now we can set the winner */  
-		ArrayList<Competitor> listOfWinners = new ArrayList<Competitor>();
-		listOfWinners.add(winner);
+		Map<Integer, Competitor> listOfWinners = new HashMap<>();
+		listOfWinners.put(new Integer(winner.getId()), winner);
 		myCompetition.setWinners(listOfWinners); 
 		// TODO check type of competition? in this case the type of bet should be w
 		pay(myCompetition);
-		myCompetition.setInProgress(Competition.STATE.SOLDOUT);
+		myCompetition.setStatus(Competition.SOLDOUT);
 	}
 
 	@Override
@@ -444,22 +489,23 @@ public class System implements Betting {
 			/* does not exist */
 			throw new CompetitionException();
 		/* check if the competition is in a proper state */
-		else if(!myCompetition.getInProgress().equals(Competition.STATE.FINISHED)) {
+		else if(myCompetition.getStatus() != (Competition.FINISHED)) {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
-		if(!myCompetition.isCompetitor(winner) || !myCompetition.isCompetitor(second) || !myCompetition.isCompetitor(third)){
+		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)){
 			throw new CompetitionException();
 		}
 		/* now we can set the winner */  
-		ArrayList<Competitor> listOfWinners = new ArrayList<Competitor>();
-		listOfWinners.add(winner);
-		listOfWinners.add(second);
-		listOfWinners.add(third);
+		Map<Integer, Competitor> listOfWinners = new HashMap<>();
+		listOfWinners.put(new Integer(winner.getId()), winner);
+		listOfWinners.put(new Integer(second.getId()), winner);
+		listOfWinners.put(new Integer(third.getId()), winner);
+
 		myCompetition.setWinners(listOfWinners); 
 		// TODO check type of competition?
 		pay(myCompetition);
-		myCompetition.setInProgress(Competition.STATE.SOLDOUT);	
+		myCompetition.setStatus(Competition.SOLDOUT);	
 	}
 
 	@Override
@@ -468,21 +514,22 @@ public class System implements Betting {
 			BadParametersException {
 		// TODO Auto-generated method stub
 		
+
 	}
 
 	@Override
 	public void betOnPodium(long numberTokens, String competition, Competitor winner, Competitor second,
 			Competitor third, String username, String pwdSubs) throws AuthenticationException, CompetitionException,
-					ExistingCompetitionException, SubscriberException, BadParametersException {
+			ExistingCompetitionException, SubscriberException, BadParametersException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void changeSubsPwd(String username, String newPwd, String currentPwd)
 			throws AuthenticationException, BadParametersException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -495,7 +542,7 @@ public class System implements Betting {
 	public void deleteBetsCompetition(String competition, String username, String pwdSubs)
 			throws AuthenticationException, CompetitionException, ExistingCompetitionException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
