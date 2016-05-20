@@ -1,26 +1,44 @@
 package dev4a.competitor;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import dev4a.exceptions.BadParametersException;
 
 public class IndividualCompetitor implements Competitor {
 
 	/* attributes */
+	private static AtomicInteger uniqueId = new AtomicInteger();
+	/* Id for the DB */
 	private int id;
+	/* type = 1 --> IndividualCompetitor */
 	private int type;
+	/* Competitor surname */
 	private String lastName;
+	/* Competitor name */
 	private String firstName;
+	/* Competitor born date */
 	private String bornDate;
+	/* Id of the team, if the competitor belongs to a team */
 	private int id_team;
 		
 	/* constructor */
 	public IndividualCompetitor(){
 		/* empty for hibernate */
 	}
-	/* proper constructor */
-	public IndividualCompetitor(int id, int type, String firstName, String lastName, String bornDate, int id_team){
+	/* proper constructor for a competitor */
+	public IndividualCompetitor(String firstName, String lastName, String bornDate){
 		/* initialize */
-		this.id = id;
-		this.type = type;
+		this.id = uniqueId.getAndIncrement();
+		this.type = TYPE_INDIVIDUAL; 
+		this.lastName = lastName;
+		this.firstName = firstName;
+		this.bornDate = bornDate;
+	}
+	/* proper constructor for a competitor in team */
+	public IndividualCompetitor(String firstName, String lastName, String bornDate, int id_team){
+		/* initialize */
+		this.id = uniqueId.getAndIncrement();
+		this.type = TYPE_INDIVIDUAL; 
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.bornDate = bornDate;
@@ -31,16 +49,8 @@ public class IndividualCompetitor implements Competitor {
 		return id;
 	}
 	
-	public void setId(int id) {
-		this.id = id;
-	}
-	
 	public int getType() {
 		return type;
-	}
-	
-	public void setType(int type) {
-		this.type = type;
 	}
 	
 	public String getLastName() {
@@ -70,16 +80,15 @@ public class IndividualCompetitor implements Competitor {
 	@Override
 	public boolean hasValidName() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 	@Override
 	public void addMember(Competitor member) throws ExistingCompetitorException, BadParametersException {
-		// TODO Auto-generated method stub
 		
 	}
+	
 	@Override
 	public void deleteMember(Competitor member) throws BadParametersException, ExistingCompetitorException {
-		// TODO Auto-generated method stub
 		
 	}
 	
