@@ -1,4 +1,5 @@
 package dev4a.system;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -20,6 +21,7 @@ import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.*;
 import dev4a.utils.Utils;
+import dev4a.db.SubscribersManager;
 /**
  * 
  * @author Group 4A
@@ -83,11 +85,15 @@ public class System implements Betting {
 		/* then check for the username (which is unique) */
 		if ( getSubscriberByUserName(username) != null )
 			throw new ExistingSubscriberException();
-		/* if he does not exist, we can create him */
-		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate);
-		/* generate a password */
+		/* give him a new password */
 		String password = utility.randomString(8);
-		temporarySubscriber.changePassword("", password );		
+		/* if he does not exist, we can create him */
+		Subscriber temporarySubscriber = new Subscriber(lastName, firstName, username, borndate); 
+		try {
+			SubscribersManager.persist(temporarySubscriber, password);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		/* we created him, now add him to the collection */
 		addSubscriberToList(temporarySubscriber);		
 		/* return the new password */
@@ -111,9 +117,15 @@ public class System implements Betting {
 		this.allSubscribers.remove(username);
 	}
 	
-	private Subscriber getSubscriberByUserName(String username) {
+	public Subscriber getSubscriberByUserName(String username) {
 		// TODO make a method to get the sub from the List
-		return this.allSubscribers.get(username);
+		Subscriber sub = null;
+		try {
+			sub = SubscribersManager.findSubscriberByUserName(username);
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		return sub;
 	}
 
 	@Override
@@ -138,6 +150,12 @@ public class System implements Betting {
 		authenticateMngr(managerPwd);
 		/* iterate the container and get all names and attributes */
 		List<List<String>> printableSubs = new ArrayList();
+		/* get the updated list */
+		try {
+			this.allSubscribers = SubscribersManager.findAll();
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		for( Subscriber sub : this.allSubscribers.values() ) {
 			/* store the details for each subscriber */
 			List<String> subDetails = new ArrayList();
