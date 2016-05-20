@@ -35,7 +35,7 @@ public class Competition {
 	/* the progress status -> @ENUM States 
 	 * 
 	 */
-	private States progress;
+	private States inProgress;
 	/* the sport played in the competition 
 	 * UTF-8 string
 	 */
@@ -72,7 +72,7 @@ public class Competition {
 		this.name = name;
 		this.startDate = startDate;
 		this.closingDate = closingDate;
-		this.progress = this.STATE.STARTED;
+		this.inProgress = this.STATE.STARTED;
 		this.allCompetitors = allCompetitors;
 	}
 	/* constructor with all params */
@@ -80,7 +80,7 @@ public class Competition {
 		this.name = name;
 		this.startDate = startDate;
 		this.closingDate = closingDate;
-		this.progress = this.STATE.STARTED;
+		this.inProgress = this.STATE.STARTED;
 		this.sport = sport;
 		this.allCompetitors = allCompetitors;
 		this.betType = betType;
@@ -112,11 +112,11 @@ public class Competition {
 	}
 	
 	public States getInProgress() {
-		return this.progress;
+		return this.inProgress;
 	}
 	
 	public void setInProgress(States newProgress) {
-		this.progress = newProgress;
+		this.inProgress = newProgress;
 	}
 	
 	public String getSport() {
@@ -171,16 +171,24 @@ public class Competition {
 		this.betType = betType;
 	}
 	
-	public long getTotalNumberOfTokens() {
+	/* return the number of tokens of a given type bet on this competition */
+	public long getTotalNumberOfTokens(int betType) {
 		long sum = 0;
-		for (int i = 0; i<bets.size(); i++){
-			sum += bets.get(i).getNumberOfTokens();
+		for(Bet b:this.bets){
+			if(b.getType()==betType)
+				sum += b.getNumberOfTokens();
 		}
 		return sum;
 	}
 	
-	public int getTotalNumberOfBets() {
-		return bets.size();
+	/* return the number of bets of a given type bet on this competition */
+	public int getTotalNumberOfBets(int betType) {
+		int count = 0;
+		for(Bet b:this.bets){
+			if(b.getType()==betType)
+				count++;
+		}
+		return count;
 	}
 	/*
 	 * Checks if a competitor is in the competition 

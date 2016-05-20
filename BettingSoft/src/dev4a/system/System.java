@@ -283,7 +283,7 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new CompetitionException();
+			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
 		else if(!myCompetition.getInProgress().equals(Competition.STATE.STARTED)) {
 			throw new CompetitionException();
@@ -427,7 +427,9 @@ public class System implements Betting {
 		ArrayList<Competitor> listOfWinners = new ArrayList<Competitor>();
 		listOfWinners.add(winner);
 		myCompetition.setWinners(listOfWinners); 
-		// TODO check type of competition?		
+		// TODO check type of competition? in this case the type of bet should be w
+		pay(myCompetition);
+		myCompetition.setInProgress(Competition.STATE.SOLDOUT);
 	}
 
 	@Override
@@ -456,7 +458,8 @@ public class System implements Betting {
 		listOfWinners.add(third);
 		myCompetition.setWinners(listOfWinners); 
 		// TODO check type of competition?
-		
+		pay(myCompetition);
+		myCompetition.setInProgress(Competition.STATE.SOLDOUT);	
 	}
 
 	@Override
@@ -509,9 +512,29 @@ public class System implements Betting {
 	}
 
 	@Override
-	public ArrayList<String> consultBetsCompetition(String competition) throws ExistingCompetitionException {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<String> consultBetsCompetition(String competition) 
+			throws ExistingCompetitionException {
+		/* competition where the competitor is to be added */
+		Competition myCompetition = getCompetitionByName(competition);
+		/* check if it exists */
+		if( myCompetition == null )
+			/* does not exist */
+			throw new ExistingCompetitionException();
+		ArrayList<String> listOfStrings = new ArrayList<String>();
+		List<Bet> listOfBets = getCompetitionByName(competition).getBets();
+		String string = "";
+		String names = "";
+		for(Bet b:listOfBets){
+			if (b.getType()==1){ //type winner
+				names = "the winner: " + b.getWinner().toString();
+			}
+			if (b.getType()==2){ //type podium
+				names = "the podium: " + b.getWinner().toString() + ", " + b.getSecond().toString() + " and " + b.getThird().toString();
+			}
+			string = b.getUserName() + " has bet " + b.getNumberOfTokens() + " tokens on " + names + " in " + competition;
+			listOfStrings.add(string);
+		}
+		return listOfStrings;
 	}
 
 	@Override
@@ -520,4 +543,48 @@ public class System implements Betting {
 		return null;
 	}
 	
+	/* distribution of tokens for a competition */
+	private void pay(Competition competition){
+		List<Bet> listOfBets = competition.getBets();
+		/* list of subscribers that bet on winner and won */
+		List<Subscriber> winningSubscribersOnWinner = new ArrayList<Subscriber>();
+		/* list of tokens that the winning subscribers bet on winner */
+		List<Long> tokensBetOnWinner = new ArrayList();
+		/* list of subscribers that bet on podium and won */
+		List<Subscriber> winningSubscribersOnPodium = new ArrayList<Subscriber>();
+		/* list of tokens that the winning subscribers bet on podium */
+		List<Long> tokensBetOnPodium = new ArrayList();
+		long winningTokensOnWinner=0;
+		long winningTokensOnPodium=0;
+		long payMe;
+		/* search in every bet done on the competition */
+		/* this will work no matter what type of bets the competition accepts*/
+		for (Bet b:listOfBets){
+			if(b.getType()==1){ // type winner
+				if(competition.getWinners()==b.getWinner()){
+					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
+					tokensBetOnWinner.add(b.getNumberOfTokens());
+					winningTokensOnWinner += b.getNumberOfTokens();
+				}				
+			}
+			else if(b.getType()==2){
+				if(competition.getWinners().get(0)==b.getWinner() && 
+						competition.getWinners().get(1)==b.getSecond() && 
+						competition.getWinners().get(2)==b.getThird()){
+					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
+					tokensBetOnPodium.add(b.getNumberOfTokens());
+					winningTokensOnPodium += b.getNumberOfTokens();
+				}
+			}
+		}
+		for (int i=0; i<winningSubscribersOnWinner.size();i++){
+			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
+			winningSubscribersOnWinner.get(i).credit(payMe);
+		}
+		
+		for (int i=0; i<winningSubscribersOnPodium.size();i++){
+			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
+			winningSubscribersOnPodium.get(i).credit(payMe);
+		}
+	}
 }
