@@ -14,6 +14,8 @@ public interface Competitor {
 	public static final int TYPE_INDIVIDUAL = 1;
 	public static final int TYPE_TEAM = 2;
 	
+	int getType();
+	
 	/**
 	 * tells if the name of the competitor is a valid one.
 	 * 

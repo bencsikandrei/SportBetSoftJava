@@ -8,7 +8,10 @@ import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.Subscriber;
 
 public class IndividualCompetitor implements Competitor {
+
 	/* attributes */
+	private int id;
+	private int type;
 	private String lastName;
 	private String firstName;
 	private String bornDate;
@@ -18,12 +21,29 @@ public class IndividualCompetitor implements Competitor {
 		/* empty for hibernate */
 	}
 	/* proper constructor */
-	public IndividualCompetitor(String firstName, String lastName, String bornDate){
+	public IndividualCompetitor(int id, int type, String firstName, String lastName, String bornDate){
 		/* initialize */
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.bornDate = bornDate;
 	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getType() {
+		return type;
+	}
+	
+	public void setType(int type) {
+		this.type = type;
+	}
+	
 	public String getLastName() {
 		return lastName;
 	}
