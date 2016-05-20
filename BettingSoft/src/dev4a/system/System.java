@@ -427,7 +427,9 @@ public class System implements Betting {
 		ArrayList<Competitor> listOfWinners = new ArrayList<Competitor>();
 		listOfWinners.add(winner);
 		myCompetition.setWinners(listOfWinners); 
-		// TODO check type of competition?		
+		// TODO check type of competition? in this case the type of bet should be w
+		pay(myCompetition);
+		myCompetition.setInProgress(Competition.STATE.SOLDOUT);
 	}
 
 	@Override
@@ -456,7 +458,8 @@ public class System implements Betting {
 		listOfWinners.add(third);
 		myCompetition.setWinners(listOfWinners); 
 		// TODO check type of competition?
-		
+		pay(myCompetition);
+		myCompetition.setInProgress(Competition.STATE.SOLDOUT);	
 	}
 
 	@Override
@@ -520,15 +523,22 @@ public class System implements Betting {
 		return null;
 	}
 	
+	/* distribution of tokens for a competition */
 	private void pay(Competition competition){
 		List<Bet> listOfBets = competition.getBets();
+		/* list of subscribers that bet on winner and won */
 		List<Subscriber> winningSubscribersOnWinner = new ArrayList<Subscriber>();
+		/* list of tokens that the winning subscribers bet on winner */
 		List<Long> tokensBetOnWinner = new ArrayList();
+		/* list of subscribers that bet on podium and won */
 		List<Subscriber> winningSubscribersOnPodium = new ArrayList<Subscriber>();
+		/* list of tokens that the winning subscribers bet on podium */
 		List<Long> tokensBetOnPodium = new ArrayList();
 		long winningTokensOnWinner=0;
 		long winningTokensOnPodium=0;
 		long payMe;
+		/* search in every bet done on the competition */
+		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
 			if(b.getType()==1){ // type winner
 				if(competition.getWinners()==b.getWinner()){
