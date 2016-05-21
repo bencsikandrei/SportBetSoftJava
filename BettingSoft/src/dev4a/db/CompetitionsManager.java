@@ -206,9 +206,10 @@ public class CompetitionsManager {
 
 		Map<Integer, Competitor> tempWins = new HashMap<>();
 		int winner, second, third;
-
+		int count = 0;
+		
 		while (resultSet.next()) {
-
+			count++;
 			winner = resultSet.getInt("id_winner");
 			second = resultSet.getInt("id_second");
 			third = resultSet.getInt("id_third");
@@ -233,6 +234,9 @@ public class CompetitionsManager {
 
 			comps.put(tempCompetition.getName(), tempCompetition);
 		}
+		
+		System.out.println("We found " + count + " competitions!");
+		
 		/* clean up */
 		resultSet.close();
 		psSelect.close();
@@ -254,17 +258,42 @@ public class CompetitionsManager {
 		 * name, starting_date, "
 				+ "closing_date, status, sport, id_winner, id_second, id_third */
 		psUpdate.setString(1, competition.getName());
-		psUpdate.setDate(2, java.sql.Date.valueOf(competition.getStartDate().toString()));
-		psUpdate.setDate(3, java.sql.Date.valueOf(competition.getClosingDate().toString()));
+		
+
+		psUpdate.setDate(2, new java.sql.Date(competition.getStartDate().getTime().getTime()));
+		psUpdate.setDate(3, new java.sql.Date(competition.getClosingDate().getTime().getTime()));
 		psUpdate.setInt(4, competition.getStatus());
 		psUpdate.setString(5, competition.getSport());
 
 		Map<Integer, Competitor> tempMap = competition.getWinners();
-		int count = 6;
-		for( Competitor comp : tempMap.values() ) {
-			psUpdate.setInt(count, comp.getId());
-			++count;
-		}			
+
+		switch (tempMap.values().size()) {
+		case 3:
+			int count = 6;
+			for( Competitor comp : tempMap.values() ) {
+				psUpdate.setInt(count, comp.getId());
+				++count;
+			}		
+			break;
+		case 1:
+			for( Competitor comp : tempMap.values()) 
+				psUpdate.setInt(6, comp.getId());
+			for( int i = 7; i <= 8; i++ ) {
+				psUpdate.setNull(i, Types.INTEGER);
+				
+			}
+		case 0:
+			for( int i = 6; i <= 8; i++ ) {
+				psUpdate.setNull(i, Types.INTEGER);
+				
+			}
+		default:
+			break;
+
+
+		}
+		psUpdate.setString(9, competition.getName());
+		
 		/* execute the query */
 		psUpdate.executeUpdate();
 		/* clean up */

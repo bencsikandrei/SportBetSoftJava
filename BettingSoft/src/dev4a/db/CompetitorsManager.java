@@ -55,7 +55,7 @@ public class CompetitorsManager {
 				if (competitor.getType() == Competitor.TYPE_TEAM) {
 				psPersist.setString(2, null);
 				psPersist.setString(3, null);
-				psPersist.setString(4, null);
+				psPersist.setNull(4, Types.DATE);
 				psPersist.setString(5, ((Team) competitor).getName());
 				psPersist.setNull(6, Types.INTEGER); // 0 for null
 			}
@@ -63,7 +63,26 @@ public class CompetitorsManager {
 			psPersist.executeUpdate();
 			
 			psPersist.close();
+			
+			// Retrieving the value of the id with a request on the
+			// sequence (subscribers_id_seq).
+			PreparedStatement psIdValue = conn
+					.prepareStatement("SELECT currval('competitor_id_seq') AS value_id");
+
+			ResultSet resultSet = psIdValue.executeQuery();
+
+			Integer id = null;
+
+			while (resultSet.next()) {
+				id = resultSet.getInt("value_id");
+			}
+			
+			resultSet.close();
+			psIdValue.close();
 			conn.commit();
+			
+			competitor.setId(id);
+			
 		} catch (SQLException e) {
 			try {
 				/* if something occured do not commit anything and rollback !*/
@@ -102,7 +121,7 @@ public class CompetitorsManager {
 		/*  (int id, String firstName, String lastName, String bornDate, int idTeam) */
 		while(resultSet.next())
 		{
-			if(resultSet.getInt("type") == Competitor.TYPE_INDIVIDUAL) {
+			if(resultSet.getInt("typeOf") == Competitor.TYPE_INDIVIDUAL) {
 				/* it's an individual */
 				competitor = new IndividualCompetitor(
 						id,
@@ -114,7 +133,7 @@ public class CompetitorsManager {
 			} 
 			else 
 				/* it's a team */
-				if(resultSet.getInt("type") == Competitor.TYPE_TEAM) {
+				if(resultSet.getInt("typeOf") == Competitor.TYPE_TEAM) {
 					competitor = new Team(
 							resultSet.getString("team_name")
 							);

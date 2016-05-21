@@ -55,4 +55,6 @@ public interface Competitor {
 	 * get Id of competitor
 	 */
 	int getId();
+	
+	void setId(int id);
 }

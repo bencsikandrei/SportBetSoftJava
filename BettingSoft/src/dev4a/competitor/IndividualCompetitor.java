@@ -109,7 +109,13 @@ public class IndividualCompetitor implements Competitor {
 		
 	}
 	
+	
 			
+	@Override
+	public void setId(int id) {
+		this.id = id;
+		
+	}
 	@Override 
 	public String toString() {
 		/* return the full name */

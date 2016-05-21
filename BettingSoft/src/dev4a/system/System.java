@@ -24,6 +24,7 @@ import dev4a.utils.Utils;
 import dev4a.db.BetsManager;
 import dev4a.db.CompetitionsManager;
 import dev4a.db.CompetitorsManager;
+import dev4a.db.ParticipantsManager;
 import dev4a.db.SubscribersManager;
 /**
  * 
@@ -349,6 +350,11 @@ public class System implements Betting {
 		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
+		try {
+			ParticipantsManager.persist(competitor, myCompetition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 
@@ -377,7 +383,7 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* check validity of the name */
-		if( (utility.checkValidName(name) ) ) {
+		if( (utility.checkValidName(name) == false ) ) {
 			throw new BadParametersException();
 		}
 		/* create the competitor */
@@ -661,7 +667,10 @@ public class System implements Betting {
 		}
 		
 	}
-
+	
+	public void printCompetitions() {
+		this.utility.printList(this.listCompetitions());
+	}
 	@Override
 	public List<List<String>> listCompetitions() {
 		/* iterate the container and get all names and attributes */
@@ -679,13 +688,22 @@ public class System implements Betting {
 			compDetails.add(comp.getName());
 			compDetails.add(comp.getSport());
 			compDetails.add(String.valueOf(comp.getStatus()));
-			compDetails.add( String.valueOf( comp.getStartDate() ) );
+			compDetails.add( String.valueOf( comp.getStartDate().getTime() ) );
 			/* insert it in the big list */
 			printableCompetitions.add(compDetails);
 		}
 		return printableCompetitions;
 	}
-
+	
+	public void printCompetitors(String competition) {
+		try {
+			this.utility.printList(this.listCompetitors(competition));
+	
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	@Override
 	public Collection<Competitor> listCompetitors(String competition)
 			throws ExistingCompetitionException, CompetitionException {
@@ -695,8 +713,13 @@ public class System implements Betting {
 		if ( tempCompetition == null ) {
 			throw new ExistingCompetitionException();
 		}
-		
-		return tempCompetition.getAllCompetitors().values();
+		Collection<Competitor> competitors = new ArrayList<>();
+		try {
+			competitors = ParticipantsManager.findAllByCompetition(competition).values();
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		return competitors;
 	}
 
 	@Override

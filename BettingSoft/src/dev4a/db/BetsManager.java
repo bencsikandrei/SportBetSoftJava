@@ -76,7 +76,7 @@ public class BetsManager {
 			Integer id = null;
 
 			while (resultSet.next()) {
-				id = resultSet.getInt("id");
+				id = resultSet.getInt("value_id");
 			}
 
 			resultSet.close();
