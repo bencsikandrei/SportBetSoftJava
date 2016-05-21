@@ -106,6 +106,28 @@ public class Utils {
 	}
 	/**
 	 * 
+	 * @param firstOrLastName
+	 * @return
+	 */
+	public boolean checkValidFirstLastName(String firstOrLastName) {
+		/* the pattern to be respected by the string */
+		String pattern = "^[A-Za-z-]{1,30}$";
+		/* */
+		return regexpParser(pattern, firstOrLastName);
+	}
+	/**
+	 * 
+	 * @param teamName
+	 * @return
+	 */
+	public boolean checkValidTeamName(String teamName) {
+		/* the pattern to be respected by the string */
+		String pattern = "^[A-Za-z-]{1,50}$";
+		/* */
+		return regexpParser(pattern, teamName);
+	}
+	/**
+	 * 
 	 * @param date
 	 * @return
 	 */
