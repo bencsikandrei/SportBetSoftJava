@@ -452,7 +452,7 @@ public class System implements Betting {
 		/* Returns tokens */
 		List<Bet> listBets = myCompetition.getBets();
 		for (int i = 0; i < listBets.size(); i++){
-			/* Look if the bet was done to the competitor to remove */
+			/* Looks if the bet was done to the competitor to remove */
 			if(listBets.get(i).getListCompetitor().contains(competitor.getId())){
 				Subscriber subscriber = getSubscriberByUserName(listBets.get(i).getUserName());
 				/* returns tokens */
@@ -531,9 +531,10 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new CompetitionException();
-		/* check if the competition is in a proper state */
-		else if( myCompetition.getStatus() != Competition.FINISHED)  {
+			throw new ExistingCompetitionException();
+		/* checks if the competition is in a proper state */
+		if(myCompetition.getClosingDate().after(Calendar.getInstance())){
+		//if( myCompetition.getStatus() != Competition.FINISHED)  {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
@@ -559,15 +560,18 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new CompetitionException();
+			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
-		else if(myCompetition.getStatus() != (Competition.FINISHED)) {
+		if(myCompetition.getClosingDate().after(Calendar.getInstance())){
+		//if(myCompetition.getStatus() != (Competition.FINISHED)) {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)){
 			throw new CompetitionException();
 		}
+		if (winner==second || second==third || winner==third)
+			throw new CompetitionException();
 		/* now we can set the winner */  
 		Map<Integer, Competitor> listOfWinners = new HashMap<>();
 		listOfWinners.put(new Integer(winner.getId()), winner);
