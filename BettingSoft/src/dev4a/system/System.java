@@ -576,7 +576,25 @@ public class System implements Betting {
 	public void betOnPodium(long numberTokens, String competition, Competitor winner, Competitor second,
 			Competitor third, String username, String pwdSubs) throws AuthenticationException, CompetitionException,
 			ExistingCompetitionException, SubscriberException, BadParametersException {
-		// TODO Auto-generated method stub
+		/* first authenticate the subscriber */
+		Subscriber tempSubscriber = authenticateSub(username, pwdSubs);
+		/* get the competition */
+		Competition tempComp = getCompetitionByName(competition);
+		/* if the competition does not exist */
+		if( tempComp == null ) {
+			throw new ExistingCompetitionException();
+		}
+		/* if we have given wrong values */
+		if( (numberTokens < 0) || (tempComp.hasCompetitor(winner) == false) || (tempComp.hasCompetitor(second) == false) || (tempComp.hasCompetitor(third) == false))
+			throw new BadParametersException();
+		/* the time of the bet */
+		String currentTime = new java.util.Date().toString();
+		/* place the bet */
+		Bet tempBet = new Bet(numberTokens, competition, winner, second, third, username, currentTime);
+		/* add it to the player */
+		tempSubscriber.placeBet( tempBet );
+		/* add it to our lists  */
+		this.addBetToList(tempBet);
 
 	}
 

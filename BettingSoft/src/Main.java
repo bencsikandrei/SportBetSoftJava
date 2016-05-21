@@ -47,6 +47,7 @@ public class Main {
 		sTruncate.executeUpdate("TRUNCATE competition CASCADE");
 		sTruncate.executeUpdate("TRUNCATE competitor CASCADE");
 		sTruncate.executeUpdate("TRUNCATE participant CASCADE");
+		sTruncate.executeUpdate("TRUNCATE participant CASCADE");
 		
 		sTruncate.close();
 		conn.close();

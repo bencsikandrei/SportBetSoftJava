@@ -10,8 +10,15 @@ DROP TABLE IF EXISTS Bet;
 DROP TABLE IF EXISTS Competition;
 DROP TABLE IF EXISTS Competitor;
 DROP TABLE IF EXISTS Subscriber;
+DROP TABLE IF EXISTS Manager;
 
 /* recreate the tables from scratch */
+
+CREATE TABLE Manager(
+	password varchar(50)
+);
+COMMENT ON TABLE Manager IS 'Table to store manager information.';
+
 CREATE TABLE Subscriber(
     username varchar(30) primary key,
     first_name varchar(30) NOT NULL,
