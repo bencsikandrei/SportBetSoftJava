@@ -205,7 +205,7 @@ public class System implements Betting {
 			BadParametersException {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
-		/* valid name, date ? */
+		/* valid name? */
 		if ( ! (utility.checkValidCompetition(competition) ) || competitors == null ) 
 			// we do not validate competitor because we already did it when we created it.
 			throw new BadParametersException();
@@ -214,8 +214,11 @@ public class System implements Betting {
 		/* the test */
 		if( tempCompetition != null )
 			throw new ExistingCompetitionException();
-		/* check if the date is correct */
-		if ( competitors.size() < 2) {
+		/* check if the date is correct, if the number of competitors is >2 and if there is no repeated competitors */
+		Set<Competitor> set = new HashSet<Competitor>(competitors);
+		if ( competitors.size() < 2
+				|| set.size()!=competitors.size() 
+				|| closingDate.before(Calendar.getInstance()) ) {
 			throw new CompetitionException();
 		}
 		/* create the Map */
@@ -301,7 +304,6 @@ public class System implements Betting {
 			/* deletes the bets from subscriber */
 			subscriber.getBets().remove(listBets.get(i));
 		}
-		/* deletes the bets from System */
 		/* deletes the bets from Competition */
 		toBeCanceled.getBets().removeAll(listBets);
 		/* cancels it */
@@ -339,14 +341,15 @@ public class System implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new CompetitionException();
+			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
-		else if( !(myCompetition.getStatus() == Competition.STARTED) ) {
+		if( myCompetition.getClosingDate().before(Calendar.getInstance()) ){
+		//if( !(myCompetition.getStatus() == Competition.STARTED) ) {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is already in the competition */
 		if(myCompetition.hasCompetitor(competitor)){
-			throw new CompetitionException();
+			throw new ExistingCompetitorException();
 		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
@@ -355,6 +358,7 @@ public class System implements Betting {
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
+		// TODO BadParametersExcaption
 	}
 
 
@@ -364,14 +368,23 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* check validity of the name */
-		if( !(utility.checkValidName(lastName) && utility.checkValidName(firstName) && utility.checkValidDate(borndate) ) ) {
+		if( !(utility.checkValidFirstLastName(lastName) && utility.checkValidFirstLastName(firstName) && utility.checkValidDate(borndate) ) ) {
 			throw new BadParametersException();
 		}
-		/* create the competitor */
+		/* Checks if the competitor already exists */
+		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
+		for(Competitor c: listAllCompetitors){
+			if(c.toString() == firstName + " " + lastName + " born " + borndate)
+				// It exists! Returned!
+				return c;
+		}
+		/* It does not exist so the competitor is created  */
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
 		/* add him to the list */
-		addCompetitorToList(tempCompetitor);
-		/* return the object we created in memory and persisted */
+		this.allCompetitors.put(new Integer(tempCompetitor.getId()), tempCompetitor);
+		// WE DON'T HAVE TO DO IT HERE!
+		//addCompetitorToList(tempCompetitor);
+		/* return the object we created in memory */
 		return tempCompetitor;
 	}
 	/**
@@ -383,13 +396,22 @@ public class System implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* check validity of the name */
-		if( (utility.checkValidName(name) == false ) ) {
+		if( !(utility.checkValidTeamName(name)) ) {
 			throw new BadParametersException();
 		}
-		/* create the competitor */
+		/* Checks if the competitor already exists */
+		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
+		for(Competitor c: listAllCompetitors){
+			if(c.toString() == name)
+				// It exists! Returned!
+				return c;
+		}
+		/* It does not exist so the competitor is created  */
 		Competitor tempCompetitor = new Team(name);
 		/* add him to the list */
-		addCompetitorToList(tempCompetitor);
+		this.allCompetitors.put(new Integer(tempCompetitor.getId()), tempCompetitor);
+		// WE DON'T HAVE TO DO IT HERE!
+		//addCompetitorToList(tempCompetitor);
 		return tempCompetitor;
 	}	
 	/**
@@ -403,8 +425,6 @@ public class System implements Betting {
 		} catch( SQLException sqlex ) {
 			sqlex.printStackTrace();
 		}
-		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
-
 	}
 	
 	@Override
