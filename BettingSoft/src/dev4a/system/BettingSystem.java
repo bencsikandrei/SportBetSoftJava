@@ -37,7 +37,7 @@ import dev4a.db.SubscribersManager;
  * for the Fil Rouge project (Spring 2016)
  * 
  */
-public class System implements Betting {
+public class BettingSystem implements Betting {
 	/* attributes */
 	/* the one and only managerPassword */
 	private String mgrPassword = null;
@@ -50,9 +50,11 @@ public class System implements Betting {
 	/* all the subscribers in the System */
 	private Map<String,Subscriber> allSubscribers = new HashMap<>();
 
-
+	public String getPassword(){
+		return this.mgrPassword;
+	}
 	/* constructor */
-	public System(String mgrPassword) {
+	public BettingSystem(String mgrPassword) {
 		/* setting the pass */
 		this.mgrPassword = mgrPassword; 
 	}

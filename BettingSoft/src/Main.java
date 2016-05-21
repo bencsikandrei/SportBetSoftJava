@@ -1,22 +1,18 @@
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
-import dev4a.competition.Competition;
 import dev4a.competition.CompetitionException;
 import dev4a.competition.ExistingCompetitionException;
 import dev4a.competitor.Competitor;
 import dev4a.competitor.ExistingCompetitorException;
-import dev4a.db.CompetitorsManager;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
+import dev4a.graphicalview.CLIBettingSoft;
 import dev4a.subscriber.ExistingSubscriberException;
-import dev4a.subscriber.Subscriber;
 import dev4a.subscriber.SubscriberException;
-import dev4a.system.System;
+import dev4a.system.BettingSystem;
 import dev4a.utils.DatabaseConnection;
 
 public class Main {
@@ -25,7 +21,7 @@ public class Main {
 	private static String tempPass = "1234";
 	
 	public static void main(String[] args) {
-		System bettingSystem = new System(managerPass);
+		final BettingSystem bettingSystem = new BettingSystem(managerPass);
 
 		try {
 			java.lang.System.out.println("Truncating ...");
@@ -38,6 +34,8 @@ public class Main {
 		addCompetitions(bettingSystem);
 
 		addCompetitor(bettingSystem);
+		
+		CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
 
 	}
 
@@ -60,7 +58,7 @@ public class Main {
 
 	}
 
-	private static void addCompetitions(System bettingSystem) {
+	private static void addCompetitions(BettingSystem bettingSystem) {
 		try {
 			/* make some competitiors */
 			java.util.ArrayList<Competitor> listOfCompetitors = new java.util.ArrayList<Competitor>();
@@ -79,7 +77,7 @@ public class Main {
 
 	}
 
-	private static void addSubscribers(System bettingSystem) {
+	private static void addSubscribers(BettingSystem bettingSystem) {
 		try {
 			/* adding some subscribers */
 			bettingSystem.subscribe("Andrei", "Bencsik", "afbencsi", "1992-08-12", managerPass);
@@ -134,7 +132,7 @@ public class Main {
 		}
 	}
 
-	private static void addCompetitor(System bettingSystem){
+	private static void addCompetitor(BettingSystem bettingSystem){
 		try{
 			//bettingSystem.createCompetitor("Messi","Lionel", "1987-06-24", managerPass);
 			/* adding Lionel Messi to the match, he does not want to miss it! and we don't want him to miss it either */
