@@ -206,7 +206,7 @@ public class System implements Betting {
 				competition,
 				Calendar.getInstance(),
 				closingDate,
-				"sport",
+				"other",
 				tempCompetitors,
 				"pw"
 				);
@@ -214,7 +214,10 @@ public class System implements Betting {
 		addCompetitionToList(tempCompetition);		
 		//TODO check BadParametresException
 	}
-
+	/**
+	 * 
+	 * @param tempCompetition
+	 */
 	private void addCompetitionToList(Competition tempCompetition) {
 		// hide the implementation
 		try {
@@ -226,7 +229,10 @@ public class System implements Betting {
 	}
 	
 
-
+	/**
+	 * 
+	 * @param competition
+	 */
 	private void removeCompetitionFromList(Competition competition) {
 		// hide the implementation
 		try {
@@ -236,7 +242,11 @@ public class System implements Betting {
 		}
 		this.allCompetitions.remove(competition.getName());
 	}
-
+	/**
+	 * 
+	 * @param competition
+	 * @return
+	 */
 	private Competition getCompetitionByName(String competition) {
 		// hide the implementation
 		Competition temp = null;
@@ -336,21 +346,12 @@ public class System implements Betting {
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
 		/* add him to the list */
 		addCompetitorToList(tempCompetitor);
-
+		/* return the object we created in memory and persisted */
 		return tempCompetitor;
 	}
-
-	private void addCompetitorToList(Competitor competitor) {
-		/* hide implementation */
-		try {
-			CompetitorsManager.persist(competitor);
-		} catch( SQLException sqlex ) {
-			sqlex.printStackTrace();
-		}
-		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
-
-	}
-
+	/**
+	 * 
+	 */
 	@Override
 	public Competitor createCompetitor(String name, String managerPwd)
 			throws AuthenticationException, BadParametersException {
@@ -365,8 +366,22 @@ public class System implements Betting {
 		/* add him to the list */
 		addCompetitorToList(tempCompetitor);
 		return tempCompetitor;
-	}
+	}	
+	/**
+	 * 
+	 * @param competitor
+	 */
+	private void addCompetitorToList(Competitor competitor) {
+		/* hide implementation */
+		try {
+			CompetitorsManager.persist(competitor);
+		} catch( SQLException sqlex ) {
+			sqlex.printStackTrace();
+		}
+		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
 
+	}
+	
 	@Override
 	public void deleteCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
@@ -412,6 +427,7 @@ public class System implements Betting {
 		/* credit the money */
 		tempSubscriber.credit(numberTokens);
 		try {
+			/* update his account in the DB */
 			SubscribersManager.update(tempSubscriber);
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
@@ -438,6 +454,7 @@ public class System implements Betting {
 		/* credit the money */
 		tempSubscriber.debit(numberTokens);
 		try {
+			/* update his account in the DB */
 			SubscribersManager.update(tempSubscriber);
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
@@ -542,15 +559,39 @@ public class System implements Betting {
 
 	@Override
 	public List<List<String>> listCompetitions() {
-		// TODO Auto-generated method stub
-		return null;
+		/* iterate the container and get all names and attributes */
+		List<List<String>> printableCompetitions = new ArrayList<>();
+		/* get the updated list */
+		try {
+			this.allCompetitions = CompetitionsManager.findAll();
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		for( Competition comp : this.allCompetitions.values() ) {
+			/* store the details for each subscriber */
+			List<String> compDetails = new ArrayList<>();
+			/* get the competition b*/
+			compDetails.add(comp.getName());
+			compDetails.add(comp.getSport());
+			compDetails.add(String.valueOf(comp.getStatus()));
+			compDetails.add( String.valueOf( comp.getStartDate() ) );
+			/* insert it in the big list */
+			printableCompetitions.add(compDetails);
+		}
+		return printableCompetitions;
 	}
 
 	@Override
 	public Collection<Competitor> listCompetitors(String competition)
 			throws ExistingCompetitionException, CompetitionException {
-		// TODO Auto-generated method stub
-		return null;
+		/* get the compeition with that name */
+		Competition tempCompetition = getCompetitionByName(competition);
+		/* check if competition exists */
+		if ( tempCompetition == null ) {
+			throw new ExistingCompetitionException();
+		}
+		
+		return tempCompetition.getAllCompetitors().values();
 	}
 
 	@Override
@@ -582,7 +623,12 @@ public class System implements Betting {
 	@Override
 	public ArrayList<Competitor> consultResultsCompetition(String competition) throws ExistingCompetitionException {
 		// TODO Auto-generated method stub
-		return null;
+		Competition tempCompetition = getCompetitionByName(competition);
+		
+		if (tempCompetition == null )
+			throw new ExistingCompetitionException();
+		
+		tempCompetition.getWinners();
 	}
 	
 	/* distribution of tokens for a competition */
