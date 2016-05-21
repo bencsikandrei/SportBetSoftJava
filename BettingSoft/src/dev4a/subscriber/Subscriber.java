@@ -1,6 +1,8 @@
 package dev4a.subscriber;
 import dev4a.bets.*;
+
 import java.util.List;
+import java.util.Map;
 /**
  * 
  * 
@@ -46,7 +48,7 @@ public class Subscriber {
 	private long numberOfTokens;
 	/* list of bets
 	 */
-	private List<Bet> bets;
+	private Map<Integer, Bet> bets;
 	
 	
 	/* Constructors of this class */
@@ -97,7 +99,11 @@ public class Subscriber {
 		setPassword(newPassword);
 		return true;
 	}
-
+	/* check password */
+	public boolean checkPassword(String pass) {
+		return this.password == pass;
+	}
+	
 	/* getters and setters REQUIRED for the POJO  (hibernate as well) */
 	public String getLastName() {
 		return lastName;
@@ -148,14 +154,19 @@ public class Subscriber {
 		this.password = password;
 	}
 	
-	public List<Bet> getBets() {
+	public Map<Integer, Bet> getBets() {
 		return bets;
 	}
 
-	public void setBets(List<Bet> bets) {
+	public void setBets(Map<Integer, Bet> bets) {
 		this.bets = bets;
 	}
-	
+	/* place a bet */
+	public void placeBet(Bet bet) {
+		/* add the bet to the list */
+		this.bets.put(bet.getIdentifier(), bet);
+		
+	}
 	/* cancel a bet */
 	public long cancelBet(Bet betToCancel) {
 
@@ -177,6 +188,4 @@ public class Subscriber {
 			return true;
 		return false;
 	}
-
-
 }

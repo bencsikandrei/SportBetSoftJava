@@ -21,6 +21,7 @@ import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.*;
 import dev4a.utils.Utils;
+import dev4a.db.BetsManager;
 import dev4a.db.CompetitionsManager;
 import dev4a.db.CompetitorsManager;
 import dev4a.db.SubscribersManager;
@@ -67,12 +68,29 @@ public class System implements Betting {
 
 	@Override
 	public void authenticateMngr(String managerPwd) throws AuthenticationException {
-		// TODO Auto-generated method stub
+		/* get the password from the DB and then compare it 
+		 * TODO
+		 */
 		if ( this.mgrPassword != managerPwd ) {
 			throw new AuthenticationException();
 		}
 	}
-
+	
+	public Subscriber authenticateSub(String username, String subPwd) throws AuthenticationException , SubscriberException {
+		/* get him and verify pass */
+		Subscriber tempSub = getSubscriberByUserName(username);
+		
+		if(tempSub == null)
+			throw new SubscriberException();
+		
+		boolean correct = tempSub.checkPassword(subPwd);
+		
+		if( correct == false ) 
+			throw new AuthenticationException();
+		
+		return tempSub;
+	}
+	
 	@Override
 	public String subscribe(String lastName, String firstName, String username, String borndate, String managerPwd)
 			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
@@ -524,9 +542,34 @@ public class System implements Betting {
 	public void betOnWinner(long numberTokens, String competition, Competitor winner, String username, String pwdSubs)
 			throws AuthenticationException, CompetitionException, ExistingCompetitionException, SubscriberException,
 			BadParametersException {
-		// TODO Auto-generated method stub
-		
+		/* first authenticate the subscriber */
+		Subscriber tempSubscriber = authenticateSub(username, pwdSubs);
+		/* get the competition */
+		Competition tempComp = getCompetitionByName(competition);
+		/* if the competition does not exist */
+		if( tempComp == null ) {
+			throw new ExistingCompetitionException();
+		}
+		/* if we have given wrong values */
+		if( (numberTokens < 0) || (tempComp.hasCompetitor(winner) == false) )
+			throw new BadParametersException();
+		/* the time of the bet */
+		String currentTime = new java.util.Date().toString();
+		/* place the bet */
+		Bet tempBet = new Bet(numberTokens, competition, winner, username, currentTime);
+		/* add it to the player */
+		tempSubscriber.placeBet( tempBet );
+		/* */
+		this.addBetToList(tempBet);
+	}
 
+	private void addBetToList(Bet bet) {
+		try {
+			BetsManager.persist(bet);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -540,21 +583,64 @@ public class System implements Betting {
 	@Override
 	public void changeSubsPwd(String username, String newPwd, String currentPwd)
 			throws AuthenticationException, BadParametersException {
-		// TODO Auto-generated method stub
-
+		/* first authenticate the subscriber */
+		Subscriber tempSubscriber = null;
+		try {
+			tempSubscriber = authenticateSub(username, currentPwd);
+		} catch(SubscriberException subex){
+			subex.printStackTrace();
+		}
+		
+		tempSubscriber.changePassword(currentPwd, newPwd);
+		
+		try {
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 	@Override
 	public ArrayList<String> infosSubscriber(String username, String pwdSubs) throws AuthenticationException {
-		// TODO Auto-generated method stub
-		return null;
+		/* first authenticate the subscriber */
+		Subscriber tempSubscriber = null;
+		try {
+			tempSubscriber = authenticateSub(username, pwdSubs);
+		} catch(SubscriberException subex){
+			subex.printStackTrace();
+		}
+		/* then get the info */
+		ArrayList<String> tempList = new ArrayList<>();
+		
+		tempList.add(tempSubscriber.getUserName());
+		tempList.add(tempSubscriber.getLastName());
+		tempList.add(tempSubscriber.getFirstName());
+		tempList.add(tempSubscriber.getBornDate());
+		
+		return tempList;
 	}
 
 	@Override
 	public void deleteBetsCompetition(String competition, String username, String pwdSubs)
 			throws AuthenticationException, CompetitionException, ExistingCompetitionException {
-		// TODO Auto-generated method stub
-
+		/* first authenticate the subscriber */
+		Subscriber tempSubscriber = null;
+		try {
+			tempSubscriber = authenticateSub(username, pwdSubs);
+		} catch(SubscriberException subex){
+			subex.printStackTrace();
+		}
+		/* get the bets */
+		for ( Bet b : tempSubscriber.getBets().values() ) {
+			/* if it's the right competition */
+			if( b.getCompetition() == competition )
+				try {
+					BetsManager.delete(b);
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
+		}
+		
 	}
 
 	@Override
@@ -622,13 +708,13 @@ public class System implements Betting {
 
 	@Override
 	public ArrayList<Competitor> consultResultsCompetition(String competition) throws ExistingCompetitionException {
-		// TODO Auto-generated method stub
+		/* */
 		Competition tempCompetition = getCompetitionByName(competition);
 		
 		if (tempCompetition == null )
 			throw new ExistingCompetitionException();
 		
-		tempCompetition.getWinners();
+		return new ArrayList<Competitor> (tempCompetition.getWinners().values());
 	}
 	
 	/* distribution of tokens for a competition */
