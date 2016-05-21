@@ -22,9 +22,9 @@ import dev4a.bets.*;
 public class Competition {
 	
 	public static final int STARTED = 1;
-	public static final int FINISHED = 1;
-	public static final int SOLDOUT = 1;
-	public static final int CANCELED = 1;
+	public static final int FINISHED = 2;
+	public static final int SOLDOUT = 3;
+	public static final int CANCELED = 4;
 	
 	private String name;
 	/* the starting date of the competition 
