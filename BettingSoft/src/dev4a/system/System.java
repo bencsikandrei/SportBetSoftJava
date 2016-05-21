@@ -353,6 +353,7 @@ public class System implements Betting {
 		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
+		addCompetitorToList(competitor);
 		try {
 			ParticipantsManager.persist(competitor, myCompetition);
 		} catch (SQLException sqlex) {
