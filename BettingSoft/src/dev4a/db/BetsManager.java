@@ -45,31 +45,33 @@ public class BetsManager {
 			conn.setAutoCommit(false);
 			PreparedStatement psPersist = conn
 					.prepareStatement("insert into bet(username, "
-							+ "name_comp, type, id_winner, "
+							+ "name_comp, bet_date, type, id_winner, "
 							+ "id_second, id_third, nb_tokens, "
 							+ "status, earnings)  "
-							+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 			/* */
 			psPersist.setString(1, bet.getUserName());
 			psPersist.setString(2, bet.getCompetition());
+			
+			psPersist.setDate(3, java.sql.Date.valueOf(bet.getBetDate()));
 			int tempType = bet.getType();
-			psPersist.setInt(3, tempType);
-			psPersist.setInt(4, bet.getWinner().getId());
+			psPersist.setInt(4, tempType);
+			psPersist.setInt(5, bet.getWinner().getId());
 			/* now we act accordingly for bet type */
 			if( tempType == Bet.TYPE_WINNER ) {
 				
-				psPersist.setNull(5, Types.INTEGER);
 				psPersist.setNull(6, Types.INTEGER);
+				psPersist.setNull(7, Types.INTEGER);
 			}
 			else
 				if( tempType == Bet.TYPE_PODIUM ) {
-					psPersist.setInt(5, bet.getSecond().getId());
-					psPersist.setNull(6, bet.getThird().getId());
+					psPersist.setInt(6, bet.getSecond().getId());
+					psPersist.setNull(7, bet.getThird().getId());
 				}
-			psPersist.setLong(7, bet.getNumberOfTokens());
-			psPersist.setInt(8, bet.getState());
-			psPersist.setLong(9, bet.getEarnings());
+			psPersist.setLong(8, bet.getNumberOfTokens());
+			psPersist.setInt(9, bet.getState());
+			psPersist.setLong(10, bet.getEarnings());
 
 			/* do the updare */
 			psPersist.executeUpdate();
@@ -139,7 +141,7 @@ public class BetsManager {
 
 			String tempUserName = resultSet.getString("username");
 
-			String tempCompName = resultSet.getString("comp_name");
+			String tempCompName = resultSet.getString("name_comp");
 
 			String tempDate = (resultSet.getDate("bet_date")).toString();
 
@@ -180,8 +182,11 @@ public class BetsManager {
 						CompetitorsManager.findById(tempThird), 
 						tempUserName, 
 						tempDate);
-			}			
+			}
+			bet.setIdentifier(tempId);
 		}
+		
+		
 		/* clean up */
 		resultSet.close();
 		psSelect.close();
@@ -203,7 +208,7 @@ public class BetsManager {
 		Connection conn = DatabaseConnection.getConnection();
 
 		PreparedStatement psSelect = conn
-				.prepareStatement("SELECT * FROM bet WHERE username=? ODER BY username");
+				.prepareStatement("SELECT * FROM bet WHERE username=? ORDER BY username");
 
 		psSelect.setString(1, subscriber.getUserName());
 
