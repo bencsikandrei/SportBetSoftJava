@@ -43,7 +43,7 @@ public class Utils {
 		for (List<String> pList : printable ) {
 			System.out.print("Subscriber " + count + " : ");
 			for ( String pString : pList ) {
-				System.out.print(pString + "\t| ");
+				System.out.format("%20s |", pString);
 			}
 			++count;
 			System.out.println();

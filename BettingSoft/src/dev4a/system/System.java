@@ -182,7 +182,8 @@ public class System implements Betting {
 		for( Subscriber sub : this.allSubscribers.values() ) {
 			/* store the details for each subscriber */
 			List<String> subDetails = new ArrayList<>();
-			/* */
+			/* adding the details about them */
+			subDetails.add(sub.getUserName());
 			subDetails.add(sub.getFirstName());
 			subDetails.add(sub.getLastName());
 			subDetails.add(sub.getBornDate());
@@ -213,7 +214,7 @@ public class System implements Betting {
 		if( tempCompetition != null )
 			throw new ExistingCompetitionException();
 		/* check if the date is correct */
-		if (closingDate.before(Calendar.getInstance()) || competitors.size() < 2) {
+		if ( competitors.size() < 2) {
 			throw new CompetitionException();
 		}
 		/* create the Map */

@@ -142,20 +142,23 @@ public class SubscribersManager {
 		/* the results are here */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* a container for them all */
-		Map<String,Subscriber> subs = new HashMap();
+		Map<String,Subscriber> subs = new HashMap<>();
 		/* refference for temp subscriber */
 		Subscriber sub = null;
+		int count = 0;
 		while (resultSet.next()) {
+			count ++;			
 			sub = new Subscriber(
-					resultSet.getString("username"),
 					resultSet.getString("first_name"),
 					resultSet.getString("last_name"),
+					resultSet.getString("username"),
 					resultSet.getString("password"),
 					resultSet.getDate("born_date").toString(),
 					resultSet.getLong("credit")
 					);
 			subs.put(sub.getUserName(), sub);
 		}
+		System.out.println("We found " + count + " subscribers!");
 		/* clean up */
 		resultSet.close();
 		psSelect.close();

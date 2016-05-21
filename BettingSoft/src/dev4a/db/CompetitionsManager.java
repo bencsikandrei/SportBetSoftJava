@@ -24,13 +24,13 @@ import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 
 public class CompetitionsManager {
-	
-	
+
+
 	public static Competition persist(Competition competition) throws SQLException {
 
 		/* get the connection using the class we defined */
 		Connection conn = DatabaseConnection.getConnection();
-		
+
 		try {
 			/* we need to leave the system in a stable state so we turn off autocommit */
 			conn.setAutoCommit(false);
@@ -48,22 +48,45 @@ public class CompetitionsManager {
 				id_third INT REFERENCES Competitor(id)
 			 */
 			PreparedStatement psPersist = conn
-			.prepareStatement("INSERT INTO competition(name, starting_date, "
-				+ "closing_date, status, sport, id_winner, id_second, id_third)"
-				+ "values (?, ?, ?, ?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO competition(name, starting_date, "
+							+ "closing_date, status, sport, id_winner, id_second, id_third)"
+							+ "values (?, ?, ?, ?, ?, ?, ?, ?)");
 			/*  */
+
 			psPersist.setString(1, competition.getName());
-			psPersist.setDate(2, java.sql.Date.valueOf(competition.getStartDate().toString()));
-			psPersist.setDate(3, java.sql.Date.valueOf(competition.getClosingDate().toString()));
+			psPersist.setDate(2, new java.sql.Date(competition.getStartDate().getTime().getTime()));
+			psPersist.setDate(3, new java.sql.Date(competition.getClosingDate().getTime().getTime()));
 			psPersist.setInt(4, competition.getStatus());
 			psPersist.setString(5, competition.getSport());
-			
+
 			Map<Integer, Competitor> tempMap = competition.getWinners();
-			int count = 6;
-			for( Competitor comp : tempMap.values() ) {
-				psPersist.setInt(count, comp.getId());
-				++count;
-			}			
+
+			switch (tempMap.values().size()) {
+			case 3:
+				int count = 6;
+				for( Competitor comp : tempMap.values() ) {
+					psPersist.setInt(count, comp.getId());
+					++count;
+				}		
+				break;
+			case 1:
+				for( Competitor comp : tempMap.values()) 
+					psPersist.setInt(6, comp.getId());
+				for( int i = 7; i <= 8; i++ ) {
+					psPersist.setNull(i, Types.INTEGER);
+					
+				}
+			case 0:
+				for( int i = 6; i <= 8; i++ ) {
+					psPersist.setNull(i, Types.INTEGER);
+					
+				}
+			default:
+				break;
+
+
+			}
+
 			/* insert them */
 			psPersist.executeUpdate();
 			/* clean up */
@@ -96,21 +119,21 @@ public class CompetitionsManager {
 	 */
 	public static Competition findByName(String name) throws SQLException
 	{
-	  // 1 - Get a database connection from the class 'DatabaseConnection' 
+		// 1 - Get a database connection from the class 'DatabaseConnection' 
 		Connection c = DatabaseConnection.getConnection();
 
-	  // 2 - Creating a Prepared Statement with the SQL instruction.
-	  //     The parameters are represented by question marks. 
+		// 2 - Creating a Prepared Statement with the SQL instruction.
+		//     The parameters are represented by question marks. 
 		PreparedStatement psSelect = c.prepareStatement("SELECT * FROM competition WHERE name LIKE ?");
 
-	  // 3 - Supplying values for the prepared statement parameters (question marks).
+		// 3 - Supplying values for the prepared statement parameters (question marks).
 		psSelect.setString(1, name);
 
-	  // 4 - Executing Prepared Statement object among the database.
-	  //     The return value is a Result Set containing the data.
+		// 4 - Executing Prepared Statement object among the database.
+		//     The return value is a Result Set containing the data.
 		ResultSet resultSet = psSelect.executeQuery();
 
-	  // 5 - Retrieving values from the Result Set.
+		// 5 - Retrieving values from the Result Set.
 		Competition tempCompetition = null;
 		/*
 		 * 	name VARCHAR(50) PRIMARY KEY,    
@@ -140,29 +163,29 @@ public class CompetitionsManager {
 			tempComps.put(new Integer(second), CompetitorsManager.findById(second));
 			tempComps.put(new Integer(third), CompetitorsManager.findById(third));
 			/* get the calendar instances */
-	        Calendar stCal = Calendar.getInstance();
-	        stCal.setTime(resultSet.getDate("starting_date"));
+			Calendar stCal = Calendar.getInstance();
+			stCal.setTime(resultSet.getDate("starting_date"));
 			Calendar clCal = Calendar.getInstance();
 			clCal.setTime(resultSet.getDate("closing_date"));
 			/* the new object can now be formed */
 			tempCompetition = new Competition(
-						resultSet.getString("name"),
-						stCal,
-						clCal,
-						resultSet.getString("sport"),
-						tempComps,
-						"pw"
+					resultSet.getString("name"),
+					stCal,
+					clCal,
+					resultSet.getString("sport"),
+					tempComps,
+					"pw"
 					);
-			
+
 		}
 
-	  // 6 - Closing the Result Set
+		// 6 - Closing the Result Set
 		resultSet.close();
 
-	  // 7 - Closing the Prepared Statement.
+		// 7 - Closing the Prepared Statement.
 		psSelect.close();
 
-	  // 8 - Closing the database connection.
+		// 8 - Closing the database connection.
 		c.close();
 		/* return the found object */
 		return tempCompetition;
@@ -180,12 +203,12 @@ public class CompetitionsManager {
 		Map<String, Competition> comps = new HashMap<>();
 		/* refference for temp subscriber */
 		Competition tempCompetition = null;
-		
+
 		Map<Integer, Competitor> tempWins = new HashMap<>();
 		int winner, second, third;
-		
+
 		while (resultSet.next()) {
-			
+
 			winner = resultSet.getInt("id_winner");
 			second = resultSet.getInt("id_second");
 			third = resultSet.getInt("id_third");
@@ -194,20 +217,20 @@ public class CompetitionsManager {
 			tempWins.put(new Integer(second), CompetitorsManager.findById(second));
 			tempWins.put(new Integer(third), CompetitorsManager.findById(third));
 			/* get the calendar instances */
-	        Calendar stCal = Calendar.getInstance();
-	        stCal.setTime(resultSet.getDate("starting_date"));
+			Calendar stCal = Calendar.getInstance();
+			stCal.setTime(resultSet.getDate("starting_date"));
 			Calendar clCal = Calendar.getInstance();
 			clCal.setTime(resultSet.getDate("closing_date"));
 			/* the new object can now be formed */
 			tempCompetition = new Competition(
-						resultSet.getString("name"),
-						stCal,
-						clCal,
-						resultSet.getString("sport"),
-						tempWins,
-						"pw"
+					resultSet.getString("name"),
+					stCal,
+					clCal,
+					resultSet.getString("sport"),
+					tempWins,
+					"pw"
 					);
-			
+
 			comps.put(tempCompetition.getName(), tempCompetition);
 		}
 		/* clean up */
@@ -217,7 +240,7 @@ public class CompetitionsManager {
 
 		return comps;
 	}
-	
+
 	public static void update(Competition competition) throws SQLException {
 		/* open the connection */
 		Connection conn = DatabaseConnection.getConnection();
@@ -235,7 +258,7 @@ public class CompetitionsManager {
 		psUpdate.setDate(3, java.sql.Date.valueOf(competition.getClosingDate().toString()));
 		psUpdate.setInt(4, competition.getStatus());
 		psUpdate.setString(5, competition.getSport());
-		
+
 		Map<Integer, Competitor> tempMap = competition.getWinners();
 		int count = 6;
 		for( Competitor comp : tempMap.values() ) {
@@ -248,7 +271,7 @@ public class CompetitionsManager {
 		psUpdate.close();
 		conn.close();
 	}
-	
+
 	public static void delete(Competition competition) throws SQLException {
 		/* open the connection */
 		Connection conn = DatabaseConnection.getConnection();
