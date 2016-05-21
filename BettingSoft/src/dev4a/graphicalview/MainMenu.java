@@ -38,8 +38,8 @@ public class MainMenu extends Menu {
 	}
 
 	@Override
-	protected void takeAction(int selected) {
-		
+	protected int takeAction(int selected) {
+		return 0;
 		
 	}
 

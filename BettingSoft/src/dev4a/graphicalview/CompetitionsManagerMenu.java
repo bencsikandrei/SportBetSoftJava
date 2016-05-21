@@ -44,7 +44,7 @@ public class CompetitionsManagerMenu extends Menu {
 	}
 
 	@Override
-	protected void takeAction(int selected) {
+	protected int takeAction(int selected) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -23,8 +23,8 @@ public class Menu {
 		
 	}
 	
-	protected void takeAction(int selected){
-		
+	protected int takeAction(int selected){
+		return 0;
 	}
 	
 	protected Menu setBettingSystem(BettingSystem bettingSystem, String password) {
