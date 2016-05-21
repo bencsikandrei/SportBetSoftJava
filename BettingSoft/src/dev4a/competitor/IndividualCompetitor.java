@@ -120,7 +120,7 @@ public class IndividualCompetitor implements Competitor {
 	public String toString() {
 		/* return the full name and borndate */
 		return this.firstName + " " + this.lastName + " born " + this.bornDate;
-		// plase don't eliminate bornDate because it's useful in function createCompetitor in System
+		// please don't eliminate bornDate because it's useful in function createCompetitor in System
 	}
 	
 }
