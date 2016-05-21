@@ -802,5 +802,22 @@ public class System implements Betting {
 			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
 			winningSubscribersOnPodium.get(i).credit(payMe);
 		}
+		for (Bet b:listOfBets){
+			if(b.getType()==1){
+				if(competition.getWinners()==b.getWinner())
+					b.setState(b.WON);
+				else
+					b.setState(b.LOST);
+			}
+			else if(b.getType()==2){
+				if(competition.getWinners().get(0)==b.getWinner() && 
+						competition.getWinners().get(1)==b.getSecond() && 
+						competition.getWinners().get(2)==b.getThird())
+					b.setState(b.WON);
+				else
+					b.setState(b.LOST);
+			
+			}
+		}
 	}
 }
