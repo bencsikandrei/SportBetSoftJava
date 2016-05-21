@@ -76,7 +76,7 @@ public class BettingSystem implements Betting {
 		/* get the password from the DB and then compare it 
 		 * TODO
 		 */
-		if ( this.mgrPassword != managerPwd ) {
+		if ( !this.mgrPassword.equals(managerPwd) ) {
 			throw new AuthenticationException();
 		}
 	}
@@ -232,8 +232,8 @@ public class BettingSystem implements Betting {
 		/* check if the date is correct, if the number of competitors is >2 and if there is no repeated competitors */
 		Set<Competitor> set = new HashSet<Competitor>(competitors);
 		if ( competitors.size() < 2
-				|| set.size()!=competitors.size() 
-				|| closingDate.before(Calendar.getInstance()) ) {
+				|| set.size() != competitors.size() 
+				) {
 			throw new CompetitionException();
 		}
 		/* create the Map */

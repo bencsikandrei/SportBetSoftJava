@@ -36,6 +36,9 @@ public class CLIBettingSoft {
 			try {
 
 				selected = Integer.parseInt(br.readLine());
+				if( selected == 1 && currentMenu instanceof MainMenu && !askForAuthentication() ) { 
+					break;
+				}
 				if( currentMenu.possibleMenus.size() < 2 && !(currentMenu instanceof MainMenu) ) {
 					
 					if( currentMenu.takeAction(selected) == -1)
@@ -66,148 +69,6 @@ public class CLIBettingSoft {
 		
 	}
 
-	private void showSubscribersOptions() {
-
-		
-
-	}
-
-	private void showCompetitorsOptions() {
-
-		System.out.println("");
-
-		System.out.println("Competitors Menu");
-
-		System.out.println("---------------------------");
-
-		System.out.println("1. Create individual competitor");
-
-		System.out.println("2. Create team competitor");
-
-		System.out.println("3. Delete competitor");
-
-		System.out.println("4. Add individual competitor to team");
-
-		System.out.println("----------------------------");
-
-		System.out.println("");
-
-		System.out.print("Please select an option from 1-4");
-
-		System.out.println("");
-
-		System.out.println("");
-
-	}
-
-	private void showCompetitionsOptions() {
-
-		System.out.println("");
-
-		System.out.println("Main Menu");
-
-		System.out.println("---------------------------");
-
-		System.out.println("1. Add subscriber");
-
-		System.out.println("2. Delete subscriber");
-
-		System.out.println("3. Credit subscriber");
-
-		System.out.println("4. Debit subscriber");
-
-		System.out.println("----------------------------");
-
-		System.out.println("");
-
-		System.out.print("Please select an option from 1-4");
-
-		System.out.println("");
-
-		System.out.println("");
-
-	}
-
-	private void showManagerOptions(int selected) throws IOException {
-		
-
-		switch (selected) {
-
-		case 1:
-			/* first authenticatte */
-			if(true) { // askForAuthentication()
-				/* manager options */
-
-
-				selected = Integer.parseInt(br.readLine());
-
-
-				switch (selected) {
-
-				case 1:
-
-					showSubscribersOptions();
-
-					break;
-
-				case 2:
-					
-					showCompetitorsOptions();
-					
-					break;
-
-				case 3:
-					
-					showCompetitionsOptions();
-					
-					break;
-
-				case 4:
-					
-					showBetsOptions();
-					
-					break;
-
-				case 5:
-					
-					
-					
-					break;
-
-				case 6:
-					try {
-						bettingSystem.printSubscribers(this.storedPassword);
-					} catch (AuthenticationException e) {
-						e.printStackTrace();
-					}
-					break;
-
-				case 7:
-					
-					bettingSystem.printCompetitions();
-					
-					break;
-				}
-
-			}
-			else {
-				System.out.println("Authentication failed!");
-			}
-			break;
-
-		case 2:
-
-
-
-			break;
-
-		case 3:
-
-			break;
-
-		}
-	}
-
 	private void showBetsOptions() {
 		// TODO Auto-generated method stub
 		
@@ -225,10 +86,14 @@ public class CLIBettingSoft {
 		char [] passwordArray = console.readPassword("Enter your password: ");
 
 		try {
+			System.out.println("Password you entered was :" + new String(passwordArray));
+			System.out.println("Password expected was :" + bettingSystem.getPassword());
+			
 			this.bettingSystem.authenticateMngr(new String(passwordArray)); 
 			this.storedPassword = new String(passwordArray);
 			return true;
 		} catch (AuthenticationException ex) {
+			System.out.println("Authentication failed");
 			return false;
 		}
 	}
