@@ -7,8 +7,9 @@ import dev4a.system.BettingSystem;
 
 public class SubscribersManagerMenu extends Menu {
 
-	public SubscribersManagerMenu(BettingSystem bs, String pass) {
+	public SubscribersManagerMenu(BettingSystem bs, String pass, Menu parentMenu) {
 		super(bs, pass);
+		this.possibleMenus.add(parentMenu);
 	}
 
 	@Override

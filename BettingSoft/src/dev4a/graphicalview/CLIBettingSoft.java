@@ -32,18 +32,22 @@ public class CLIBettingSoft {
 		while(true) {
 			
 			showCurrentMenu();
-
+			
 			try {
 
 				selected = Integer.parseInt(br.readLine());
-				if( currentMenu.possibleMenus.size() < 1) {
+				if( currentMenu.possibleMenus.size() < 2 && !(currentMenu instanceof MainMenu) ) {
 					
-					currentMenu.takeAction(selected);
+					if( currentMenu.takeAction(selected) == -1)
+						currentMenu = currentMenu.possibleMenus.get(0);
 					
 				}
 				else 
-					this.currentMenu = this.currentMenu.possibleMenus.get(selected-1);
-
+					if ( selected <= currentMenu.possibleMenus.size() )
+						this.currentMenu = this.currentMenu.possibleMenus.get(selected);
+				else 
+					if( currentMenu.takeAction(selected) == -1)
+						currentMenu = currentMenu.possibleMenus.get(0);
 
 			} catch (Exception ioe) {
 

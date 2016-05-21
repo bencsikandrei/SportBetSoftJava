@@ -1,12 +1,17 @@
 package dev4a.graphicalview;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 import dev4a.system.BettingSystem;
 
 public class ManagerMenu extends Menu {
 	
-	public ManagerMenu (BettingSystem bs, String pass) {
+	public ManagerMenu (BettingSystem bs, String pass, Menu parentMenu) {
 		super(bs, pass);
-		this.possibleMenus.add(new SubscribersManagerMenu(bs, pass));
+
+		this.possibleMenus.add(parentMenu);
+		this.possibleMenus.add(new SubscribersManagerMenu(bs, pass, this));
 		this.possibleMenus.add(new CompetitorsManagerMenu(bs, pass));
 		this.possibleMenus.add(new CompetitionsManagerMenu(bs, pass));
 		this.possibleMenus.add(new BetsManagerMenu(bs, pass));
@@ -49,8 +54,37 @@ public class ManagerMenu extends Menu {
 
 	@Override
 	protected int takeAction(int selected) {
-		// TODO Auto-generated method stub
 		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+		switch (selected) {
+		case 5:
+				
+				System.out.println("Sorry this is not yet implemented :)");
+
+			break;	
+		case 6:
+			try {
+
+				this.bettingSystem.printSubscribers(storedPass);
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+		case 7:
+			try {
+				
+				this.bettingSystem.printCompetitions();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+		default:
+			return -1;
+		}
+		return 0;
 	}
 	
 }

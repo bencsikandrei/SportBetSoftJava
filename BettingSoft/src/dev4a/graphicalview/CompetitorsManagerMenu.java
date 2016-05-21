@@ -155,9 +155,9 @@ public class CompetitorsManagerMenu extends Menu {
 			}
 			break;
 		default:
-			break;
+			return -1;
 		}
-		
+		return 0;
 	}
 	
 }
