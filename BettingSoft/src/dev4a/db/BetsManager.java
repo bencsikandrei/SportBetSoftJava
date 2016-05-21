@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,11 +53,20 @@ public class BetsManager {
 			/* */
 			psPersist.setString(1, bet.getUserName());
 			psPersist.setString(2, bet.getCompetition());
-			psPersist.setInt(3, bet.getType());
-			/* */
+			int tempType = bet.getType();
+			psPersist.setInt(3, tempType);
 			psPersist.setInt(4, bet.getWinner().getId());
-			psPersist.setInt(5, bet.getSecond().getId());
-			psPersist.setInt(6, bet.getThird().getId());
+			/* now we act accordingly for bet type */
+			if( tempType == Bet.TYPE_WINNER ) {
+				
+				psPersist.setNull(5, Types.INTEGER);
+				psPersist.setNull(6, Types.INTEGER);
+			}
+			else
+				if( tempType == Bet.TYPE_PODIUM ) {
+					psPersist.setInt(5, bet.getSecond().getId());
+					psPersist.setNull(6, bet.getThird().getId());
+				}
 			psPersist.setLong(7, bet.getNumberOfTokens());
 			psPersist.setInt(8, bet.getState());
 			psPersist.setLong(9, bet.getEarnings());
@@ -69,7 +79,7 @@ public class BetsManager {
 			// Retrieving the value of the id with a request on the
 			// sequence (subscribers_id_seq).
 			PreparedStatement psIdValue = conn
-					.prepareStatement("SELECT currval('bets_id_seq') AS value_id");
+					.prepareStatement("SELECT currval('bet_id_seq') AS value_id");
 
 			ResultSet resultSet = psIdValue.executeQuery();
 

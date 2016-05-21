@@ -18,7 +18,11 @@ public class Bet {
 	public static final int INPROGRESS = 1;
 	public static final int WON = 2;
 	public static final int LOST = 3;
-
+	
+	public static final int TYPE_WINNER = 1;
+	public static final int TYPE_PODIUM = 2;
+	
+	
 	/* the id of this bet -> serves for DB */
 	private int identifier;
 	/* how many tokens have been bet on this */
@@ -49,7 +53,7 @@ public class Bet {
 			String username, String betDate) {
 		this.state = INPROGRESS;
 		this.numberOfTokens = nbOfTokens;
-		this.type = 1;
+		this.type = TYPE_WINNER;
 		this.betDate = betDate;
 		this.userName = username;
 		this.competition = competition;

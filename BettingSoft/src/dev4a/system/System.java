@@ -558,7 +558,7 @@ public class System implements Betting {
 			throw new ExistingCompetitionException();
 		}
 		/* if we have given wrong values */
-		if( (numberTokens < 0) || (tempComp.hasCompetitor(winner) == false) )
+		if( (numberTokens < 0))// || (tempComp.hasCompetitor(winner) == false) )
 			throw new BadParametersException();
 		/* the time of the bet */
 		String currentTime = new java.util.Date().toString();

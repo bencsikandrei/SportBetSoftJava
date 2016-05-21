@@ -138,7 +138,8 @@ public class Competition {
 		this.allCompetitors = allCompetitors;
 	}
 	
-	public void addCompetitor(Competitor competitor){
+	public void addCompetitor(Competitor competitor) {
+		System.out.println(competitor.getId() + " " + competitor.toString());
 		this.allCompetitors.put(new Integer(competitor.getId()), competitor);
 	}
 	
@@ -197,7 +198,7 @@ public class Competition {
 	 * Checks if a competitor is in the competition 
 	 */
 	public boolean hasCompetitor(Competitor competitor) {
-		return this.allCompetitors.containsValue(competitor);
+		return this.allCompetitors.containsKey(competitor.getId());
 	}
 	
 	@Override

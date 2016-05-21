@@ -1,6 +1,7 @@
 package dev4a.subscriber;
 import dev4a.bets.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
@@ -48,7 +49,7 @@ public class Subscriber {
 	private long numberOfTokens;
 	/* list of bets
 	 */
-	private Map<Integer, Bet> bets;
+	private Map<Integer, Bet> bets = new HashMap<>();
 	
 	
 	/* Constructors of this class */
@@ -101,7 +102,7 @@ public class Subscriber {
 	}
 	/* check password */
 	public boolean checkPassword(String pass) {
-		return this.password == pass;
+		return this.password.equals(pass);
 	}
 	
 	/* getters and setters REQUIRED for the POJO  (hibernate as well) */

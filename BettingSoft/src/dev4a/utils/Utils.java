@@ -27,13 +27,14 @@ public class Utils {
 	 * @return generatePassword = sb.toString()
 	 */
 	public String randomString( int len ) {
-		/* use string builder for more optimization */
+		/* use string builder for more optimization 
 		StringBuilder sb = new StringBuilder( len );
-		/* loop through and get a random char */
+		 loop through and get a random char 
 		for( int i = 0; i < len; i++ ) 
 			sb.append( ALPHANUM.charAt( rnd.nextInt(ALPHANUM.length()) ) );
-		/* return the final string */
-		return sb.toString();
+		 return the final string 
+		return sb.toString();*/
+		return "1234";
 	}
 	/**
 	 * This method takes care of printing a complex list
