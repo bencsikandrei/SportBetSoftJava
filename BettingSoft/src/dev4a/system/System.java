@@ -436,21 +436,35 @@ public class System implements Betting {
 		authenticateMngr(managerPwd);
 		/* competition to remove competitor from */
 		Competition myCompetition = getCompetitionByName(competition);
-		/* check if it exists */
+		/* checks if it exists */
 		if( myCompetition == null )
 			/* does not exist */
 			throw new ExistingCompetitionException();
-		/* check if the competition is in a proper state */
-		else if( (myCompetition.getStatus() != Competition.STARTED) || myCompetition.getAllCompetitors().size() == 2) {
+		/* checks if the competition is in a proper state */
+		if( myCompetition.getClosingDate().before(Calendar.getInstance()) || myCompetition.getAllCompetitors().size() == 2) {
+		// if((myCompetition.getStatus() != Competition.STARTED))
 			throw new CompetitionException();
 		}
-		/* check if the competitor is in the competition */
+		/* checks if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
 		}
+		/* Returns tokens */
+		List<Bet> listBets = myCompetition.getBets();
+		for (int i = 0; i < listBets.size(); i++){
+			/* Look if the bet was done to the competitor to remove */
+			if(listBets.get(i).getListCompetitor().contains(competitor.getId())){
+				Subscriber subscriber = getSubscriberByUserName(listBets.get(i).getUserName());
+				/* returns tokens */
+				subscriber.credit(listBets.get(i).getNumberOfTokens());
+				/* deletes the bet from subscriber */
+				subscriber.getBets().remove(listBets.get(i));
+				/* deletes the bet from the competition */
+				myCompetition.getBets().remove(listBets.get(i));
+			}
+		}
 		/* now we can delete the competitor */  
 		myCompetition.removeCompetitor(competitor); 
-		// TODO return tokens
 	}
 
 	@Override
