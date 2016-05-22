@@ -563,6 +563,8 @@ public class BettingSystem implements Betting {
 		// TODO check type of competition? in this case the type of bet should be w
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
+		/* Deletes the competition */
+		deleteCompetition(competition, managerPwd);
 	}
 
 	@Override
@@ -596,7 +598,9 @@ public class BettingSystem implements Betting {
 		myCompetition.setWinners(listOfWinners); 
 		// TODO check type of competition?
 		pay(myCompetition);
-		myCompetition.setStatus(Competition.SOLDOUT);	
+		myCompetition.setStatus(Competition.SOLDOUT);
+		/* Deletes the competition */
+		deleteCompetition(competition, managerPwd);
 	}
 
 	@Override
@@ -840,7 +844,10 @@ public class BettingSystem implements Betting {
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
-				}				
+					b.setState(b.WON);
+				}
+				else
+					b.setState(b.LOST);
 			}
 			else if(b.getType()==2){
 				if(competition.getWinners().get(0)==b.getWinner() && 
@@ -849,36 +856,40 @@ public class BettingSystem implements Betting {
 					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnPodium.add(b.getNumberOfTokens());
 					winningTokensOnPodium += b.getNumberOfTokens();
+					b.setState(b.WON);
 				}
-			}
-		}
-		for (int i=0; i<winningSubscribersOnWinner.size();i++){
-			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
-			winningSubscribersOnWinner.get(i).credit(payMe);
-		}
-
-		for (int i=0; i<winningSubscribersOnPodium.size();i++){
-			payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
-			winningSubscribersOnPodium.get(i).credit(payMe);
-		}
-		for (Bet b:listOfBets){
-			if(b.getType()==1){
-				if(competition.getWinners()==b.getWinner())
-					b.setState(b.WON);
 				else
 					b.setState(b.LOST);
 			}
-			else if(b.getType()==2){
-				if(competition.getWinners().get(0)==b.getWinner() && 
-						competition.getWinners().get(1)==b.getSecond() && 
-						competition.getWinners().get(2)==b.getThird())
-					b.setState(b.WON);
-				else
-					b.setState(b.LOST);
-			
+		}
+		/* pays to the winners */
+		if(winningSubscribersOnWinner.size()!=0){
+			for (int i=0; i<winningSubscribersOnWinner.size();i++){
+				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
+				winningSubscribersOnWinner.get(i).credit(payMe);
+			}
+		}
+		/* Since it is a nonprofit organization... money is returned if nobody won */
+		else{
+			for (Bet b:listOfBets){
+				getSubscriberByUserName(b.getUserName()).credit(b.getNumberOfTokens());
+			}
+		}
+		/* pays to the winners */
+		if(winningSubscribersOnPodium.size()!=0){
+			for (int i=0; i<winningSubscribersOnPodium.size();i++){
+				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
+				winningSubscribersOnPodium.get(i).credit(payMe);
+			}
+		}
+		/* Since it is a nonprofit organization... money is returned if nobody won */
+		else{
+			for (Bet b:listOfBets){
+				getSubscriberByUserName(b.getUserName()).credit(b.getNumberOfTokens());
 			}
 		}
 	}
+	
 	public Competitor getCompetitorById(Integer id) {
 		Competitor tempComp = null;
 		try {
