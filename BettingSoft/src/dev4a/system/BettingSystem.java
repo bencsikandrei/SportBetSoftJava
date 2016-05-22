@@ -734,6 +734,15 @@ public class BettingSystem implements Betting {
 	public void printCompetitions() {
 		this.utility.printList(this.listCompetitions());
 	}
+	
+	private List<String> consultCompetitors(Competition competition){
+		List<String> competitors = new ArrayList<String>();
+		List<Competitor> listCompetitors = new ArrayList<Competitor> (competition.getAllCompetitors().values());
+		for (Competitor c : listCompetitors)
+			competitors.add(c.toString());
+		return competitors;
+	}
+	
 	@Override
 	public List<List<String>> listCompetitions() {
 		/* iterate the container and get all names and attributes */
@@ -749,9 +758,15 @@ public class BettingSystem implements Betting {
 			List<String> compDetails = new ArrayList<>();
 			/* get the competition b*/
 			compDetails.add(comp.getName());
-			compDetails.add(comp.getSport());
-			compDetails.add(String.valueOf(comp.getStatus()));
-			compDetails.add( String.valueOf( comp.getStartDate().getTime() ) );
+			//compDetails.add(comp.getSport());
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
+			String stringDate = formatter.format(comp.getClosingDate()); 
+			compDetails.add(stringDate);
+			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " bets.");
+			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " bets.");
+			compDetails.addAll(consultCompetitors(comp));
+			//compDetails.add(String.valueOf(comp.getStatus()));
+			//compDetails.add( String.valueOf( comp.getStartDate().getTime() ) );
 			/* insert it in the big list */
 			printableCompetitions.add(compDetails);
 		}
@@ -770,12 +785,15 @@ public class BettingSystem implements Betting {
 	@Override
 	public Collection<Competitor> listCompetitors(String competition)
 			throws ExistingCompetitionException, CompetitionException {
-		/* get the compeition with that name */
+		/* get the competition with that name */
 		Competition tempCompetition = getCompetitionByName(competition);
 		/* check if competition exists */
 		if ( tempCompetition == null ) {
 			throw new ExistingCompetitionException();
 		}
+		/* Checks if the competition is closed */
+		if (tempCompetition.getClosingDate().before(Calendar.getInstance()))
+			throw new CompetitionException();
 		Collection<Competitor> competitors = new ArrayList<>();
 		try {
 			competitors = ParticipantsManager.findAllByCompetition(competition).values();
@@ -799,6 +817,7 @@ public class BettingSystem implements Betting {
 		String string = "";
 		String names = "";
 		for(Bet b:listOfBets){
+			//listOfStrings.add(b.toString());
 			if (b.getType()==1){ //type winner
 				names = "the winner: " + b.getWinner().toString();
 			}
@@ -812,13 +831,13 @@ public class BettingSystem implements Betting {
 	}
 
 	@Override
-	public ArrayList<Competitor> consultResultsCompetition(String competition) throws ExistingCompetitionException {
+	public ArrayList<Competitor> consultResultsCompetition(String competition) 
+			throws ExistingCompetitionException {
 		/* */
 		Competition tempCompetition = getCompetitionByName(competition);
-
 		if (tempCompetition == null )
 			throw new ExistingCompetitionException();
-
+		/* Can't throw CompetitionException because it's not in the interface. */
 		return new ArrayList<Competitor> (tempCompetition.getWinners().values());
 	}
 
