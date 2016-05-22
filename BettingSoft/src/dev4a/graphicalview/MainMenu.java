@@ -8,10 +8,8 @@ public class MainMenu extends Menu {
 		
 		super(bs, pass);	
 		this.possibleMenus.add(this);
-		this.possibleMenus.add(new ManagerMenu(bs, pass, this));
-		
-		
-		
+		this.possibleMenus.add(new ManagerMenu(bs, pass));
+						
 	}
 	
 	@Override

@@ -65,7 +65,7 @@ public class Bet {
 			String username, String betDate) {
 		this.state = INPROGRESS;
 		this.numberOfTokens = nbOfTokens;
-		this.type = 2;
+		this.type = TYPE_PODIUM;
 		this.betDate = betDate;
 		this.userName = username;
 		this.competition = competition;

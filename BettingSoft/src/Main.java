@@ -7,9 +7,11 @@ import dev4a.competition.CompetitionException;
 import dev4a.competition.ExistingCompetitionException;
 import dev4a.competitor.Competitor;
 import dev4a.competitor.ExistingCompetitorException;
+import dev4a.db.RootManager;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.graphicalview.CLIBettingSoft;
+import dev4a.graphicalview.CLIClient;
 import dev4a.subscriber.ExistingSubscriberException;
 import dev4a.subscriber.SubscriberException;
 import dev4a.system.BettingSystem;
@@ -21,24 +23,41 @@ public class Main {
 	private static String tempPass = "1234";
 	
 	public static void main(String[] args) {
-		final BettingSystem bettingSystem = new BettingSystem(managerPass);
-
+		/* open up the system */
 		try {
-			java.lang.System.out.println("Truncating ...");
-			initializeDatabase();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
+			managerPass = RootManager.getPassword();
+		} catch (SQLException sqlex) {
+			System.out.println("Could not connect to DB!");
 		}
-		addSubscribers(bettingSystem);
-		
-		addCompetitions(bettingSystem);
-
-		addCompetitor(bettingSystem);
-		
-		CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
-
+		if( managerPass == null) {
+			System.out.println("New system! Welcome, default pass is 1234. Please change it!");
+			managerPass = "1234";
+			try {
+				/* persist the first pass */
+				RootManager.persist(managerPass);
+			} catch (SQLException e) {
+				System.out.println("Could not connect to DB!");
+			}
+		}
+		/* properly initialized */
+		final BettingSystem bettingSystem = new BettingSystem(managerPass);
+				
+		/* fire up the CLI */
+		//CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
+		CLIClient cli = new CLIClient(bettingSystem);
 	}
+	/* TESTS */
+	/*try {
+		java.lang.System.out.println("Truncating ...");
+		initializeDatabase();
+	} catch (SQLException ex) {
+		ex.printStackTrace();
+	}
+	addSubscribers(bettingSystem);
+	
+	addCompetitions(bettingSystem);
 
+	addCompetitor(bettingSystem);*/
 
 	private static void initializeDatabase() throws SQLException {
 		/* open the connection */
@@ -69,7 +88,7 @@ public class Main {
 			bettingSystem.addCompetition("Real_Madrid_-_Barcelona_Primera_Division", Calendar.getInstance(), listOfCompetitors, managerPass);
 			bettingSystem.addCompetition("Real_Madrid_-_Barcelona_Primera_Division_1", Calendar.getInstance(), listOfCompetitors, managerPass);
 			
-			bettingSystem.printCompetitions();
+			//bettingSystem.printCompetitions();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -87,9 +106,9 @@ public class Main {
 			bettingSystem.subscribe("Pfuong-Bich", "Luc", "pfluc", "1992-08-12", managerPass);
 			bettingSystem.subscribe("Leonard", "Toshimori", "ltoshimor", "1992-08-12", managerPass);
 			
-			java.lang.System.out.println( "Password : " + bettingSystem.subscribe("Florian", "Dumbovski", "fdumbov", "1992-08-12", managerPass) );
+			bettingSystem.subscribe("Florian", "Dumbovski", "fdumbov", "1992-08-12", managerPass);
 			/* testing the to String method */
-			java.lang.System.out.println(bettingSystem.getSubscriberByUserName("afbencsi").toString());
+			//java.lang.System.out.println(bettingSystem.getSubscriberByUserName("afbencsi").toString());
 			
 			
 			bettingSystem.creditSubscriber("asamimoh", 9999, managerPass);
@@ -118,7 +137,7 @@ public class Main {
 
 		try {
 			/* some unsubscribtions */
-			java.lang.System.out.println( bettingSystem.unsubscribe("afbencsi", managerPass) );
+			//bettingSystem.unsubscribe("afbencsi", managerPass)
 			
 
 		} catch(Exception ex) {
@@ -126,7 +145,7 @@ public class Main {
 		}
 		
 		try {
-			bettingSystem.printSubscribers(managerPass);
+			//bettingSystem.printSubscribers(managerPass);
 		} catch (Exception ex) {
 
 		}
@@ -150,7 +169,7 @@ public class Main {
 			bettingSystem.addCompetitor("Real_Madrid_-_Barcelona_Primera_Division", team2,managerPass);	
 			/* deleting poor James :( */
 			//bettingSystem.deleteCompetitor("Real_Madrid_-_Barcelona_Primera_Division", player,managerPass);
-			bettingSystem.printCompetitors("Real_Madrid_-_Barcelona_Primera_Division");
+			//bettingSystem.printCompetitors("Real_Madrid_-_Barcelona_Primera_Division");
 			
 			bettingSystem.betOnWinner(100, "Real_Madrid_-_Barcelona_Primera_Division", team, "asamimoh", tempPass);
 			

@@ -9,9 +9,11 @@ public class SubscribersManagerMenu extends Menu {
 
 	public SubscribersManagerMenu(BettingSystem bs, String pass, Menu parentMenu) {
 		super(bs, pass);
-		this.possibleMenus.add(parentMenu);
+		this.parentMenu = parentMenu;
 	}
-
+	/**
+	 * 
+	 */
 	@Override
 	public void showMenu() {
 		System.out.println("");
@@ -44,7 +46,9 @@ public class SubscribersManagerMenu extends Menu {
 		System.out.println("");
 
 	}
-
+	/**
+	 * The logic behind
+	 */
 	@Override
 	protected int takeAction(int selected) {
 

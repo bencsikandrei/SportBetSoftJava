@@ -6,18 +6,22 @@ import java.io.InputStreamReader;
 import dev4a.system.BettingSystem;
 
 public class ManagerMenu extends Menu {
-	
-	public ManagerMenu (BettingSystem bs, String pass, Menu parentMenu) {
+	/**
+	 * The main manu of the manager
+	 * @param bs
+	 * @param pass
+	 */
+	public ManagerMenu (BettingSystem bs, String pass) {
 		super(bs, pass);
-
-		this.possibleMenus.add(parentMenu);
+		/* set the possible menus */
 		this.possibleMenus.add(new SubscribersManagerMenu(bs, pass, this));
-		this.possibleMenus.add(new CompetitorsManagerMenu(bs, pass));
-		this.possibleMenus.add(new CompetitionsManagerMenu(bs, pass));
-		this.possibleMenus.add(new BetsManagerMenu(bs, pass));
-		
+		this.possibleMenus.add(new CompetitorsManagerMenu(bs, pass, this));
+		this.possibleMenus.add(new CompetitionsManagerMenu(bs, pass, this));
+		this.possibleMenus.add(new BetsManagerMenu(bs, pass, this));
+		/* the parent */
+		this.parentMenu = this;
 	}
-	
+
 	@Override
 	public void showMenu() {
 		System.out.println("");
@@ -40,6 +44,8 @@ public class ManagerMenu extends Menu {
 
 		System.out.println("7. List all competitions");
 
+		System.out.println("*. Exit system");
+
 		System.out.println("----------------------------");
 
 		System.out.println("");
@@ -49,19 +55,27 @@ public class ManagerMenu extends Menu {
 		System.out.println("");
 
 		System.out.println("");
-		
-	}
 
+	}
+	/**
+	 * Take aciton based on the 'selected' integer
+	 */
 	@Override
 	protected int takeAction(int selected) {
-		
+
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		switch (selected) {
 		case 5:
-				
-				System.out.println("Sorry this is not yet implemented :)");
-
+			try {
+				/* the new pass */
+				System.out.println("Insert new password");
+				String newPassword = br.readLine();
+				/* change pass */
+				bettingSystem.changeManagerPassword(this.storedPass, newPassword);
+			} catch (Exception e) {
+				System.out.println("Something went wrong..");
+			}
 			break;	
 		case 6:
 			try {
@@ -74,7 +88,7 @@ public class ManagerMenu extends Menu {
 			break;
 		case 7:
 			try {
-				
+
 				this.bettingSystem.printCompetitions();
 
 			} catch (Exception ex) {
@@ -86,5 +100,5 @@ public class ManagerMenu extends Menu {
 		}
 		return 0;
 	}
-	
+
 }

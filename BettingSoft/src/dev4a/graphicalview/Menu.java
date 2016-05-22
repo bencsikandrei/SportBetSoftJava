@@ -6,7 +6,7 @@ import dev4a.system.BettingSystem;
 
 public class Menu {
 	
-	
+	protected Menu parentMenu = null;
 	
 	protected BettingSystem bettingSystem;
 	
@@ -14,7 +14,7 @@ public class Menu {
 	
 	protected ArrayList<Menu> possibleMenus = new ArrayList<>();
 	
-	public Menu(BettingSystem bs, String storredPass){
+	public Menu(BettingSystem bs, String storredPass) {
 		this.bettingSystem = bs;
 		this.storedPass = storredPass;
 	}
@@ -27,10 +27,7 @@ public class Menu {
 		return 0;
 	}
 	
-	protected Menu setBettingSystem(BettingSystem bettingSystem, String password) {
-		this.bettingSystem = bettingSystem;
-		this.storedPass = password;
-		return this;
+	protected Menu getParent() {
+		return this.parentMenu;
 	}
-	
 }

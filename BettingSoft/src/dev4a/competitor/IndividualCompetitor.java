@@ -119,7 +119,7 @@ public class IndividualCompetitor implements Competitor {
 	@Override 
 	public String toString() {
 		/* return the full name and borndate */
-		return this.firstName + " " + this.lastName + " born " + this.bornDate;
+		return "Id: " + this.id + this.firstName + " " + this.lastName + " born " + this.bornDate;
 		// please don't eliminate bornDate because it's useful in function createCompetitor in System
 	}
 	
