@@ -362,7 +362,18 @@ public class BettingSystem implements Betting {
 		toBeCanceled.setStatus(Competition.CANCELED);
 	}
 
-
+	public List<Bet> getBetsByCompetition(Competition competition){
+		List<Bet> bets = new ArrayList<Bet>();
+		try {
+			for ( Bet bet : BetsManager.findByCompetition(competition).values()) {
+				bets.add(bet);
+			}
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		return bets;
+	}
+		
 	@Override
 	public void deleteCompetition(String competition, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
