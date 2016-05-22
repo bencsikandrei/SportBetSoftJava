@@ -97,5 +97,14 @@ public class Team implements Competitor {
 		/* just return the name of the team */
 		return "Id :" + this.id + " Name : " + this.name;
 	}
-
+	
+	@Override 
+	public boolean equals(Object obj) {
+		/* check if it's instance of the Team class */
+		if (!(obj instanceof Team))
+			return false;
+		if ( ((Team) obj).getId() == this.getId() )
+			return true;
+		return false;
+	}
 }

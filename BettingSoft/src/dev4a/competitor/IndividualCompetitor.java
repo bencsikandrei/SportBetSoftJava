@@ -3,6 +3,7 @@ package dev4a.competitor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import dev4a.exceptions.BadParametersException;
+import dev4a.subscriber.Subscriber;
 
 public class IndividualCompetitor implements Competitor {
 
@@ -123,4 +124,13 @@ public class IndividualCompetitor implements Competitor {
 		// please don't eliminate bornDate because it's useful in function createCompetitor in System
 	}
 	
+	@Override 
+	public boolean equals(Object obj) {
+		/* check if it's instance of the IndividualCompetitor class */
+		if (!(obj instanceof IndividualCompetitor))
+			return false;
+		if ( ((IndividualCompetitor) obj).getId() == this.getId() )
+			return true;
+		return false;
+	}
 }
