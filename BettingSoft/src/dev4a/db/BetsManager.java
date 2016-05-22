@@ -67,7 +67,7 @@ public class BetsManager {
 			else
 				if( tempType == Bet.TYPE_PODIUM ) {
 					psPersist.setInt(6, bet.getSecond().getId());
-					psPersist.setNull(7, bet.getThird().getId());
+					psPersist.setInt(7, bet.getThird().getId());
 				}
 			psPersist.setLong(8, bet.getNumberOfTokens());
 			psPersist.setInt(9, bet.getState());

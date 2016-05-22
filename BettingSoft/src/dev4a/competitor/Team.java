@@ -95,7 +95,7 @@ public class Team implements Competitor {
 	@Override 
 	public String toString() {
 		/* just return the name of the team */
-		return this.name;
+		return "Id :" + this.id + " Name : " + this.name;
 	}
 
 }

@@ -37,13 +37,17 @@ public class CompetitorsManagerMenu extends Menu {
 		
 		System.out.println("6. List competitors in competition");
 		
-		System.out.println("7. List competitions");	
+		System.out.println("7. List all competitors");
+		
+		System.out.println("8. List competitions");	
+		
+		System.out.println("*. Go back");
 		
 		System.out.println("----------------------------");
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-6");
+		System.out.print("Please select an option from 1-8");
 
 		System.out.println("");
 
@@ -158,12 +162,23 @@ public class CompetitorsManagerMenu extends Menu {
 		case 7:
 			try {
 				/* print */
+				this.bettingSystem.printAllCompetitors();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+			
+		case 8:
+			try {
+				/* print */
 				this.bettingSystem.printCompetitions();
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			break;
+		
 		default:
 			return -1;
 		}
