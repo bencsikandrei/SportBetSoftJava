@@ -5,10 +5,14 @@ import dev4a.system.BettingSystem;
 public class BetsManagerMenu extends Menu {
 	
 	
-	
-	public BetsManagerMenu(BettingSystem bs, String storredPass) {
+	/**
+	 * Initialize the menu and set up the parent
+	 * @param bs
+	 * @param storredPass
+	 */
+	public BetsManagerMenu(BettingSystem bs, String storredPass, Menu parentMenu) {
 		super(bs, storredPass);
-		// TODO Auto-generated constructor stub
+		this.parentMenu = parentMenu;
 	}
 
 	@Override
@@ -19,7 +23,7 @@ public class BetsManagerMenu extends Menu {
 
 		System.out.println("---------------------------");
 
-		System.out.println("1. Manage subscribers");
+		System.out.println("1. See bets for subscriber");
 
 		System.out.println("2. Manage competitors");
 

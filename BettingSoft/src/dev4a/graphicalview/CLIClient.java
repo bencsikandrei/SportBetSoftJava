@@ -2,18 +2,14 @@ package dev4a.graphicalview;
 
 import java.io.BufferedReader;
 import java.io.Console;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
+import dev4a.subscriber.SubscriberException;
 import dev4a.system.BettingSystem;
-/**
- * 
- * @author g4ab2
- *
- */
-public class CLIBettingSoft {
+
+public class CLIClient {
 	/* the system */
 	private BettingSystem bettingSystem;
 	/* the choice */
@@ -28,16 +24,24 @@ public class CLIBettingSoft {
 	 * 
 	 * @param bettingSys
 	 */
-	public CLIBettingSoft(BettingSystem bettingSys) {
+	public CLIClient(BettingSystem bettingSys) {
 		/* our new system */
-		this.bettingSystem = bettingSys;
-		
+		this.bettingSystem = bettingSys;		
 		/* to read the input */
 		br = new BufferedReader(new InputStreamReader(System.in));
+		/* ask for user name */
+		System.out.println("Insert user name");
+		String username = "";
+		try {
+			username = br.readLine();
+		} catch (Exception e) {
+			System.out.println("Something went wrong.\nExiting ..");
+			System.exit(-1);
+		}
 		/* ask for authentication as long as the user porovides a wrong pass */
-		while(!askForAuthentication1());
+		while(!askForAuthentication(username));
 		/* show the first menu */
-		this.currentMenu = new ManagerMenu(bettingSys, storedPassword);
+		this.currentMenu = new ClientMenu(bettingSys, storedPassword);
 		/* while we still want to to stuff */
 		while(true) {
 			/* show the instructions for the menu in a list fashion */
@@ -82,7 +86,7 @@ public class CLIBettingSoft {
 	/**
 	 *  authentication for the manager 
 	 *  */
-	private boolean askForAuthentication() {
+	private boolean askForAuthentication(String username) {
 		/* get the console */
 		Console console = System.console();
 		/* problems getting the console ? IDE maybe ?*/
@@ -97,7 +101,12 @@ public class CLIBettingSoft {
 			/*System.out.println("Password you entered was :" + new String(passwordArray));
 			System.out.println("Password expected was :" + bettingSystem.getPassword());*/
 			/* authenticate the manager */
-			this.bettingSystem.authenticateMngr(new String(passwordArray)); 
+			try {
+				this.bettingSystem.authenticateSub(username,new String(passwordArray));
+			} catch (SubscriberException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			this.storedPassword = new String(passwordArray);
 			return true;
 		} catch (AuthenticationException ex) {
@@ -105,5 +114,4 @@ public class CLIBettingSoft {
 			return false;
 		}
 	}
-
 }

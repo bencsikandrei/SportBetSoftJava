@@ -27,6 +27,7 @@ import dev4a.db.BetsManager;
 import dev4a.db.CompetitionsManager;
 import dev4a.db.CompetitorsManager;
 import dev4a.db.ParticipantsManager;
+import dev4a.db.RootManager;
 import dev4a.db.SubscribersManager;
 /**
  * 
@@ -65,10 +66,14 @@ public class BettingSystem implements Betting {
 		return mgrPassword;
 	}
 
-	public void setMgrPassword(String mgrPassword) {
+	public void changeManagerPassword(String mgrPassword, String newPassword) throws AuthenticationException, SQLException {
 		// TODO add some logic for the setting of pswd -> maybe check OLD pass -> New PASS
-		this.mgrPassword = mgrPassword;
-
+		/* first authenticate */
+		authenticateMngr(mgrPassword);
+		/* now change pass */
+		this.mgrPassword = newPassword;		
+		/* now persist */
+		RootManager.update(newPassword);
 	}
 
 	@Override
@@ -683,7 +688,7 @@ public class BettingSystem implements Betting {
 			sqlex.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public ArrayList<String> infosSubscriber(String username, String pwdSubs) throws AuthenticationException {
 		/* first authenticate the subscriber */
@@ -695,12 +700,19 @@ public class BettingSystem implements Betting {
 		}
 		/* then get the info */
 		ArrayList<String> tempList = new ArrayList<>();
-
+		
 		tempList.add(tempSubscriber.getUserName());
 		tempList.add(tempSubscriber.getLastName());
 		tempList.add(tempSubscriber.getFirstName());
 		tempList.add(tempSubscriber.getBornDate());
-
+		tempList.add(String.valueOf(tempSubscriber.getNumberOfTokens()));
+		
+		/* make it printable */
+		List<List<String>> printable = new ArrayList<>();
+		printable.add(tempList);
+		/* print it as a side effect */
+		utility.printList(printable);
+		
 		return tempList;
 	}
 
@@ -887,5 +899,41 @@ public class BettingSystem implements Betting {
 			sqlex.printStackTrace();
 		}
 		return tempComp;
+	}
+	
+	public void setWinnersForCompetition(String competition, Competitor winner, Competitor second, Competitor third, String mgrPass) 
+			throws ExistingCompetitionException, AuthenticationException, CompetitionException {
+		
+		/* first authenticate the manager */
+		authenticateMngr(mgrPass);
+		/* proceed to remove him */
+		Competition tempCompetition = getCompetitionByName(competition);
+		/* check if the username exists */
+		if ( tempCompetition == null )
+			throw new ExistingCompetitionException("The competition does not exist!");
+		
+		if( !tempCompetition.hasCompetitor(winner) || 
+				!tempCompetition.hasCompetitor(second) ||
+				!tempCompetition.hasCompetitor(third)){
+			throw new CompetitionException();
+		}
+		
+		Map<Integer, Competitor> winners = new HashMap<>();
+		try {
+			winners.put(winner.getId(), getCompetitorById(winner.getId()));
+			winners.put(second.getId(), getCompetitorById(second.getId()));
+			winners.put(third.getId(), getCompetitorById(third.getId()));			
+		} catch (Exception e) {
+			System.out.println("BETA! some of the names in here could not have been winners !\nPodium vs Winner..");
+		}
+		
+		tempCompetition.setWinners(winners);
+		
+		try { 
+			CompetitionsManager.update(tempCompetition);
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		
 	}
 }

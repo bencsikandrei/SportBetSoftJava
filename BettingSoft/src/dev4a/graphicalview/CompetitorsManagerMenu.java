@@ -6,9 +6,14 @@ import java.io.InputStreamReader;
 import dev4a.system.BettingSystem;
 
 public class CompetitorsManagerMenu extends Menu {
-
-	public CompetitorsManagerMenu(BettingSystem bs, String storredPass) {
+	/**
+	 * Initialize the menu and set up the parent
+	 * @param bs
+	 * @param storredPass
+	 */
+	public CompetitorsManagerMenu(BettingSystem bs, String storredPass, Menu parentMenu) {
 		super(bs, storredPass);
+		this.parentMenu = parentMenu;
 		
 	}
 
@@ -32,6 +37,8 @@ public class CompetitorsManagerMenu extends Menu {
 		
 		System.out.println("6. List competitors in competition");
 		
+		System.out.println("7. List competitions");	
+		
 		System.out.println("----------------------------");
 
 		System.out.println("");
@@ -45,21 +52,24 @@ public class CompetitorsManagerMenu extends Menu {
 	}
 
 	@Override
+	/**
+	 * take action based on the 'selected' integer
+	 */
 	protected int takeAction(int selected) {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		switch (selected) {
 		case 1:
 			try {
-
+				/* insert the data */
 				System.out.println("Insert last name");
 				String lastName = br.readLine();
 				System.out.println("Insert first name");
 				String firstName = br.readLine();
 				System.out.println("Insert born date");
 				String borndate = br.readLine();
-				if(this.bettingSystem != null)
-					this.bettingSystem.createCompetitor(lastName, firstName, borndate, this.storedPass);
+				/* persist */
+				this.bettingSystem.createCompetitor(lastName, firstName, borndate, this.storedPass);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -69,11 +79,11 @@ public class CompetitorsManagerMenu extends Menu {
 
 		case 2:
 			try {
-
+				/* insert the data */
 				System.out.println("Insert team name");
 
 				String teamName = br.readLine();
-				
+				/* persist */
 				this.bettingSystem.createCompetitor(teamName, this.storedPass);
 
 			} catch (Exception ex) {
@@ -82,7 +92,7 @@ public class CompetitorsManagerMenu extends Menu {
 			break;
 		case 3:
 			try {
-
+				/* insert the data */
 				System.out.println("Insert id");
 
 				String id = br.readLine();
@@ -90,7 +100,7 @@ public class CompetitorsManagerMenu extends Menu {
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
-				
+				/* persist */
 				this.bettingSystem.deleteCompetitor(competition, bettingSystem.getCompetitorById(Integer.valueOf(id)), this.storedPass);
 
 			} catch (Exception ex) {
@@ -100,7 +110,7 @@ public class CompetitorsManagerMenu extends Menu {
 			
 		case 4:
 			try {
-
+				/* insert the data */
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
@@ -108,7 +118,7 @@ public class CompetitorsManagerMenu extends Menu {
 				System.out.println("Insert id of the competitor");
 
 				int competitor = Integer.parseInt(br.readLine());
-				
+				/* persist */
 				this.bettingSystem.addCompetitor(competition, bettingSystem.getCompetitorById(competitor), this.storedPass);
 
 			} catch (Exception ex) {
@@ -117,7 +127,7 @@ public class CompetitorsManagerMenu extends Menu {
 			break;
 		case 5:
 			try {
-				
+				/* insert the data */
 				System.out.println("Insert team id");
 
 				int teamId = Integer.parseInt(br.readLine());
@@ -134,11 +144,11 @@ public class CompetitorsManagerMenu extends Menu {
 			break;	
 		case 6:
 			try {
-				
+				/* insert the data */
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
-				
+				/* print */
 				this.bettingSystem.printCompetitors(competition);
 
 			} catch (Exception ex) {
@@ -147,7 +157,7 @@ public class CompetitorsManagerMenu extends Menu {
 			break;
 		case 7:
 			try {
-				
+				/* print */
 				this.bettingSystem.printCompetitions();
 
 			} catch (Exception ex) {

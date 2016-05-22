@@ -12,9 +12,14 @@ import dev4a.system.BettingSystem;
 
 public class CompetitionsManagerMenu extends Menu {
 
-	public CompetitionsManagerMenu(BettingSystem bs, String storredPass) {
+	/**
+	 * Initialize the menu and set up the parent
+	 * @param bs
+	 * @param storredPass
+	 */
+	public CompetitionsManagerMenu(BettingSystem bs, String storredPass, Menu parentMenu) {
 		super(bs, storredPass);
-		// TODO Auto-generated constructor stub
+		this.parentMenu = parentMenu;
 	}
 
 	@Override
@@ -30,10 +35,12 @@ public class CompetitionsManagerMenu extends Menu {
 		System.out.println("2. Cancel competition");
 
 		System.out.println("3. Delete competition");
+		
+		System.out.println("4. Set winner(s) for competition");
+		
+		System.out.println("5. List all subscribers");
 
-		System.out.println("4. List all subscribers");
-
-		System.out.println("5. List all competitions");
+		System.out.println("6. List all competitions");
 		
 		System.out.println("*. Go back");		
 
@@ -113,6 +120,40 @@ public class CompetitionsManagerMenu extends Menu {
 			
 		case 4:
 			try {
+				/* competition name */
+				System.out.println("Insert competition name");
+
+				String competition = br.readLine();
+				
+				/* winner id */
+				System.out.println("Insert winner id");
+
+				int winner = Integer.parseInt(br.readLine());
+				
+				/* second id */
+				System.out.println("Insert second id");
+
+				int second = Integer.parseInt(br.readLine());
+				
+				/* third id */
+				System.out.println("Insert third id");
+
+				int third = Integer.parseInt(br.readLine());
+				
+				this.bettingSystem.setWinnersForCompetition(
+						competition, 
+						bettingSystem.getCompetitorById(winner),
+						bettingSystem.getCompetitorById(second),
+						bettingSystem.getCompetitorById(third),
+						this.storedPass);
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+
+		case 5:
+			try {
 
 				this.bettingSystem.printSubscribers(this.storedPass);
 
@@ -120,7 +161,7 @@ public class CompetitionsManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;
-		case 5:
+		case 6:
 			try {
 
 				this.bettingSystem.printCompetitions();

@@ -7,9 +7,11 @@ import dev4a.competition.CompetitionException;
 import dev4a.competition.ExistingCompetitionException;
 import dev4a.competitor.Competitor;
 import dev4a.competitor.ExistingCompetitorException;
+import dev4a.db.RootManager;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
 import dev4a.graphicalview.CLIBettingSoft;
+import dev4a.graphicalview.CLIClient;
 import dev4a.subscriber.ExistingSubscriberException;
 import dev4a.subscriber.SubscriberException;
 import dev4a.system.BettingSystem;
@@ -21,24 +23,41 @@ public class Main {
 	private static String tempPass = "1234";
 	
 	public static void main(String[] args) {
-		final BettingSystem bettingSystem = new BettingSystem(managerPass);
-
+		/* open up the system */
 		try {
-			java.lang.System.out.println("Truncating ...");
-			initializeDatabase();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
+			managerPass = RootManager.getPassword();
+		} catch (SQLException sqlex) {
+			System.out.println("Could not connect to DB!");
 		}
-		addSubscribers(bettingSystem);
-		
-		addCompetitions(bettingSystem);
-
-		addCompetitor(bettingSystem);
-		
-		CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
-
+		if( managerPass == null) {
+			System.out.println("New system! Welcome, default pass is 1234. Please change it!");
+			managerPass = "1234";
+			try {
+				/* persist the first pass */
+				RootManager.persist(managerPass);
+			} catch (SQLException e) {
+				System.out.println("Could not connect to DB!");
+			}
+		}
+		/* properly initialized */
+		final BettingSystem bettingSystem = new BettingSystem(managerPass);
+				
+		/* fire up the CLI */
+		//CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
+		CLIClient cli = new CLIClient(bettingSystem);
 	}
+	/* TESTS */
+	/*try {
+		java.lang.System.out.println("Truncating ...");
+		initializeDatabase();
+	} catch (SQLException ex) {
+		ex.printStackTrace();
+	}
+	addSubscribers(bettingSystem);
+	
+	addCompetitions(bettingSystem);
 
+	addCompetitor(bettingSystem);*/
 
 	private static void initializeDatabase() throws SQLException {
 		/* open the connection */

@@ -198,6 +198,9 @@ public class Competition {
 	 * Checks if a competitor is in the competition 
 	 */
 	public boolean hasCompetitor(Competitor competitor) {
+		if(competitor == null) {
+			return true;
+		}
 		return this.allCompetitors.containsKey(competitor.getId());
 	}
 	
