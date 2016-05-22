@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev4a.competitor.*;
+import dev4a.subscriber.Subscriber;
 import dev4a.bets.*;
 /**
  * 
@@ -207,4 +208,13 @@ public class Competition {
 		return this.name;
 	}
 	
+	@Override 
+	public boolean equals(Object obj) {
+		/* check if it's instance of the competition class */
+		if (!(obj instanceof Competition))
+			return false;
+		if ( ((Competition) obj).getName() == this.getName() )
+			return true;
+		return false;
+	}
 }
