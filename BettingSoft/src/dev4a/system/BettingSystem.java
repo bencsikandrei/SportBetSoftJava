@@ -348,18 +348,35 @@ public class BettingSystem implements Betting {
 		if (toBeCanceled.getClosingDate().before(Calendar.getInstance()))
 			throw new CompetitionException();
 		/* take care of all the ongoing bets ! */
-		List<Bet> listBets = toBeCanceled.getBets();
+		List<Bet> listBets = getBetsByCompetition(toBeCanceled);
 		for (int i = 0; i < listBets.size(); i++){
 			Subscriber subscriber = getSubscriberByUserName(listBets.get(i).getUserName());
 			/* returns tokens */
 			subscriber.credit(listBets.get(i).getNumberOfTokens());
+			try {
+				/* update his account in the DB */
+				SubscribersManager.update(subscriber);
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
 			/* deletes the bets from subscriber */
 			subscriber.getBets().remove(listBets.get(i));
+			try {
+				BetsManager.delete(listBets.get(i));
+			} catch (SQLException sqlex ) {
+				sqlex.printStackTrace();
+			}
 		}
 		/* deletes the bets from Competition */
 		toBeCanceled.getBets().removeAll(listBets);
 		/* cancels it */
 		toBeCanceled.setStatus(Competition.CANCELED);
+		try {
+			/* update competition in the DB */
+			CompetitionsManager.update(toBeCanceled);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 	}
 
 	public List<Bet> getBetsByCompetition(Competition competition){
