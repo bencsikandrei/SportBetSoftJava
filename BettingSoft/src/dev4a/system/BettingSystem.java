@@ -249,13 +249,23 @@ public class BettingSystem implements Betting {
 		/* check if the date is correct, if the number of competitors is >2 and if there is no repeated competitors */
 		Set<Competitor> set = new HashSet<Competitor>(competitors);
 		if ( competitors.size() < 2
-				|| set.size() != competitors.size() 
-				) {
+				|| set.size() != competitors.size() ) {
 			throw new CompetitionException();
 		}
 		/* create the Map */
 		Map<Integer, Competitor> tempCompetitors = new HashMap<>();
-
+		for (Competitor c : competitors){
+			tempCompetitors.put(c.getId(), c);
+			/* Here, we add the competitor to the database if they are not yet*/
+			Competitor tempComp = null;
+			try {
+				tempComp = CompetitorsManager.findById(c.getId());
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+			if (tempComp == null)
+				addCompetitorToList(c);
+		}
 		/* create it ! */
 		tempCompetition = new Competition(
 				competition,
@@ -266,8 +276,15 @@ public class BettingSystem implements Betting {
 				"pw"
 				);
 		/* freshly created add it to our collection */
+		addCompetitionToList(tempCompetition);
 		
-		addCompetitionToList(tempCompetition);		
+		for (Competitor c : competitors){
+			try {
+				ParticipantsManager.persist(c, tempCompetition);
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+		}
 		//TODO check BadParametresException
 		System.out.println("Added " + tempCompetition);
 	}
@@ -390,7 +407,14 @@ public class BettingSystem implements Betting {
 		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
-		//addCompetitorToList(competitor);
+		Competitor tempComp = null;
+		try {
+			tempComp = CompetitorsManager.findById(competitor.getId());
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		if (tempComp == null)
+			addCompetitorToList(competitor);
 		try {
 			ParticipantsManager.persist(competitor, myCompetition);
 		} catch (SQLException sqlex) {
@@ -421,7 +445,7 @@ public class BettingSystem implements Betting {
 		/* add him to the list */
 		this.allCompetitors.put(new Integer(tempCompetitor.getId()), tempCompetitor);
 		// WE DON'T HAVE TO DO IT HERE!
-		addCompetitorToList(tempCompetitor);
+		//addCompetitorToList(tempCompetitor);
 		/* return the object we created in memory */
 		System.out.println("Added " + tempCompetitor);
 		return tempCompetitor;
@@ -450,7 +474,7 @@ public class BettingSystem implements Betting {
 		/* add him to the list */
 		this.allCompetitors.put(new Integer(tempCompetitor.getId()), tempCompetitor);
 		// WE DON'T HAVE TO DO IT HERE!
-		addCompetitorToList(tempCompetitor);
+		//addCompetitorToList(tempCompetitor);
 		System.out.println("Added " + tempCompetitor);
 		return tempCompetitor;
 		
@@ -467,7 +491,7 @@ public class BettingSystem implements Betting {
 		} catch( SQLException sqlex ) {
 			sqlex.printStackTrace();
 		}
-		this.allCompetitors.put(competitor.getId(), competitor);
+		//this.allCompetitors.put(competitor.getId(), competitor);
 	}
 
 	@Override
