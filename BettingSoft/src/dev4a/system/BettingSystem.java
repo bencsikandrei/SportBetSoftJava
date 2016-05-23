@@ -118,7 +118,7 @@ public class BettingSystem implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* valid name ? */
-		if ( ! (utility.checkValidName(lastName) && utility.checkValidName(firstName) ) )
+		if ( ! (utility.checkValidFirstLastName(lastName) && utility.checkValidFirstLastName(firstName) ) )
 			throw new BadParametersException();
 		/* then check for the username (which is unique) */
 		if ( getSubscriberByUserName(username) != null )
