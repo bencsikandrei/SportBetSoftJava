@@ -2,6 +2,7 @@ package dev4a.system;
 
 import java.util.*;
 
+import dev4a.bets.BetException;
 import dev4a.competition.CompetitionException;
 import dev4a.competition.ExistingCompetitionException;
 import dev4a.competitor.Competitor;
@@ -423,18 +424,19 @@ public interface Betting {
 	 *             raised if subscriber has not enough tokens.
 	 * @throws BadParametersException
 	 *             raised if number of tokens less than 0.
-	 * 
+	 * @throws BetException 
+	 *             raised if number of tokens more than subscribers tokens.
 	 */
 	void betOnWinner(long numberTokens, String competition, Competitor winner,
 			String username, String pwdSubs) throws AuthenticationException,
 			CompetitionException, ExistingCompetitionException,
-			SubscriberException, BadParametersException;
+			SubscriberException, BadParametersException, BetException;
 
 	/**
 	 * bet on podium <br>
 	 * The number of tokens of the subscriber is debited.
 	 * 
-	 * @param username
+	 * @param username0
 	 *            subscriber's username.
 	 * @param pwdSubs
 	 *            subscriber's password.
@@ -462,12 +464,14 @@ public interface Betting {
 	 *             raised if subscriber has not enough tokens.
 	 * @throws BadParametersException
 	 *             raised if number of tokens less than 0.
+	 * @throws BetException 
+	 *             raised if number of tokens more than subscribers tokens.
 	 */
 	void betOnPodium(long numberTokens, String competition, Competitor winner,
 			Competitor second, Competitor third, String username, String pwdSubs)
 			throws AuthenticationException, CompetitionException,
 			ExistingCompetitionException, SubscriberException,
-			BadParametersException;
+			BadParametersException, BetException;
 
 	/**
 	 * change subscriber's password.
