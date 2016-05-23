@@ -64,8 +64,9 @@ public class BettingSystem implements Betting {
 		/* setting the pass */
 		this.mgrPassword = mgrPassword; 
 		try {
-			this.allCompetitions = CompetitionsManager.findAll();
+			//this.allCompetitions = CompetitionsManager.findAll();
 			this.allCompetitors = CompetitorsManager.findAll();
+			updateAllCompetitions();
 			this.allSubscribers = SubscribersManager.findAll();
 		} catch( SQLException sqlex) {
 			System.out.println("Error connecting to db");
@@ -449,12 +450,12 @@ public class BettingSystem implements Betting {
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
-		//List<Competition> competitions = new ArrayList<Competition>(allCompetitions.values());
-		
 		for (Competition comp : allCompetitions.values()){
 			try {
-				/* set it's competitiors */
-				comp.setAllCompetitors(ParticipantsManager.findAllByCompetition(comp.getName()));			
+				/* set its competitors */
+				Map<Integer,Competitor> competitors = new HashMap<Integer,Competitor>(ParticipantsManager.findAllByCompetition(comp.getName()));
+				this.allCompetitors.putAll(competitors);
+				comp.setAllCompetitors(competitors);			
 			} catch (SQLException sqlex) {
 				sqlex.printStackTrace();
 			}
