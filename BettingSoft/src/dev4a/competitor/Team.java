@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import dev4a.competition.Competition;
 import dev4a.competition.ExistingCompetitionException;
@@ -14,7 +13,6 @@ import dev4a.utils.Utils;
 public class Team implements Competitor {
 	
 	/* attributes */
-	private static AtomicInteger uniqueId = new AtomicInteger();
 	/* Id for the DB */
 	private int id;
 	/* Name of the team */

@@ -1,7 +1,5 @@
 package dev4a.competitor;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.Subscriber;
 import dev4a.utils.Utils;
@@ -9,7 +7,6 @@ import dev4a.utils.Utils;
 public class IndividualCompetitor implements Competitor {
 
 	/* attributes */
-	private static AtomicInteger uniqueId = new AtomicInteger();
 	/* Id for the DB */
 	private Integer id;
 	/* type = 1 --> IndividualCompetitor */

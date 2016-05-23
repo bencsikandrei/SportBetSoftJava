@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import dev4a.bets.Bet;
+import dev4a.bets.BetException;
 import dev4a.competition.Competition;
 import dev4a.competition.CompetitionException;
 import dev4a.competition.ExistingCompetitionException;
@@ -695,7 +696,7 @@ public class BettingSystem implements Betting {
 	@Override
 	public void betOnWinner(long numberTokens, String competition, Competitor winner, String username, String pwdSubs)
 			throws AuthenticationException, CompetitionException, ExistingCompetitionException, SubscriberException,
-			BadParametersException {
+			BadParametersException, BetException {
 		/* first authenticate the subscriber */
 		Subscriber tempSubscriber = authenticateSub(username, pwdSubs);
 		/* get the competition */
@@ -705,8 +706,10 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		}
 		/* if we have given wrong values */
-		if( (numberTokens < 0))// || (tempComp.hasCompetitor(winner) == false) )
+		if( (numberTokens <= 0))// || (tempComp.hasCompetitor(winner) == false) )
 			throw new BadParametersException();
+		if(numberTokens > tempSubscriber.getNumberOfTokens())
+			throw new BetException();
 		/* the time of the bet */
 		java.util.Date currentTime = new java.util.Date();
 
@@ -718,7 +721,18 @@ public class BettingSystem implements Betting {
 		Bet tempBet = new Bet(numberTokens, competition, winner, username, betDate);
 		/* add it to the player */
 		tempSubscriber.placeBet( tempBet );
-		/* */
+		
+		/* debit the money */
+		tempSubscriber.debit(numberTokens);
+		try {
+			/* update his account in the DB */
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		System.out.println("Debited " + tempSubscriber + " for " + numberTokens);
+		
+		/* add to the system bet list */
 		this.addBetToList(tempBet);
 	}
 
@@ -734,7 +748,7 @@ public class BettingSystem implements Betting {
 	@Override
 	public void betOnPodium(long numberTokens, String competition, Competitor winner, Competitor second,
 			Competitor third, String username, String pwdSubs) throws AuthenticationException, CompetitionException,
-			ExistingCompetitionException, SubscriberException, BadParametersException {
+			ExistingCompetitionException, SubscriberException, BadParametersException, BetException {
 		/* first authenticate the subscriber */
 		Subscriber tempSubscriber = authenticateSub(username, pwdSubs);
 		/* get the competition */
@@ -744,14 +758,28 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		}
 		/* if we have given wrong values */
-		if( (numberTokens < 0) || (tempComp.hasCompetitor(winner) == false) || (tempComp.hasCompetitor(second) == false) || (tempComp.hasCompetitor(third) == false))
+		if( (numberTokens <= 0))// || (tempComp.hasCompetitor(winner) == false) || (tempComp.hasCompetitor(second) == false) || (tempComp.hasCompetitor(third) == false))
 			throw new BadParametersException();
+		/* if we have given wrong values */
+		if(numberTokens > tempSubscriber.getNumberOfTokens())
+			throw new BetException();
 		/* the time of the bet */
 		String currentTime = new java.util.Date().toString();
 		/* place the bet */
 		Bet tempBet = new Bet(numberTokens, competition, winner, second, third, username, currentTime);
 		/* add it to the player */
 		tempSubscriber.placeBet( tempBet );
+		
+		/* debit the money */
+		tempSubscriber.debit(numberTokens);
+		try {
+			/* update his account in the DB */
+			SubscribersManager.update(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		System.out.println("Debited " + tempSubscriber + " for " + numberTokens);
+		
 		/* add it to our lists  */
 		this.addBetToList(tempBet);
 
