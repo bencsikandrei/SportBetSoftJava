@@ -423,7 +423,7 @@ public class BettingSystem implements Betting {
 				sqlex.printStackTrace();
 			}
 		}
-		/* Deletes the competitors if needed */
+		/* Deletes the competitors if needed because Mayte doesnt want Competitors without Competition*/
 		List<Competitor> deletableCompetitors = myCompetitors; 
 		updateAllCompetitions();
 		for(Competition aCompetition : this.allCompetitions.values()){
@@ -606,6 +606,29 @@ public class BettingSystem implements Betting {
 				/* deletes the bet from the competition */
 				myCompetition.getBets().remove(listBets.get(i));
 			}
+		}
+		/* clear the relation between the competition and the competitor */
+		try {
+			ParticipantsManager.delete(competitor,myCompetition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		/*  */
+		boolean eliminates = true;
+		updateAllCompetitions();
+		for(Competition aCompetition : this.allCompetitions.values()){
+			if (aCompetition.getAllCompetitors().values().contains(competitor)){
+				eliminates = false;
+				break;
+			}
+		}
+		if (eliminates){
+			try {
+				CompetitorsManager.delete(competitor);
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+			allCompetitors.remove(competitor.getId());
 		}
 		/* now we can delete the competitor */  
 		myCompetition.removeCompetitor(competitor); 
