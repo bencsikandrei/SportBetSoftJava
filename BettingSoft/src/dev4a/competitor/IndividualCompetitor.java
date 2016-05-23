@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import dev4a.exceptions.BadParametersException;
 import dev4a.subscriber.Subscriber;
+import dev4a.utils.Utils;
 
 public class IndividualCompetitor implements Competitor {
 
@@ -97,20 +98,20 @@ public class IndividualCompetitor implements Competitor {
 	}
 	@Override
 	public boolean hasValidName() {
-		// TODO Auto-generated method stub
-		return true;
+		Utils utils = new Utils();
+		return (utils.checkValidFirstLastName(firstName) && utils.checkValidFirstLastName(lastName)); 
 	}
+	
 	@Override
 	public void addMember(Competitor member) throws ExistingCompetitorException, BadParametersException {
-		
+		// useless...
 	}
 	
 	@Override
 	public void deleteMember(Competitor member) throws BadParametersException, ExistingCompetitorException {
-		
+		// useless...
 	}
-	
-	
+		
 			
 	@Override
 	public void setId(int id) {

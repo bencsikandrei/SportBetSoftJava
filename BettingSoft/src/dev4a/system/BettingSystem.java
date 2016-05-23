@@ -404,11 +404,15 @@ public class BettingSystem implements Betting {
 			/* does not exist */
 			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
-		if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
-			throw new CompetitionException();
-		//if(!toBeRemoved.getInProgress().equals(Competition.STATE.SOLDOUT)) 
+		if(toBeRemoved.getStatus()!=Competition.CANCELED){
+			if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
+				throw new CompetitionException("Competition is still open!");
+			if (toBeRemoved.getStatus()!=Competition.SOLDOUT)
+				throw new CompetitionException("First set winner(s)!");
+		}
+		/* Deletes the competitors if needed */
+		// TODO
 		/* now we can safely delete */
-		
 		removeCompetitionFromList(toBeRemoved);
 		System.out.println("Removed " + toBeRemoved);
 	}
