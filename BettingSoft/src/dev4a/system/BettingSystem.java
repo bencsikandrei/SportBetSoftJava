@@ -761,9 +761,12 @@ public class BettingSystem implements Betting {
 		if(numberTokens > tempSubscriber.getNumberOfTokens())
 			throw new BetException();
 		/* the time of the bet */
-		String currentTime = new java.util.Date().toString();
+		java.util.Date currentTime = new java.util.Date();
+
+		Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+		String betDate = formatter.format(currentTime);
 		/* place the bet */
-		Bet tempBet = new Bet(numberTokens, competition, winner, second, third, username, currentTime);
+		Bet tempBet = new Bet(numberTokens, competition, winner, second, third, username, betDate);
 		/* add it to the player */
 		tempSubscriber.placeBet( tempBet );
 		
