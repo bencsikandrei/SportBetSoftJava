@@ -67,15 +67,18 @@ public class ManagerMenu extends Menu {
 
 		switch (selected) {
 		case 5:
+			String newPassword = new String(storedPass);
 			try {
 				/* the new pass */
 				System.out.println("Insert new password");
-				String newPassword = br.readLine();
+				newPassword = br.readLine();
 				/* change pass */
 				bettingSystem.changeManagerPassword(this.storedPass, newPassword);
+				
 			} catch (Exception e) {
 				System.out.println("Something went wrong..");
 			}
+			this.storedPass = newPassword;
 			break;	
 		case 6:
 			try {
