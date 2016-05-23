@@ -47,7 +47,8 @@ public class Subscriber {
 	 * a long integer ( he can be really rich if he bets right )
 	 */
 	private long numberOfTokens;
-	/* list of bets
+	/* 
+	 * list of bets mapped by their ID
 	 */
 	private Map<Integer, Bet> bets = new HashMap<>();
 	
@@ -55,7 +56,7 @@ public class Subscriber {
 	/* Constructors of this class */
 	public Subscriber(){
 		/*
-		 * Empty constructor for Hibernate
+		 * Empty constructor for convinience and TESTS
 		 */
 	}
 
@@ -68,9 +69,15 @@ public class Subscriber {
 		this.numberOfTokens = 0l;
 		this.password = "";
 	}
+	/*
+	 * a simple version of the constructor for TEST purposes
+	 */
 	public  Subscriber( String lastName, String firstName, String userName ) {
 		this(lastName, firstName, userName, null);
 	}
+	/*
+	 * Complete subscriber constructor
+	 */
 	public  Subscriber( String lastName, String firstName, String userName, String password, String bornDate, long credit) {
 		this(lastName, firstName, userName, bornDate);
 		this.setNumberOfTokens(credit);
@@ -86,11 +93,13 @@ public class Subscriber {
 	}
 	/* debiting */
 	public long debit(long amount) {
+		/* check if we are respecting constraints */
 		if (amount > 0 && amount <= this.numberOfTokens ) 
 			this.numberOfTokens -= amount;
 		
 		return this.numberOfTokens;
 	}
+	
 	/* password management */
 	public boolean changePassword(String oldPassword, String newPassword) {
 		/* check validity of old pass */
@@ -100,6 +109,7 @@ public class Subscriber {
 		setPassword(newPassword);
 		return true;
 	}
+	
 	/* check password */
 	public boolean checkPassword(String pass) {
 		return this.password.equals(pass);
@@ -154,11 +164,11 @@ public class Subscriber {
 	private void setPassword(String password) {
 		this.password = password;
 	}
-	
+	/* return the collection of bets */
 	public Map<Integer, Bet> getBets() {
 		return bets;
 	}
-
+	
 	public void setBets(Map<Integer, Bet> bets) {
 		this.bets = bets;
 	}
@@ -170,21 +180,32 @@ public class Subscriber {
 	}
 	/* cancel a bet */
 	public long cancelBet(Bet betToCancel) {
-
-		return 0l;
+		/* find the bet we want to cancel */
+		this.bets.remove(betToCancel.getIdentifier());
+		/* show the amount we get back */
+		return betToCancel.getNumberOfTokens();
 	}
-	
+	/**
+	 * The unique identifier for the subscriber is the 
+	 * username
+	 */
 	@Override
 	public String toString() {
 		/* simply return the username, since it is unique */
 		return this.userName;
 	}
-	
+	/**
+	 * In conformity with the specification, our Subscribers
+	 * are equal if their usernames are the same.
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override 
 	public boolean equals(Object obj) {
 		/* check if it's instance of the subscriber class */
 		if (!(obj instanceof Subscriber))
 			return false;
+		/* they are equal only if their usernames are the same */
 		if ( ((Subscriber) obj).getUserName() == this.getUserName() )
 			return true;
 		return false;
