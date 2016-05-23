@@ -326,7 +326,10 @@ public class BettingSystem implements Betting {
 		// hide the implementation
 		Competition temp = null;
 		try {
+			/* get the competition */
 			temp = CompetitionsManager.findByName(competition);
+			/* set it's competitiors */
+			temp.setAllCompetitors(ParticipantsManager.findAllByCompetition(competition));			
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
