@@ -413,13 +413,54 @@ public class BettingSystem implements Betting {
 			if (toBeRemoved.getStatus()!=Competition.SOLDOUT)
 				throw new CompetitionException("First set winner(s)!");
 		}
+		/* clear relations between the competition and each of its competitors */
+		List<Competitor> myCompetitors = new ArrayList<Competitor> (toBeRemoved.getAllCompetitors().values()); 
+		for(Competitor aCompetitor : myCompetitors){
+			try {
+				ParticipantsManager.delete(aCompetitor,toBeRemoved);
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+		}
 		/* Deletes the competitors if needed */
-		// TODO
+		List<Competitor> deletableCompetitors = myCompetitors; 
+		updateAllCompetitions();
+		for(Competition aCompetition : this.allCompetitions.values()){
+			for(Competitor oneCompetitor : aCompetition.getAllCompetitors().values()){
+				deletableCompetitors.remove(oneCompetitor);
+			}
+		}
+		for(Competitor toDelete : deletableCompetitors){
+			try {
+				CompetitorsManager.delete(toDelete);
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+			allCompetitors.remove(toDelete.getId());
+		}
 		/* now we can safely delete */
 		removeCompetitionFromList(toBeRemoved);
 		System.out.println("Removed " + toBeRemoved);
 	}
-
+	
+	private void updateAllCompetitions(){
+		try {
+			this.allCompetitions = CompetitionsManager.findAll();
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		//List<Competition> competitions = new ArrayList<Competition>(allCompetitions.values());
+		
+		for (Competition comp : allCompetitions.values()){
+			try {
+				/* set it's competitiors */
+				comp.setAllCompetitors(ParticipantsManager.findAllByCompetition(comp.getName()));			
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+		}
+	} 
+	
 	@Override
 	public void addCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
