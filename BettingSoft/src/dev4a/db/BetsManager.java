@@ -25,6 +25,7 @@ import java.util.Map;
 import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 import dev4a.bets.*;
+import dev4a.competition.Competition;
 import dev4a.competitor.Competitor;
 
 public class BetsManager {
@@ -228,6 +229,40 @@ public class BetsManager {
 
 		return bets;
 	}
+	
+// -----------------------------------------------------------------------------
+		/**
+		 * Find all the bets for a specific competition in the database.
+		 * 
+		 * @return
+		 * @throws SQLException
+		 */
+		public static Map<Integer, Bet> findByCompetition(Competition competition)
+				throws SQLException {
+			
+			Connection conn = DatabaseConnection.getConnection();
+
+			PreparedStatement psSelect = conn
+					.prepareStatement("SELECT * FROM bet WHERE name_comp=? ORDER BY name_comp");
+
+			psSelect.setString(1, competition.getName());
+
+			ResultSet resultSet = psSelect.executeQuery();
+
+			Map<Integer, Bet> bets = new HashMap<>();
+
+			Bet bet = null;
+			while (resultSet.next()) {
+				int tempId = resultSet.getInt("id");
+				
+				bets.put(new Integer(tempId), findById(tempId));
+			}
+			resultSet.close();
+			psSelect.close();
+			conn.close();
+
+			return bets;
+		}
 
 	// -----------------------------------------------------------------------------
 	/**

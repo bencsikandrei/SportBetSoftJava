@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import dev4a.competition.Competition;
 import dev4a.competition.ExistingCompetitionException;
 import dev4a.exceptions.BadParametersException;
+import dev4a.utils.Utils;
 
 public class Team implements Competitor {
 	
@@ -59,8 +60,8 @@ public class Team implements Competitor {
 	
 	@Override
 	public boolean hasValidName() {
-		// TODO Auto-generated method stub
-		return true;
+		Utils utils = new Utils();
+		return (utils.checkValidTeamName(name));
 	}
 
 	@Override
