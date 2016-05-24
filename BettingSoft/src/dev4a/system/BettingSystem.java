@@ -347,6 +347,8 @@ public class BettingSystem implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* now checks if it exists */
+		//updateAllCompetitions(); // is it this line necessary?
+		//Competition toBeCanceled = this.allCompetitions.get(competition);
 		Competition toBeCanceled = getCompetitionByName(competition);
 		/* checks if it exists */
 		if( toBeCanceled == null )
