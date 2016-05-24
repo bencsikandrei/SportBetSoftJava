@@ -330,8 +330,11 @@ public class BettingSystem implements Betting {
 		try {
 			/* get the competition */
 			temp = CompetitionsManager.findByName(competition);
-			/* set it's competitiors */
-			temp.setAllCompetitors(ParticipantsManager.findAllByCompetition(competition));			
+			/* set its competititors */
+			temp.setAllCompetitors(ParticipantsManager.findAllByCompetition(competition));
+			/* set its bets */
+			Map<Integer,Bet> bets = new HashMap<Integer,Bet>(BetsManager.findByCompetition(temp));
+			temp.setBets(new ArrayList<Bet>(bets.values()));	
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
@@ -423,7 +426,7 @@ public class BettingSystem implements Betting {
 				sqlex.printStackTrace();
 			}
 		}
-		/* Deletes the competitors if needed because Mayte doesnt want Competitors without Competition*/
+		/* Deletes the competitors if needed because Mayte doesn't want Competitors without Competition*/
 		List<Competitor> deletableCompetitors = myCompetitors; 
 		updateAllCompetitions();
 		for(Competition aCompetition : this.allCompetitions.values()){
@@ -456,6 +459,13 @@ public class BettingSystem implements Betting {
 				Map<Integer,Competitor> competitors = new HashMap<Integer,Competitor>(ParticipantsManager.findAllByCompetition(comp.getName()));
 				this.allCompetitors.putAll(competitors);
 				comp.setAllCompetitors(competitors);			
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+			try {
+				/* set its bets */
+				Map<Integer,Bet> bets = new HashMap<Integer,Bet>(BetsManager.findByCompetition(comp));
+				comp.setBets(new ArrayList<Bet>(bets.values()));			
 			} catch (SQLException sqlex) {
 				sqlex.printStackTrace();
 			}
@@ -601,10 +611,23 @@ public class BettingSystem implements Betting {
 				Subscriber subscriber = getSubscriberByUserName(listBets.get(i).getUserName());
 				/* returns tokens */
 				subscriber.credit(listBets.get(i).getNumberOfTokens());
+				try {
+					/* update his account in the DB */
+					SubscribersManager.update(subscriber);
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
+				System.out.println("To eliminate the competitor, " + subscriber + " is credited with " + listBets.get(i).getNumberOfTokens());
 				/* deletes the bet from subscriber */
 				subscriber.getBets().remove(listBets.get(i));
 				/* deletes the bet from the competition */
 				myCompetition.getBets().remove(listBets.get(i));
+				/* deletes the bet in DB */
+				try {
+					BetsManager.delete(listBets.get(i));
+				} catch (SQLException sqlex ) {
+					sqlex.printStackTrace();
+				}
 			}
 		}
 		/* clear the relation between the competition and the competitor */
@@ -613,7 +636,7 @@ public class BettingSystem implements Betting {
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
-		/*  */
+		/* Deletes the competitors if needed because Mayte doesn't want Competitors without Competition */
 		boolean eliminates = true;
 		updateAllCompetitions();
 		for(Competition aCompetition : this.allCompetitions.values()){
@@ -718,6 +741,12 @@ public class BettingSystem implements Betting {
 		// TODO check type of competition? in this case the type of bet should be w
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
+		try {
+			/* update competition in the DB */
+			CompetitionsManager.update(myCompetition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		/* Deletes the competition */
 		deleteCompetition(competition, managerPwd);
 	}
@@ -754,6 +783,12 @@ public class BettingSystem implements Betting {
 		// TODO check type of competition?
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
+		try {
+			/* update competition in the DB */
+			CompetitionsManager.update(myCompetition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
 		/* Deletes the competition */
 		deleteCompetition(competition, managerPwd);
 	}
