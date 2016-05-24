@@ -1119,12 +1119,24 @@ public class BettingSystem implements Betting {
 			for (int i=0; i<winningSubscribersOnWinner.size();i++){
 				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
 				winningSubscribersOnWinner.get(i).credit(payMe);
+				try {
+					/* update his account in the DB */
+					SubscribersManager.update(winningSubscribersOnWinner.get(i));
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
 			}
 		}
 		/* Since it is a nonprofit organization... money is returned if nobody won */
 		else{
 			for (Bet b:listOfBets){
 				getSubscriberByUserName(b.getUserName()).credit(b.getNumberOfTokens());
+				try {
+					/* update his account in the DB */
+					SubscribersManager.update(getSubscriberByUserName(b.getUserName()));
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
 			}
 		}
 		/* pays to the winners */
@@ -1132,12 +1144,24 @@ public class BettingSystem implements Betting {
 			for (int i=0; i<winningSubscribersOnPodium.size();i++){
 				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
 				winningSubscribersOnPodium.get(i).credit(payMe);
+				try {
+					/* update his account in the DB */
+					SubscribersManager.update(winningSubscribersOnPodium.get(i));
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
 			}
 		}
 		/* Since it is a nonprofit organization... money is returned if nobody won */
 		else{
 			for (Bet b:listOfBets){
 				getSubscriberByUserName(b.getUserName()).credit(b.getNumberOfTokens());
+				try {
+					/* update his account in the DB */
+					SubscribersManager.update(getSubscriberByUserName(b.getUserName()));
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
 			}
 		}
 	}
