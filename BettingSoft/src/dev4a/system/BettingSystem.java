@@ -951,17 +951,33 @@ public class BettingSystem implements Betting {
 		} catch(SubscriberException subex){
 			subex.printStackTrace();
 		}
+		Map<Integer, Bet> bets = new HashMap<Integer,Bet>();
+		try {
+			bets = BetsManager.findBySubscriber(tempSubscriber);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		tempSubscriber.setBets(bets);
 		/* get the bets */
 		for ( Bet b : tempSubscriber.getBets().values() ) {
 			/* if it's the right competition */
-			if( b.getCompetition() == competition )
+			if( b.getCompetition() == competition ){
+				/* Returning money to subscriber... */
+				tempSubscriber.credit(b.getNumberOfTokens());
+				try {
+					/* update his account in the DB */
+					SubscribersManager.update(tempSubscriber);
+				} catch (SQLException sqlex) {
+					sqlex.printStackTrace();
+				}
+				/* Now we can eliminate the bet */
 				try {
 					BetsManager.delete(b);
 				} catch (SQLException sqlex) {
 					sqlex.printStackTrace();
 				}
+			}
 		}
-
 	}
 
 	public void printCompetitions() {
