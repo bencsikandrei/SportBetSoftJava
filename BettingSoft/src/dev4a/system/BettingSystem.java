@@ -730,10 +730,12 @@ public class BettingSystem implements Betting {
 		//if( myCompetition.getStatus() != Competition.FINISHED)  {
 			throw new CompetitionException();
 		}
+		
 		/* check if the competitor is in the competition */
-		if(!myCompetition.hasCompetitor(winner)){
+		if(!myCompetition.hasCompetitor(winner) || winner == null){
 			throw new CompetitionException();
 		}
+		winner = myCompetition.getAllCompetitors().get(winner.getId());
 		/* now we can set the winner */  
 		Map<Integer, Competitor> listOfWinners = new HashMap<>();
 		listOfWinners.put(new Integer(winner.getId()), winner);
@@ -768,11 +770,15 @@ public class BettingSystem implements Betting {
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
-		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)){
+		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)
+				|| winner == null || second == null || third == null){
 			throw new CompetitionException();
 		}
 		if (winner==second || second==third || winner==third)
 			throw new CompetitionException();
+		winner = myCompetition.getAllCompetitors().get(winner.getId());
+		second = myCompetition.getAllCompetitors().get(second.getId());
+		third = myCompetition.getAllCompetitors().get(third.getId());
 		/* now we can set the winner */  
 		Map<Integer, Competitor> listOfWinners = new HashMap<>();
 		listOfWinners.put(new Integer(winner.getId()), winner);
