@@ -1027,12 +1027,7 @@ public class BettingSystem implements Betting {
 		/* Checks if the competition is closed */
 		if (tempCompetition.getClosingDate().before(Calendar.getInstance()))
 			throw new CompetitionException();
-		Collection<Competitor> competitors = new ArrayList<>();
-		try {
-			competitors = ParticipantsManager.findAllByCompetition(competition).values();
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
-		}
+		Collection<Competitor> competitors = new ArrayList<>(tempCompetition.getAllCompetitors().values());
 		return competitors;
 	}
 
