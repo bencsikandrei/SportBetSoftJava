@@ -1037,7 +1037,7 @@ public class BettingSystem implements Betting {
 			/* does not exist */
 			throw new ExistingCompetitionException();
 		ArrayList<String> listOfStrings = new ArrayList<String>();
-		List<Bet> listOfBets = getCompetitionByName(competition).getBets();
+		List<Bet> listOfBets = myCompetition.getBets();
 		String string = "";
 		String names = "";
 		for(Bet b:listOfBets){
