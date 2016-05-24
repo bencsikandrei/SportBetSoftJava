@@ -1151,42 +1151,44 @@ public class BettingSystem implements Betting {
 		}
 		return tempComp;
 	}
+
+	/* THE FOLLOWING FUNCTION DOES THE SAME AS settleWinner AND settlePodium, PLEASE TRY TO USE THOSE, AS THEY ARE IN THE INTERFACE */
 	
-	public void setWinnersForCompetition(String competition, Competitor winner, Competitor second, Competitor third, String mgrPass) 
-			throws ExistingCompetitionException, AuthenticationException, CompetitionException {
-		
-		/* first authenticate the manager */
-		authenticateMngr(mgrPass);
-		/* proceed to remove him */
-		Competition tempCompetition = getCompetitionByName(competition);
-		/* check if the username exists */
-		if ( tempCompetition == null )
-			throw new ExistingCompetitionException("The competition does not exist!");
-		
-		if( !tempCompetition.hasCompetitor(winner) || 
-				!tempCompetition.hasCompetitor(second) ||
-				!tempCompetition.hasCompetitor(third)){
-			throw new CompetitionException();
-		}
-		
-		Map<Integer, Competitor> winners = new HashMap<>();
-		try {
-			winners.put(winner.getId(), getCompetitorById(winner.getId()));
-			winners.put(second.getId(), getCompetitorById(second.getId()));
-			winners.put(third.getId(), getCompetitorById(third.getId()));			
-		} catch (Exception e) {
-			System.out.println("BETA! some of the names in here could not have been winners !\nPodium vs Winner..");
-		}
-		
-		tempCompetition.setWinners(winners);
-		
-		try { 
-			CompetitionsManager.update(tempCompetition);
-		} catch(SQLException sqlex) {
-			sqlex.printStackTrace();
-		}
-		
-	}
+	//public void setWinnersForCompetition(String competition, Competitor winner, Competitor second, Competitor third, String mgrPass) 
+	//		throws ExistingCompetitionException, AuthenticationException, CompetitionException {	
+	//	/* first authenticate the manager */
+	//	authenticateMngr(mgrPass);
+	//	/* proceed to remove him */
+	//	Competition tempCompetition = getCompetitionByName(competition);
+	//	/* check if the username exists */
+	//	if ( tempCompetition == null )
+	//		throw new ExistingCompetitionException("The competition does not exist!");
+	//	
+	//	if( !tempCompetition.hasCompetitor(winner) || 
+	//			!tempCompetition.hasCompetitor(second) ||
+	//			!tempCompetition.hasCompetitor(third)){
+	//		throw new CompetitionException();
+	//	}
+	//	
+	//	Map<Integer, Competitor> winners = new HashMap<>();
+	//	try {
+	//		winners.put(winner.getId(), getCompetitorById(winner.getId()));
+	//		winners.put(second.getId(), getCompetitorById(second.getId()));
+	//		winners.put(third.getId(), getCompetitorById(third.getId()));			
+	//	} catch (Exception e) {
+	//		System.out.println("BETA! some of the names in here could not have been winners !\nPodium vs Winner..");
+	//	}
+	//	
+	//	tempCompetition.setWinners(winners);
+	//	
+	//	try { 
+	//		CompetitionsManager.update(tempCompetition);
+	//	} catch(SQLException sqlex) {
+	//		sqlex.printStackTrace();
+	//	}
+	//	
+	//}
+	
 	public void printAllCompetitors() {
 		utility.printList(this.allCompetitors.values());
 	}
