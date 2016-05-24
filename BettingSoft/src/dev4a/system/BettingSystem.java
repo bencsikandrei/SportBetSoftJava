@@ -981,11 +981,7 @@ public class BettingSystem implements Betting {
 		/* iterate the container and get all names and attributes */
 		List<List<String>> printableCompetitions = new ArrayList<>();
 		/* get the updated list */
-		try {
-			this.allCompetitions = CompetitionsManager.findAll();
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
-		}
+		this.updateAllCompetitions();
 		for( Competition comp : this.allCompetitions.values() ) {
 			/* store the details for each subscriber */
 			List<String> compDetails = new ArrayList<>();
