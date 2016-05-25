@@ -701,7 +701,10 @@ public class BettingSystem implements Betting {
 		if(myCompetition.getStatus() == (Competition.SOLDOUT)){
 			throw new CompetitionException();
 		}
-		
+		/* Check if the competition has more than 2 competitors */
+		if(myCompetition.getAllCompetitors().size() > 2){
+			throw new CompetitionException("You should try settling podium!");
+		}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || winner == null){
 			throw new CompetitionException();
