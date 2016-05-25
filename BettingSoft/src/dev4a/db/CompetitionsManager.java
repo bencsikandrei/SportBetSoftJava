@@ -262,6 +262,7 @@ public class CompetitionsManager {
 
 		psUpdate.setDate(2, new java.sql.Date(competition.getStartDate().getTime().getTime()));
 		psUpdate.setDate(3, new java.sql.Date(competition.getClosingDate().getTime().getTime()));
+		
 		psUpdate.setInt(4, competition.getStatus());
 		psUpdate.setString(5, competition.getSport());
 

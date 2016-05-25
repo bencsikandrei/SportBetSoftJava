@@ -172,7 +172,7 @@ public class ParticipantsManager {
 		Connection conn = DatabaseConnection.getConnection();
 		/* create the delete query */
 		PreparedStatement psUpdate = conn
-				.prepareStatement("DELETE FROM competitor WHERE id_competitor=? and name_competition like ?");
+				.prepareStatement("DELETE FROM participant WHERE id_competitor=? and name_competition like ?");
 		psUpdate.setInt(1, competitor.getId());
 		psUpdate.setString(2, competition.getName());
 		/* clean up */

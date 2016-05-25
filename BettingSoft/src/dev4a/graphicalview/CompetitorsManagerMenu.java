@@ -148,6 +148,7 @@ public class CompetitorsManagerMenu extends Menu {
 
 				int competitor = Integer.parseInt(br.readLine());
 				/* persist */
+				
 				this.bettingSystem.addCompetitor(competition, bettingSystem.getCompetitorById(competitor), this.storedPass);
 
 			} catch (Exception ex) {
