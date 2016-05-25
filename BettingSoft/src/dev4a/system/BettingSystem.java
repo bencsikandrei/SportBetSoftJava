@@ -696,11 +696,11 @@ public class BettingSystem implements Betting {
 		if( myCompetition == null )
 			/* does not exist */
 			throw new ExistingCompetitionException();
-		//if( myCompetition.getStatus() != Competition.FINISHED)  {
 		/* checks if the competition is in a proper state */
 		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//	throw new CompetitionException();
-		//}
+		if(myCompetition.getStatus() != (Competition.SOLDOUT)){
+			throw new CompetitionException();
+		}
 		
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || winner == null){
@@ -737,12 +737,12 @@ public class BettingSystem implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new ExistingCompetitionException();
-		//if(myCompetition.getStatus() != (Competition.FINISHED)) 
+			throw new ExistingCompetitionException(); 
 		/* check if the competition is in a proper state */
+		if(myCompetition.getStatus() != (Competition.SOLDOUT)){
 		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//	throw new CompetitionException();
-		//}
+			throw new CompetitionException();
+		}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)
 				|| winner == null || second == null || third == null){
@@ -1086,7 +1086,7 @@ public class BettingSystem implements Betting {
 		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
 			if(b.getType()==1){ // type winner
-				if(competition.getWinners()==b.getWinner()){
+				if(competition.getWinners().equals(b.getWinner())){
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
@@ -1097,9 +1097,9 @@ public class BettingSystem implements Betting {
 					b.setState(Bet.LOST);
 			}
 			else if(b.getType()==2){
-				if(competition.getWinners().get(0)==b.getWinner() && 
-						competition.getWinners().get(1)==b.getSecond() && 
-						competition.getWinners().get(2)==b.getThird()){
+				if(competition.getWinners().get(0).equals(b.getWinner()) && 
+						competition.getWinners().get(1).equals(b.getSecond()) && 
+						competition.getWinners().get(2).equals(b.getThird())){
 					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnPodium.add(b.getNumberOfTokens());
 					winningTokensOnPodium += b.getNumberOfTokens();
@@ -1223,4 +1223,29 @@ public class BettingSystem implements Betting {
 		utility.printList(CompetitorsManager.findAll().values());
 		
 	}
+	
+	public void deleteCompetitorFromDB(Competitor competitor)
+			throws BadParametersException {
+		/* Checks if the competitor doesn't participate in any competition */
+		Map<String,Competition> competitions = new HashMap<String,Competition>();
+		try { 
+			competitions = ParticipantsManager.findAllByCompetitor(competitor.getId());
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		if (!competitions.isEmpty()){
+			new BadParametersException("This competitor still participates in competitions!");
+		}
+		try { 
+			CompetitorsManager.delete(competitor);
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}	
+	}
+	
+	public void addCompetitiorToTeam(IndividualCompetitor indComp, Team team){
+		
+	}
+
+	
 }
