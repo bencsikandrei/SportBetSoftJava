@@ -246,8 +246,7 @@ public class BetsManager {
 			ResultSet resultSet = psSelect.executeQuery();
 
 			Map<Integer, Bet> bets = new LinkedHashMap<>();
-
-			Bet bet = null;
+			
 			while (resultSet.next()) {
 				int tempId = resultSet.getInt("id");
 				

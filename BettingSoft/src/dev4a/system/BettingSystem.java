@@ -1090,7 +1090,7 @@ public class BettingSystem implements Betting {
 		/* search in every bet done on the competition */
 		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
-			if(b.getType()==1){ // type winner
+			if(b.getType()== Bet.TYPE_WINNER){ // type winner
 				List<Competitor> list = new ArrayList<Competitor> (competition.getWinners().values());
 				if(list.get(0).equals(b.getWinner())){
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
@@ -1102,7 +1102,7 @@ public class BettingSystem implements Betting {
 				else
 					b.setState(Bet.LOST);
 			}
-			else if(b.getType()==2){ // type podium
+			else if(b.getType()== Bet.TYPE_PODIUM){ // type podium
 				List<Competitor> list = new ArrayList<Competitor> (competition.getWinners().values());
 				if(list.get(0).equals(b.getWinner()) && 
 						list.get(1).equals(b.getSecond()) && 
@@ -1110,6 +1110,7 @@ public class BettingSystem implements Betting {
 					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnPodium.add(b.getNumberOfTokens());
 					winningTokensOnPodium += b.getNumberOfTokens();
+					System.out.println("Added " + b.getNumberOfTokens() + " from pay");
 					b.setState(Bet.WON);
 				}
 				else
@@ -1127,7 +1128,7 @@ public class BettingSystem implements Betting {
 		/* pays to the winners */
 		if(winningSubscribersOnWinner.size()!=0){
 			for (int i=0; i<winningSubscribersOnWinner.size();i++){
-				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
+				payMe = competition.getTotalNumberOfTokens(Bet.TYPE_WINNER)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
 				winningSubscribersOnWinner.get(i).credit(payMe);
 				try {
 					/* update his account in the DB */
@@ -1152,7 +1153,7 @@ public class BettingSystem implements Betting {
 		/* pays to the winners */
 		if(winningSubscribersOnPodium.size()!=0){
 			for (int i=0; i<winningSubscribersOnPodium.size();i++){
-				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
+				payMe = competition.getTotalNumberOfTokens(Bet.TYPE_PODIUM)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
 				winningSubscribersOnPodium.get(i).credit(payMe);
 				try {
 					/* update his account in the DB */

@@ -182,20 +182,26 @@ public class Competition {
 	/* return the number of tokens of a given type bet on this competition */
 	public long getTotalNumberOfTokens(int betType) {
 		long sum = 0;
-		for(Bet b:this.bets){
-			if(b.getType()==betType)
+		for(Bet b:this.bets) {
+			System.out.println("in getTotalNumberOfTokens " + b.getNumberOfTokens());
+			if(b.getType() == betType) {
+				System.out.println("in the if");
 				sum += b.getNumberOfTokens();
+			}
 		}
+		System.out.println("In getTotalNumberOfTokens " + sum);
 		return sum;
 	}
 	
 	/* return the number of bets of a given type bet on this competition */
 	public int getTotalNumberOfBets(int betType) {
+		
 		int count = 0;
 		for(Bet b:this.bets){
 			if(b.getType()==betType)
 				count++;
 		}
+		System.out.println("In getTotalNumberOfbets " + count);
 		return count;
 	}
 	/*

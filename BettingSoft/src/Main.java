@@ -43,8 +43,8 @@ public class Main {
 		final BettingSystem bettingSystem = new BettingSystem(managerPass);
 		
 		/* fire up the CLI */
-		CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
-		//CLIClient cli = new CLIClient(bettingSystem);
+		//CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
+		CLIClient cli = new CLIClient(bettingSystem);
 	}
 	/* TESTS */
 	/*try {
