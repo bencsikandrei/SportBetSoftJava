@@ -1,46 +1,74 @@
 package dev4a.competitor;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import dev4a.exceptions.BadParametersException;
+import dev4a.subscriber.Subscriber;
 
 public class IndividualCompetitor implements Competitor {
 
 	/* attributes */
-	private int id;
+	private static AtomicInteger uniqueId = new AtomicInteger();
+	/* Id for the DB */
+	private Integer id;
+	/* type = 1 --> IndividualCompetitor */
 	private int type;
+	/* Competitor surname */
 	private String lastName;
+	/* Competitor name */
 	private String firstName;
+	/* Competitor born date */
 	private String bornDate;
-	private int id_team;
+	/* Id of the team, if the competitor belongs to a team */
+	private int idTeam;
 		
 	/* constructor */
 	public IndividualCompetitor(){
 		/* empty for hibernate */
 	}
-	/* proper constructor */
-	public IndividualCompetitor(int id, int type, String firstName, String lastName, String bornDate, int id_team){
+	/* proper constructor for a competitor */
+	public IndividualCompetitor(String firstName, String lastName, String bornDate){
 		/* initialize */
-		this.id = id;
-		this.type = type;
+		this.id = 0;
+		this.type = TYPE_INDIVIDUAL; 
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.bornDate = bornDate;
-		this.id_team = id_team;
+	}
+	/* proper constructor for a competitor in team */
+	public IndividualCompetitor(String firstName, String lastName, String bornDate, int id_team){
+		/* initialize */
+		this.id = 0;
+		this.type = TYPE_INDIVIDUAL; 
+		this.lastName = lastName;
+		this.firstName = firstName;
+		this.bornDate = bornDate;
+		this.idTeam = id_team;
+	}
+	/*
+	 * id serial primary key,    
+	typeOf integer,
+	first_name varchar(30),
+	last_name varchar(30),
+	born_date date
+	team_name varchar(50),
+	id_team integer references COMPETITOR(id)
+	 */
+	public IndividualCompetitor(int id, String firstName, String lastName, String bornDate, int idTeam) {
+		this.id = id;
+		this.type = TYPE_INDIVIDUAL; 
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.bornDate = bornDate;
+		this.idTeam = idTeam;
 	}
 	
 	public int getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
-		this.id = id;
-	}
-	
 	public int getType() {
 		return type;
-	}
-	
-	public void setType(int type) {
-		this.type = type;
 	}
 	
 	public String getLastName() {
@@ -61,33 +89,48 @@ public class IndividualCompetitor implements Competitor {
 	public void setBornDate(String bornDate) {
 		this.bornDate = bornDate;
 	}
-	public int getIdTeam() {
-		return id_team;
+	public Integer getIdTeam() {
+		return idTeam;
 	}
-	public void setIdTeam(int id_team) {
-		this.id_team = id_team;
+	public void setIdTeam(Integer id_team) {
+		this.idTeam = id_team;
 	}
 	@Override
 	public boolean hasValidName() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 	@Override
 	public void addMember(Competitor member) throws ExistingCompetitorException, BadParametersException {
-		// TODO Auto-generated method stub
 		
 	}
+	
 	@Override
 	public void deleteMember(Competitor member) throws BadParametersException, ExistingCompetitorException {
-		// TODO Auto-generated method stub
 		
 	}
 	
+	
 			
+	@Override
+	public void setId(int id) {
+		this.id = id;
+		
+	}
 	@Override 
 	public String toString() {
-		/* return the full name */
-		return this.firstName + " " + this.lastName;
+		/* return the full name and borndate */
+		return "Id: " + this.id + this.firstName + " " + this.lastName + " born " + this.bornDate;
+		// please don't eliminate bornDate because it's useful in function createCompetitor in System
 	}
 	
+	@Override 
+	public boolean equals(Object obj) {
+		/* check if it's instance of the IndividualCompetitor class */
+		if (!(obj instanceof IndividualCompetitor))
+			return false;
+		if ( ((IndividualCompetitor) obj).getId() == this.getId() )
+			return true;
+		return false;
+	}
 }

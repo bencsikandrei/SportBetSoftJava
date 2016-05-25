@@ -10,8 +10,15 @@ DROP TABLE IF EXISTS Bet;
 DROP TABLE IF EXISTS Competition;
 DROP TABLE IF EXISTS Competitor;
 DROP TABLE IF EXISTS Subscriber;
+DROP TABLE IF EXISTS Manager;
 
 /* recreate the tables from scratch */
+
+CREATE TABLE Manager(
+	password varchar(50)
+);
+COMMENT ON TABLE Manager IS 'Table to store manager information.';
+
 CREATE TABLE Subscriber(
     username varchar(30) primary key,
     first_name varchar(30) NOT NULL,
@@ -37,8 +44,8 @@ COMMENT ON TABLE Competitor IS 'Competitors their names and if they are teams th
 
 CREATE TABLE Competition (    
 	name VARCHAR(50) PRIMARY KEY,    
-	starting_date timestamp,    
-	closing_date timestamp,    
+	starting_date date,    
+	closing_date date,    
 	status INT NOT NULL,    
     sport  VARCHAR(30)  NOT NULL,
     id_winner INT REFERENCES Competitor(id),

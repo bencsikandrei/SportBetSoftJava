@@ -1,12 +1,15 @@
 package dev4a.utils;
 
 import java.security.SecureRandom;
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
+
+import dev4a.competitor.Competitor;
 
 public class Utils {
 	/* create a string with all alphanumerical chars and some symbols */
@@ -24,13 +27,14 @@ public class Utils {
 	 * @return generatePassword = sb.toString()
 	 */
 	public String randomString( int len ) {
-		/* use string builder for more optimization */
+		/* use string builder for more optimization 
 		StringBuilder sb = new StringBuilder( len );
-		/* loop through and get a random char */
+		 loop through and get a random char 
 		for( int i = 0; i < len; i++ ) 
 			sb.append( ALPHANUM.charAt( rnd.nextInt(ALPHANUM.length()) ) );
-		/* return the final string */
-		return sb.toString();
+		 return the final string 
+		return sb.toString();*/
+		return "1234";
 	}
 	/**
 	 * This method takes care of printing a complex list
@@ -39,15 +43,29 @@ public class Utils {
 	public void printList(List<List<String>> printable) {
 		/* count */
 		int count = 0;
-		
+
 		for (List<String> pList : printable ) {
-			System.out.print("Subscriber " + count + " : ");
+			System.out.print("Index " + count + " : ");
 			for ( String pString : pList ) {
-				System.out.print(pString + "\t| ");
+				System.out.format("%30s |", pString);
 			}
 			++count;
 			System.out.println();
 		}
+	}
+
+	public void printList(Collection<Competitor> listCompetitors) {
+		
+		int count = 0;
+		
+		for( Competitor comp : listCompetitors ) {
+			System.out.print("Index " + count + " : ");
+			System.out.format("%30s |", comp);
+			System.out.println();
+			++count;
+			
+		}
+		
 	}
 	/**
 	 * Parses the regular expression
@@ -61,11 +79,8 @@ public class Utils {
 		Pattern pat = Pattern.compile(pattern);
 		/* also the matcher for the line */
 		Matcher mat = pat.matcher(string);
-		/* check validity */
-		if ( !mat.matches())
-			return false;
 		/* it matches */
-		return true;
+		return mat.matches();
 	}
 	/**
 	 * 
@@ -88,6 +103,28 @@ public class Utils {
 		String pattern = "^[A-Za-z][A-Za-z-]*";
 		/* */
 		return regexpParser(pattern, uname);
+	}
+	/**
+	 * 
+	 * @param firstOrLastName
+	 * @return
+	 */
+	public boolean checkValidFirstLastName(String firstOrLastName) {
+		/* the pattern to be respected by the string */
+		String pattern = "^[A-Za-z-]{1,30}$";
+		/* */
+		return regexpParser(pattern, firstOrLastName);
+	}
+	/**
+	 * 
+	 * @param teamName
+	 * @return
+	 */
+	public boolean checkValidTeamName(String teamName) {
+		/* the pattern to be respected by the string */
+		String pattern = "^[A-Za-z-]{1,50}$";
+		/* */
+		return regexpParser(pattern, teamName);
 	}
 	/**
 	 * 
@@ -124,5 +161,6 @@ public class Utils {
 		/* */
 		return regexpParser(pattern, stringDate);
 	}
-	
+
+
 }

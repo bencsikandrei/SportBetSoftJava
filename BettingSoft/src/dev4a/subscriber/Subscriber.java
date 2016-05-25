@@ -1,5 +1,9 @@
 package dev4a.subscriber;
 import dev4a.bets.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * 
  * 
@@ -43,7 +47,11 @@ public class Subscriber {
 	 * a long integer ( he can be really rich if he bets right )
 	 */
 	private long numberOfTokens;
-
+	/* list of bets
+	 */
+	private Map<Integer, Bet> bets = new HashMap<>();
+	
+	
 	/* Constructors of this class */
 	public Subscriber(){
 		/*
@@ -92,7 +100,11 @@ public class Subscriber {
 		setPassword(newPassword);
 		return true;
 	}
-
+	/* check password */
+	public boolean checkPassword(String pass) {
+		return this.password.equals(pass);
+	}
+	
 	/* getters and setters REQUIRED for the POJO  (hibernate as well) */
 	public String getLastName() {
 		return lastName;
@@ -143,6 +155,19 @@ public class Subscriber {
 		this.password = password;
 	}
 	
+	public Map<Integer, Bet> getBets() {
+		return bets;
+	}
+
+	public void setBets(Map<Integer, Bet> bets) {
+		this.bets = bets;
+	}
+	/* place a bet */
+	public void placeBet(Bet bet) {
+		/* add the bet to the list */
+		this.bets.put(bet.getIdentifier(), bet);
+		
+	}
 	/* cancel a bet */
 	public long cancelBet(Bet betToCancel) {
 

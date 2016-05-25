@@ -50,4 +50,11 @@ public interface Competitor {
 	 */
 	void deleteMember(Competitor member) throws BadParametersException,
 			ExistingCompetitorException;
+	
+	/**
+	 * get Id of competitor
+	 */
+	int getId();
+	
+	void setId(int id);
 }
