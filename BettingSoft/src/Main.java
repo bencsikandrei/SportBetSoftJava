@@ -19,7 +19,7 @@ import dev4a.utils.DatabaseConnection;
 
 public class Main {
 	
-	private static String managerPass = "1234";
+	private static String managerPass;
 	private static String tempPass = "1234";
 	
 	public static void main(String[] args) {
@@ -43,8 +43,8 @@ public class Main {
 		final BettingSystem bettingSystem = new BettingSystem(managerPass);
 				
 		/* fire up the CLI */
-		//CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
-		CLIClient cli = new CLIClient(bettingSystem);
+		CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
+		//CLIClient cli = new CLIClient(bettingSystem);
 	}
 	/* TESTS */
 	/*try {

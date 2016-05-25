@@ -160,6 +160,10 @@ public class Competition {
 		return bets;
 	}
 	
+	public void setBets(List<Bet> bets) {
+		this.bets = bets;
+	}
+	
 	public void addBet(Bet bet){
 		this.bets.add(bet);
 	}
