@@ -257,8 +257,7 @@ public class CompetitionsManager {
 		/* update all necessary fields
 		 * name, starting_date, "
 				+ "closing_date, status, sport, id_winner, id_second, id_third */
-		psUpdate.setString(1, competition.getName());
-		
+		psUpdate.setString(1, competition.getName());		
 
 		psUpdate.setDate(2, new java.sql.Date(competition.getStartDate().getTime().getTime()));
 		psUpdate.setDate(3, new java.sql.Date(competition.getClosingDate().getTime().getTime()));
