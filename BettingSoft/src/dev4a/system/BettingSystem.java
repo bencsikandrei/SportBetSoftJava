@@ -698,7 +698,7 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* checks if the competition is in a proper state */
 		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		if(myCompetition.getStatus() != (Competition.SOLDOUT)){
+		if(myCompetition.getStatus() == (Competition.SOLDOUT)){
 			throw new CompetitionException();
 		}
 		
@@ -739,7 +739,7 @@ public class BettingSystem implements Betting {
 			/* does not exist */
 			throw new ExistingCompetitionException(); 
 		/* check if the competition is in a proper state */
-		if(myCompetition.getStatus() != (Competition.SOLDOUT)){
+		if(myCompetition.getStatus() == (Competition.SOLDOUT)){
 		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
 			throw new CompetitionException();
 		}
