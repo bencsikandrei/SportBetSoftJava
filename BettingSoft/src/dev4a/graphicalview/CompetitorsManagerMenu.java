@@ -6,6 +6,16 @@ import java.io.InputStreamReader;
 import dev4a.system.BettingSystem;
 
 public class CompetitorsManagerMenu extends Menu {
+	
+	private static final int CREATEINDIV = 1;
+	private static final int CREATETEAM = 2;
+	private static final int DELETE = 3;
+	private static final int ADD = 4;
+	private static final int ADDMEMBER = 5;
+	private static final int LISTCOMPETITORSINCOMPETITION = 6;
+	private static final int LISTALL = 7;
+	private static final int LISTCOMPETITIONS = 8;
+	
 	/**
 	 * Initialize the menu and set up the parent
 	 * @param bs
@@ -18,7 +28,15 @@ public class CompetitorsManagerMenu extends Menu {
 	}
 
 	@Override
+	/**
+	 * This method shows the appropriate menu for each type 
+	 * we have the options printed in order and the user can 
+	 * select one of them or a higher number to obtain a different
+	 * behavior
+	 * 
+	 */
 	public void showMenu() {
+		
 		System.out.println("");
 
 		System.out.println("Competitors Menu");
@@ -57,13 +75,19 @@ public class CompetitorsManagerMenu extends Menu {
 
 	@Override
 	/**
-	 * take action based on the 'selected' integer
+	 * This method uses a simple choice selector (i.e. a switch statement)
+	 * to chose the acction that is happening given the selected number
+	 * 
+	 * Uses the functions in the betting system given as a param to the class
+	 * 
+	 * @param selected (int) - the choice of the user
 	 */
 	protected int takeAction(int selected) {
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		switch (selected) {
-		case 1:
+		case CREATEINDIV:
 			try {
 				/* insert the data */
 				System.out.println("Insert last name");
@@ -81,7 +105,7 @@ public class CompetitorsManagerMenu extends Menu {
 
 			break;
 
-		case 2:
+		case CREATETEAM:
 			try {
 				/* insert the data */
 				System.out.println("Insert team name");
@@ -94,7 +118,8 @@ public class CompetitorsManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;
-		case 3:
+			
+		case DELETE:
 			try {
 				/* insert the data */
 				System.out.println("Insert id");
@@ -112,7 +137,7 @@ public class CompetitorsManagerMenu extends Menu {
 			}
 			break;
 			
-		case 4:
+		case ADD:
 			try {
 				/* insert the data */
 				System.out.println("Insert competition name");
@@ -129,7 +154,8 @@ public class CompetitorsManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;
-		case 5:
+			
+		case ADDMEMBER:
 			try {
 				/* insert the data */
 				System.out.println("Insert team id");
@@ -146,7 +172,8 @@ public class CompetitorsManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;	
-		case 6:
+			
+		case LISTCOMPETITORSINCOMPETITION:
 			try {
 				/* insert the data */
 				System.out.println("Insert competition name");
@@ -159,7 +186,8 @@ public class CompetitorsManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;
-		case 7:
+			
+		case LISTALL:
 			try {
 				/* print */
 				this.bettingSystem.printAllCompetitors();
@@ -169,7 +197,7 @@ public class CompetitorsManagerMenu extends Menu {
 			}
 			break;
 			
-		case 8:
+		case LISTCOMPETITIONS:
 			try {
 				/* print */
 				this.bettingSystem.printCompetitions();

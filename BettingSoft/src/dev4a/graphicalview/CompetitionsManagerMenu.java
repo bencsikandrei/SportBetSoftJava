@@ -6,11 +6,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
 import dev4a.competitor.Competitor;
 import dev4a.system.BettingSystem;
 
 public class CompetitionsManagerMenu extends Menu {
+	
+	/* to better differentiate the Menu choices we use constants */
+	private static final int ADD = 1;
+	private static final int CANCEL = 2;
+	private static final int DELETE = 3;
+	private static final int SETWINNER = 4;
+	private static final int SETPODIUM = 5;
+	private static final int LISTALLSUBS = 6;
+	private static final int LISTALLCOMPETITIONS = 7;	
 
 	/**
 	 * Initialize the menu and set up the parent
@@ -23,7 +31,15 @@ public class CompetitionsManagerMenu extends Menu {
 	}
 
 	@Override
+	/**
+	 * This method shows the appropriate menu for each type 
+	 * we have the options printed in order and the user can 
+	 * select one of them or a higher number to obtain a different
+	 * behavior
+	 * 
+	 */
 	public void showMenu() {
+		
 		System.out.println("");
 
 		System.out.println("Competitions Menu");
@@ -35,34 +51,44 @@ public class CompetitionsManagerMenu extends Menu {
 		System.out.println("2. Cancel competition");
 
 		System.out.println("3. Delete competition");
-		
-		System.out.println("4. Set winner(s) for competition");
-		
-		System.out.println("5. List all subscribers");
 
-		System.out.println("6. List all competitions");
-		
+		System.out.println("4. Set winner for competition");
+
+		System.out.println("5. Set podium for competition");
+
+		System.out.println("6. List all subscribers");
+
+		System.out.println("7. List all competitions");
+
 		System.out.println("*. Go back");		
 
 		System.out.println("----------------------------");
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-5");
+		System.out.print("Please select an option from 1-7");
 
 		System.out.println("");
 
 		System.out.println("");
-		
+
 	}
 
 	@Override
+	/**
+	 * This method uses a simple choice selector (i.e. a switch statement)
+	 * to chose the acction that is happening given the selected number
+	 * 
+	 * Uses the functions in the betting system given as a param to the class
+	 * 
+	 * @param selected (int) - the choice of the user
+	 */
 	protected int takeAction(int selected) {
-		
+
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		switch (selected) {
-		case 1:
+		case ADD:
 			try {
 
 				System.out.println("Insert competition name");
@@ -73,7 +99,7 @@ public class CompetitionsManagerMenu extends Menu {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				Date date = sdf.parse(closingDate);
 				Calendar cal = sdf.getCalendar();
-				
+
 				System.out.println("Insert competitor id");
 				int compId = Integer.parseInt(br.readLine());
 				ArrayList<Competitor> competitors = new ArrayList<>();
@@ -81,7 +107,7 @@ public class CompetitionsManagerMenu extends Menu {
 					competitors.add(bettingSystem.getCompetitorById(compId));
 					System.out.println("Insert competitor id");
 				} while( (compId = Integer.parseInt(br.readLine())) != -1 );
-				
+
 				if(this.bettingSystem != null)
 					this.bettingSystem.addCompetition(competition, cal, competitors, this.storedPass);
 
@@ -91,56 +117,80 @@ public class CompetitionsManagerMenu extends Menu {
 
 			break;
 
-		case 2:
+		case CANCEL:
 			try {
-
+				/* name of the compeittion to cancel */
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
-				
+
 				this.bettingSystem.cancelCompetition(competition, this.storedPass);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			break;
-		case 3:
+		case DELETE:
 			try {
-
+				/* name of the competition to delete */
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
-				
+
 				this.bettingSystem.deleteCompetition(competition, this.storedPass);
-				
+
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			break;
 			
-		case 4:
+		case SETWINNER: 
 			try {
 				/* competition name */
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
-				
+
 				/* winner id */
 				System.out.println("Insert winner id");
 
 				int winner = Integer.parseInt(br.readLine());
 				
+				this.bettingSystem.settleWinner(
+						competition, 
+						bettingSystem.getCompetitorById(winner),						
+						this.storedPass);
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+
+		
+		case SETPODIUM:
+			try {
+				/* competition name */
+				System.out.println("Insert competition name");
+
+				String competition = br.readLine();
+
+				/* winner id */
+				System.out.println("Insert winner id");
+
+				int winner = Integer.parseInt(br.readLine());
+
 				/* second id */
 				System.out.println("Insert second id");
 
 				int second = Integer.parseInt(br.readLine());
-				
+
 				/* third id */
 				System.out.println("Insert third id");
 
 				int third = Integer.parseInt(br.readLine());
 				
-				this.bettingSystem.setWinnersForCompetition(
+				/* seal the deal */
+				this.bettingSystem.settlePodium(
 						competition, 
 						bettingSystem.getCompetitorById(winner),
 						bettingSystem.getCompetitorById(second),
@@ -152,28 +202,30 @@ public class CompetitionsManagerMenu extends Menu {
 			}
 			break;
 
-		case 5:
+		case LISTALLSUBS:
 			try {
-
+				/* print everybody */
 				this.bettingSystem.printSubscribers(this.storedPass);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			break;
-		case 6:
+			
+		case LISTALLCOMPETITIONS:
 			try {
-
+				/* all competitions */
 				this.bettingSystem.printCompetitions();
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			break;
+			
 		default:
 			return -1;
 		}
 		return 0;
 	}
-	
+
 }

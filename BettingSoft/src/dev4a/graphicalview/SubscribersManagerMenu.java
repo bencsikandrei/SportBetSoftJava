@@ -6,12 +6,20 @@ import java.io.InputStreamReader;
 import dev4a.system.BettingSystem;
 
 public class SubscribersManagerMenu extends Menu {
-
+	/**
+	 * Initialize the menu and set up the parent
+	 * @param bs
+	 * @param storredPass
+	 */
 	public SubscribersManagerMenu(BettingSystem bs, String pass, Menu parentMenu) {
 		super(bs, pass);
 		this.parentMenu = parentMenu;
 	}
 	/**
+	 * This method shows the appropriate menu for each type 
+	 * we have the options printed in order and the user can 
+	 * select one of them or a higher number to obtain a different
+	 * behavior
 	 * 
 	 */
 	@Override
@@ -46,8 +54,14 @@ public class SubscribersManagerMenu extends Menu {
 		System.out.println("");
 
 	}
+	
 	/**
-	 * The logic behind
+	 * This method uses a simple choice selector (i.e. a switch statement)
+	 * to chose the acction that is happening given the selected number
+	 * 
+	 * Uses the functions in the betting system given as a param to the class
+	 * 
+	 * @param selected (int) - the choice of the user
 	 */
 	@Override
 	protected int takeAction(int selected) {

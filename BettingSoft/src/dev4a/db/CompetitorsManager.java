@@ -227,28 +227,8 @@ public class CompetitorsManager {
 		 * @throws SQLException
 		 */
 		public static Map<Integer, Competitor> findAll() throws SQLException {
-			/* open the connection */
-			Connection conn = DatabaseConnection.getConnection();
-			/* prepare the query */
-			PreparedStatement psSelect = conn
-			.prepareStatement("SELECT * FROM competitor ORDER BY id");
-			/* the results are here */
-			ResultSet resultSet = psSelect.executeQuery();
-			/* a container for them all */
-			Map<Integer, Competitor> competitors = new HashMap<Integer, Competitor>();
-			
-			/* loop through */
-			int tempId;
-			while (resultSet.next()) {
-				tempId = resultSet.getInt("id");
-				competitors.put(tempId, findById(tempId) );
-			}
-			
-			/* clean up */
-			resultSet.close();
-			psSelect.close();
-			conn.close();
-			/* return all of them */
+			/* get all teams */
+			Map<Integer, Competitor> allCompetitors = new HashMap<>();
 			return competitors;
 		}
 		/**

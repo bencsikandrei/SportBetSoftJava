@@ -74,10 +74,6 @@ public class BettingSystem implements Betting {
 		}
 	}
 
-	private String getMgrPassword() {
-		return mgrPassword;
-	}
-
 	public void changeManagerPassword(String mgrPassword, String newPassword) throws AuthenticationException, SQLException {
 		// TODO add some logic for the setting of pswd -> maybe check OLD pass -> New PASS
 		/* first authenticate */
@@ -1089,11 +1085,11 @@ public class BettingSystem implements Betting {
 		/* list of subscribers that bet on winner and won */
 		List<Subscriber> winningSubscribersOnWinner = new ArrayList<Subscriber>();
 		/* list of tokens that the winning subscribers bet on winner */
-		List<Long> tokensBetOnWinner = new ArrayList();
+		List<Long> tokensBetOnWinner = new ArrayList<>();
 		/* list of subscribers that bet on podium and won */
 		List<Subscriber> winningSubscribersOnPodium = new ArrayList<Subscriber>();
 		/* list of tokens that the winning subscribers bet on podium */
-		List<Long> tokensBetOnPodium = new ArrayList();
+		List<Long> tokensBetOnPodium = new ArrayList<>();
 		long winningTokensOnWinner=0;
 		long winningTokensOnPodium=0;
 		long payMe;
@@ -1105,10 +1101,10 @@ public class BettingSystem implements Betting {
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
-					b.setState(b.WON);
+					b.setState(Bet.WON);
 				}
 				else
-					b.setState(b.LOST);
+					b.setState(Bet.LOST);
 			}
 			else if(b.getType()==2){
 				if(competition.getWinners().get(0)==b.getWinner() && 
@@ -1117,10 +1113,10 @@ public class BettingSystem implements Betting {
 					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnPodium.add(b.getNumberOfTokens());
 					winningTokensOnPodium += b.getNumberOfTokens();
-					b.setState(b.WON);
+					b.setState(Bet.WON);
 				}
 				else
-					b.setState(b.LOST);
+					b.setState(Bet.LOST);
 			}
 		}
 		/* pays to the winners */
@@ -1223,6 +1219,7 @@ public class BettingSystem implements Betting {
 	//}
 	
 	public void printAllCompetitors() {
+		
 		utility.printList(this.allCompetitors.values());
 	}
 }
