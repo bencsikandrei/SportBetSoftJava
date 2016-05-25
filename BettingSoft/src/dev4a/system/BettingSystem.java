@@ -1023,7 +1023,7 @@ public class BettingSystem implements Betting {
 			compDetails.add(comp.getName());
 			//compDetails.add(comp.getSport());
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
-			String stringDate = formatter.format(comp.getClosingDate()); 
+			String stringDate = formatter.format(comp.getClosingDate().getTime()); 
 			compDetails.add(stringDate);
 			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " bets.");
 			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " bets.");
