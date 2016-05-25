@@ -688,11 +688,11 @@ public class BettingSystem implements Betting {
 		if( myCompetition == null )
 			/* does not exist */
 			throw new ExistingCompetitionException();
-		/* checks if the competition is in a proper state */
-		if(myCompetition.getClosingDate().after(Calendar.getInstance())){
 		//if( myCompetition.getStatus() != Competition.FINISHED)  {
-			throw new CompetitionException();
-		}
+		/* checks if the competition is in a proper state */
+		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
+		//	throw new CompetitionException();
+		//}
 		
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || winner == null){
@@ -708,7 +708,7 @@ public class BettingSystem implements Betting {
 		// TODO check type of competition? in this case the type of bet should be w
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
-		this.allCompetitions.get(myCompetition.getName()).setStatus(Competition.SOLDOUT);
+		this.allCompetitions.put(myCompetition.getName(), myCompetition);
 		try {
 			/* update competition in the DB */
 			CompetitionsManager.update(myCompetition);
@@ -730,11 +730,11 @@ public class BettingSystem implements Betting {
 		if( myCompetition == null )
 			/* does not exist */
 			throw new ExistingCompetitionException();
+		//if(myCompetition.getStatus() != (Competition.FINISHED)) 
 		/* check if the competition is in a proper state */
-		if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//if(myCompetition.getStatus() != (Competition.FINISHED)) {
-			throw new CompetitionException();
-		}
+		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
+		//	throw new CompetitionException();
+		//}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)
 				|| winner == null || second == null || third == null){
@@ -756,7 +756,7 @@ public class BettingSystem implements Betting {
 		// TODO check type of competition?
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
-		this.allCompetitions.get(myCompetition.getName()).setStatus(Competition.SOLDOUT);
+		this.allCompetitions.put(myCompetition.getName(), myCompetition);
 		try {
 			/* update competition in the DB */
 			CompetitionsManager.update(myCompetition);
@@ -1083,6 +1083,7 @@ public class BettingSystem implements Betting {
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
 					b.setState(Bet.WON);
+					
 				}
 				else
 					b.setState(Bet.LOST);
@@ -1099,6 +1100,13 @@ public class BettingSystem implements Betting {
 				else
 					b.setState(Bet.LOST);
 			}
+			try {
+				/* update bet in the DB */
+				BetsManager.update(b);
+			} catch (SQLException sqlex) {
+				sqlex.printStackTrace();
+			}
+			
 		}
 		/* pays to the winners */
 		if(winningSubscribersOnWinner.size()!=0){
@@ -1152,6 +1160,7 @@ public class BettingSystem implements Betting {
 		}
 	}
 	
+	 
 	public Competitor getCompetitorById(Integer id) {
 		Competitor tempComp = null;
 		try {
