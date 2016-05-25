@@ -152,19 +152,18 @@ public class CompetitorsManager {
 		 * @return
 		 * @throws SQLException
 		 */
-		public static Map<Integer, IndividualCompetitor> findAllIndividualCompetitors() throws SQLException {
+		public static Map<Integer, Competitor> findAllIndividualCompetitors() throws SQLException {
 			/* open the connection */
 			Connection conn = DatabaseConnection.getConnection();
 			/* prepare the query */
 			PreparedStatement psSelect = conn
-			.prepareStatement("SELECT * FROM competitor ORDER BY id WHERE type=?");
+			.prepareStatement("SELECT * FROM competitor WHERE typeOf=? ORDER BY id ");
 			/* set the value */
 			psSelect.setInt(1, Competitor.TYPE_INDIVIDUAL);
 			/* the results are here */
 			ResultSet resultSet = psSelect.executeQuery();
 			/* a container for them all */
-			Map<Integer, IndividualCompetitor> competitors = new HashMap<Integer, IndividualCompetitor>();
-			
+			Map<Integer, Competitor> competitors = new HashMap<Integer, Competitor>();
 			/* reference for temporary competitor */
 			IndividualCompetitor competitor = null;
 			/* (int id, String firstName, String lastName, String bornDate, int idTeam) */
@@ -175,7 +174,7 @@ public class CompetitorsManager {
 						resultSet.getString("last_name"), 
 						resultSet.getDate("born_date").toString(),
 						resultSet.getInt("id_team"));
-				
+				competitor.setId(resultSet.getInt("id"));
 				competitors.put(competitor.getId(), competitor);
 			}
 			
@@ -183,6 +182,7 @@ public class CompetitorsManager {
 			resultSet.close();
 			psSelect.close();
 			conn.close();
+			System.out.println("We found " + competitors.size());
 			/* return the map */
 			return competitors;
 		}
@@ -192,17 +192,16 @@ public class CompetitorsManager {
 		 * @return
 		 * @throws SQLException
 		 */
-		public static Map<Integer, Team> findAllTeams() throws SQLException {
+		public static Map<Integer, Competitor> findAllTeams() throws SQLException {
 			/* open the connection */
 			Connection conn = DatabaseConnection.getConnection();
 			/* prepare the query */
 			PreparedStatement psSelect = conn
-			.prepareStatement("SELECT * FROM competitor ORDER BY id WHERE type=" + Integer.toString(Competitor.TYPE_TEAM));
+			.prepareStatement("SELECT * FROM competitor WHERE typeOf=" + Integer.toString(Competitor.TYPE_TEAM) + " ORDER BY id");
 			/* the results are here */
 			ResultSet resultSet = psSelect.executeQuery();
 			/* a container for them all */
-			Map<Integer, Team> competitors = new HashMap<Integer, Team>();
-			
+			Map<Integer, Competitor> competitors = new HashMap<Integer, Competitor>();			
 			/* reference for temporary competitor */
 			Team competitor = null;
 			/* loop through */
@@ -210,6 +209,7 @@ public class CompetitorsManager {
 				competitor = new Team(
 						resultSet.getString("team_name")
 						);
+				competitor.setId(resultSet.getInt("id"));
 				competitors.put(competitor.getId(), competitor);
 			}
 			
@@ -218,6 +218,7 @@ public class CompetitorsManager {
 			psSelect.close();
 			conn.close();
 			/* return all of them */
+			System.out.println("We found " + competitors.size());
 			return competitors;
 		}
 
@@ -228,8 +229,9 @@ public class CompetitorsManager {
 		 */
 		public static Map<Integer, Competitor> findAll() throws SQLException {
 			/* get all teams */
-			Map<Integer, Competitor> allCompetitors = new HashMap<>();
-			return competitors;
+			Map<Integer, Competitor> allComps = findAllIndividualCompetitors();
+			allComps.putAll(findAllTeams());
+			return allComps;
 		}
 		/**
 		 * This method updates the competitor in the db

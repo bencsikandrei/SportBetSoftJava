@@ -70,6 +70,7 @@ public class BettingSystem implements Betting {
 			this.allSubscribers = SubscribersManager.findAll();
 		} catch( SQLException sqlex) {
 			System.out.println("Error connecting to db");
+			sqlex.printStackTrace();
 			System.exit(-1);
 		}
 	}
@@ -983,7 +984,7 @@ public class BettingSystem implements Betting {
 			compDetails.add(comp.getName());
 			//compDetails.add(comp.getSport());
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
-			String stringDate = formatter.format(comp.getClosingDate()); 
+			String stringDate = formatter.format(comp.getClosingDate().getTime()); 
 			compDetails.add(stringDate);
 			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " bets.");
 			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " bets.");
@@ -1198,8 +1199,9 @@ public class BettingSystem implements Betting {
 	//	
 	//}
 	
-	public void printAllCompetitors() {
+	public void printAllCompetitors() throws SQLException {
 		
-		utility.printList(this.allCompetitors.values());
+		utility.printList(CompetitorsManager.findAll().values());
+		
 	}
 }
