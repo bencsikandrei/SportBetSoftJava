@@ -254,6 +254,20 @@ public class BettingSystem implements Betting {
 				|| set.size() != competitors.size() ) {
 			throw new CompetitionException();
 		}
+		/* Checks if all competitors have the same type */
+		int type = 0;
+		boolean sameType = true;
+		for (Competitor c : competitors){
+			if (type==0)
+				type = c.getType();
+			if (c.getType() != type){
+				sameType = false;
+				break;
+			}
+		}
+		if (!sameType){
+			throw new CompetitionException("Competitors have different types!");
+		}
 		/* create the Map */
 		Map<Integer, Competitor> tempCompetitors = new HashMap<>();
 		for (Competitor c : competitors){
@@ -494,6 +508,11 @@ public class BettingSystem implements Betting {
 		/* check if the competitor is already in the competition */
 		if(myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
+		}
+		/* Checks if the competitor has the same type */
+		List<Competitor> listOfCompetitors = new ArrayList<Competitor>(myCompetition.getAllCompetitors().values());
+		if (competitor.getType()!=listOfCompetitors.get(0).getType()){
+			throw new CompetitionException("Competitor type mismatch!");
 		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
