@@ -309,13 +309,19 @@ public class BetsManager {
 							+ "id_second=?, id_third=?, nb_tokens=?, "
 							+ "status=?, earnings=?"
 						+ "WHERE id=?");
-		
+		psUpdate.setInt(10, bet.getIdentifier());
 		psUpdate.setString(1, bet.getUserName());
 		psUpdate.setString(2, bet.getCompetition());
 		psUpdate.setInt(3, bet.getType());
 		psUpdate.setInt(4, bet.getWinner().getId());
-		psUpdate.setInt(5, bet.getSecond().getId());
-		psUpdate.setInt(6, bet.getThird().getId());
+		if( bet.getType() == bet.TYPE_PODIUM ) {
+			psUpdate.setInt(5, bet.getSecond().getId());
+			psUpdate.setInt(6, bet.getThird().getId());
+		}
+		else {
+			psUpdate.setNull(5, Types.INTEGER);
+			psUpdate.setNull(6, Types.INTEGER);
+		}
 		psUpdate.setLong(7, bet.getNumberOfTokens());
 		psUpdate.setInt(8, bet.getState());
 		psUpdate.setLong(9, bet.getEarnings());

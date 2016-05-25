@@ -1110,6 +1110,7 @@ public class BettingSystem implements Betting {
 			}
 			try {
 				/* update bet in the DB */
+				System.out.println("we are in pay and we have a bet " + b);
 				BetsManager.update(b);
 			} catch (SQLException sqlex) {
 				sqlex.printStackTrace();
