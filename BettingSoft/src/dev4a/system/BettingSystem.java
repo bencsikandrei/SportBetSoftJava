@@ -696,11 +696,11 @@ public class BettingSystem implements Betting {
 		if( myCompetition == null )
 			/* does not exist */
 			throw new ExistingCompetitionException();
-		//if( myCompetition.getStatus() != Competition.FINISHED)  {
 		/* checks if the competition is in a proper state */
 		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//	throw new CompetitionException();
-		//}
+		if(myCompetition.getStatus() != (Competition.SOLDOUT)){
+			throw new CompetitionException();
+		}
 		
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || winner == null){
@@ -737,12 +737,12 @@ public class BettingSystem implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new ExistingCompetitionException();
-		//if(myCompetition.getStatus() != (Competition.FINISHED)) 
+			throw new ExistingCompetitionException(); 
 		/* check if the competition is in a proper state */
+		if(myCompetition.getStatus() != (Competition.SOLDOUT)){
 		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//	throw new CompetitionException();
-		//}
+			throw new CompetitionException();
+		}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || !myCompetition.hasCompetitor(second) || !myCompetition.hasCompetitor(third)
 				|| winner == null || second == null || third == null){
@@ -1222,4 +1222,29 @@ public class BettingSystem implements Betting {
 		utility.printList(CompetitorsManager.findAll().values());
 		
 	}
+	
+	public void deleteCompetitorFromDB(Competitor competitor)
+			throws BadParametersException {
+		/* Checks if the competitor doesn't participate in any competition */
+		Map<String,Competition> competitions = new HashMap<String,Competition>();
+		try { 
+			competitions = ParticipantsManager.findAllByCompetitor(competitor.getId());
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		if (!competitions.isEmpty()){
+			new BadParametersException("This competitor still participates in competitions!");
+		}
+		try { 
+			CompetitorsManager.delete(competitor);
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		}	
+	}
+	
+	public void addCompetitiorToTeam(IndividualCompetitor indComp, Team team){
+		
+	}
+
+	
 }
