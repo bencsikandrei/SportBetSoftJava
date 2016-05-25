@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +50,11 @@ public class BettingSystem implements Betting {
 	/* the utilities */
 	Utils utility = new Utils();
 	/* the list of all competitors in the System */
-	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
+	private Map<Integer, Competitor> allCompetitors = new LinkedHashMap<>();
 	/* all the competitions in the system */
-	private Map<String,Competition> allCompetitions = new HashMap<>();
+	private Map<String,Competition> allCompetitions = new LinkedHashMap<>();
 	/* all the subscribers in the System */
-	private Map<String,Subscriber> allSubscribers = new HashMap<>();
+	private Map<String,Subscriber> allSubscribers = new LinkedHashMap<>();
 
 	public String getPassword(){
 		return this.mgrPassword;
@@ -266,7 +266,7 @@ public class BettingSystem implements Betting {
 			throw new CompetitionException("Competitors have different types!");
 		}
 		/* create the Map */
-		Map<Integer, Competitor> tempCompetitors = new HashMap<>();
+		Map<Integer, Competitor> tempCompetitors = new LinkedHashMap<>();
 		for (Competitor c : competitors){
 			tempCompetitors.put(c.getId(), c);
 		}
@@ -341,7 +341,7 @@ public class BettingSystem implements Betting {
 			/* set its competititors */
 			temp.setAllCompetitors(ParticipantsManager.findAllByCompetition(competition));
 			/* set its bets */
-			Map<Integer,Bet> bets = new HashMap<Integer,Bet>(BetsManager.findByCompetition(temp));
+			Map<Integer,Bet> bets = new LinkedHashMap<Integer,Bet>(BetsManager.findByCompetition(temp));
 			temp.setBets(new ArrayList<Bet>(bets.values()));	
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
@@ -451,7 +451,7 @@ public class BettingSystem implements Betting {
 		for (Competition comp : allCompetitions.values()){
 			try {
 				/* set its competitors */
-				Map<Integer,Competitor> competitors = new HashMap<Integer,Competitor>(ParticipantsManager.findAllByCompetition(comp.getName()));
+				Map<Integer,Competitor> competitors = new LinkedHashMap<Integer,Competitor>(ParticipantsManager.findAllByCompetition(comp.getName()));
 				this.allCompetitors.putAll(competitors);
 				comp.setAllCompetitors(competitors);			
 			} catch (SQLException sqlex) {
@@ -459,7 +459,7 @@ public class BettingSystem implements Betting {
 			}
 			try {
 				/* set its bets */
-				Map<Integer,Bet> bets = new HashMap<Integer,Bet>(BetsManager.findByCompetition(comp));
+				Map<Integer,Bet> bets = new LinkedHashMap<Integer,Bet>(BetsManager.findByCompetition(comp));
 				comp.setBets(new ArrayList<Bet>(bets.values()));			
 			} catch (SQLException sqlex) {
 				sqlex.printStackTrace();
@@ -708,7 +708,7 @@ public class BettingSystem implements Betting {
 		}
 		winner = myCompetition.getAllCompetitors().get(winner.getId());
 		/* now we can set the winner */  
-		Map<Integer, Competitor> listOfWinners = new HashMap<>();
+		Map<Integer, Competitor> listOfWinners = new LinkedHashMap<>();
 		listOfWinners.put(new Integer(winner.getId()), winner);
 		myCompetition.setWinners(listOfWinners);
 		this.allCompetitions.get(myCompetition.getName()).setWinners(listOfWinners);
@@ -750,15 +750,20 @@ public class BettingSystem implements Betting {
 		}
 		if (winner==second || second==third || winner==third)
 			throw new CompetitionException();
-		winner = myCompetition.getAllCompetitors().get(winner.getId());
+/*		winner = myCompetition.getAllCompetitors().get(winner.getId());
 		second = myCompetition.getAllCompetitors().get(second.getId());
-		third = myCompetition.getAllCompetitors().get(third.getId());
+		third = myCompetition.getAllCompetitors().get(third.getId());*/
 		/* now we can set the winner */  
-		Map<Integer, Competitor> listOfWinners = new HashMap<>();
+		Map<Integer, Competitor> listOfWinners = new LinkedHashMap<>();
+		
 		listOfWinners.put(new Integer(winner.getId()), winner);
 		listOfWinners.put(new Integer(second.getId()), second);
 		listOfWinners.put(new Integer(third.getId()), third);
-
+		
+		for (Competitor comp : listOfWinners.values()) {
+			System.out.println(" Settle " + comp);
+		}
+		
 		myCompetition.setWinners(listOfWinners); 
 		this.allCompetitions.get(myCompetition.getName()).setWinners(listOfWinners);
 		// TODO check type of competition?
@@ -927,7 +932,7 @@ public class BettingSystem implements Betting {
 		} catch(SubscriberException subex){
 			subex.printStackTrace();
 		}
-		Map<Integer, Bet> bets = new HashMap<Integer,Bet>();
+		Map<Integer, Bet> bets = new LinkedHashMap<Integer,Bet>();
 		try {
 			bets = BetsManager.findBySubscriber(tempSubscriber);
 		} catch (SQLException sqlex) {
@@ -1201,7 +1206,7 @@ public class BettingSystem implements Betting {
 	//		throw new CompetitionException();
 	//	}
 	//	
-	//	Map<Integer, Competitor> winners = new HashMap<>();
+	//	Map<Integer, Competitor> winners = new LinkedHashMap<>();
 	//	try {
 	//		winners.put(winner.getId(), getCompetitorById(winner.getId()));
 	//		winners.put(second.getId(), getCompetitorById(second.getId()));
@@ -1229,7 +1234,7 @@ public class BettingSystem implements Betting {
 	public void deleteCompetitorFromDB(Competitor competitor)
 			throws BadParametersException {
 		/* Checks if the competitor doesn't participate in any competition */
-		Map<String,Competition> competitions = new HashMap<String,Competition>();
+		Map<String,Competition> competitions = new LinkedHashMap<String,Competition>();
 		try { 
 			competitions = ParticipantsManager.findAllByCompetitor(competitor.getId());
 		} catch(SQLException sqlex) {

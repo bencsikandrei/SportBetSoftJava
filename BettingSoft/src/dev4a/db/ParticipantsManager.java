@@ -1,18 +1,14 @@
 package dev4a.db;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import dev4a.competitor.Competitor;
-
 import dev4a.competition.Competition;
-
+import dev4a.competitor.Competitor;
 import dev4a.utils.DatabaseConnection;
 
 public class ParticipantsManager {
@@ -89,7 +85,7 @@ public class ParticipantsManager {
 		ResultSet resultSet = psSelect.executeQuery();
 		
 		/*  (int id, String firstName, String lastName, String bornDate, int idTeam) */
-		Map<String, Competition> tempComps = new HashMap<>();
+		Map<String, Competition> tempComps = new LinkedHashMap<>();
 		String compName = "";
 		while(resultSet.next()) {
 			compName = resultSet.getString("name_competition");
@@ -119,7 +115,7 @@ public class ParticipantsManager {
 		/* the results are here */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* a container for them all */
-		Map<Integer, Competitor> competitors = new HashMap<Integer, Competitor>();
+		Map<Integer, Competitor> competitors = new LinkedHashMap<Integer, Competitor>();
 
 		/* reference for temporary competitor */
 		Competitor competitor = null;

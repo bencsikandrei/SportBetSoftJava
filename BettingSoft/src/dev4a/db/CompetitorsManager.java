@@ -6,13 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import dev4a.competitor.Competitor;
 import dev4a.competitor.IndividualCompetitor;
 import dev4a.competitor.Team;
-import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 
 public class CompetitorsManager {
@@ -165,7 +164,7 @@ public class CompetitorsManager {
 			/* the results are here */
 			ResultSet resultSet = psSelect.executeQuery();
 			/* a container for them all */
-			Map<Integer, Competitor> competitors = new HashMap<Integer, Competitor>();
+			Map<Integer, Competitor> competitors = new LinkedHashMap<Integer, Competitor>();
 			/* reference for temporary competitor */
 			IndividualCompetitor competitor = null;
 			/* (int id, String firstName, String lastName, String bornDate, int idTeam) */
@@ -202,7 +201,7 @@ public class CompetitorsManager {
 			/* the results are here */
 			ResultSet resultSet = psSelect.executeQuery();
 			/* a container for them all */
-			Map<Integer, Competitor> competitors = new HashMap<Integer, Competitor>();			
+			Map<Integer, Competitor> competitors = new LinkedHashMap<Integer, Competitor>();			
 			/* reference for temporary competitor */
 			Team competitor = null;
 			/* loop through */

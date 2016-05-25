@@ -145,7 +145,7 @@ public class CompetitionsManager {
 			id_second INT REFERENCES Competitor(id),    
 			id_third INT REFERENCES Competitor(id)
 		 */
-		Map<Integer, Competitor> tempComps = new HashMap<>();
+		Map<Integer, Competitor> tempComps = new LinkedHashMap<>();
 		int winner, second, third;
 		while(resultSet.next())
 		{	/* public Competition(String name, Calendar startDate, Calendar closingDate, 
@@ -200,11 +200,11 @@ public class CompetitionsManager {
 		/* the results are here */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* a container for them all */
-		Map<String, Competition> comps = new HashMap<>();
+		Map<String, Competition> comps = new LinkedHashMap<>();
 		/* refference for temp subscriber */
 		Competition tempCompetition = null;
 
-		Map<Integer, Competitor> tempWins = new HashMap<>();
+		Map<Integer, Competitor> tempWins = new LinkedHashMap<>();
 		int winner, second, third;
 		int count = 0;
 		
@@ -266,6 +266,9 @@ public class CompetitionsManager {
 		psUpdate.setString(5, competition.getSport());
 
 		Map<Integer, Competitor> tempMap = competition.getWinners();
+		for (Competitor comp : tempMap.values()) {
+			System.out.println(comp);
+		}
 
 		switch (tempMap.values().size()) {
 		case 3:

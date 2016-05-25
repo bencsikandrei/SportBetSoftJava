@@ -16,17 +16,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import dev4a.bets.Bet;
+import dev4a.competition.Competition;
 import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
-import dev4a.bets.*;
-import dev4a.competition.Competition;
-import dev4a.competitor.Competitor;
 
 public class BetsManager {
 
@@ -215,7 +211,7 @@ public class BetsManager {
 
 		ResultSet resultSet = psSelect.executeQuery();
 
-		Map<Integer, Bet> bets = new HashMap<>();
+		Map<Integer, Bet> bets = new LinkedHashMap<>();
 
 		Bet bet = null;
 		while (resultSet.next()) {
@@ -249,7 +245,7 @@ public class BetsManager {
 
 			ResultSet resultSet = psSelect.executeQuery();
 
-			Map<Integer, Bet> bets = new HashMap<>();
+			Map<Integer, Bet> bets = new LinkedHashMap<>();
 
 			Bet bet = null;
 			while (resultSet.next()) {
@@ -278,7 +274,7 @@ public class BetsManager {
 		
 		ResultSet resultSet = psSelect.executeQuery();
 		
-		Map<Integer, Bet> bets = new HashMap<Integer, Bet>();
+		Map<Integer, Bet> bets = new LinkedHashMap<Integer, Bet>();
 		
 		while (resultSet.next()) {
 			int tempId = resultSet.getInt("id");

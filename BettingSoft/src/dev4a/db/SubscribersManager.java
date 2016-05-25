@@ -15,11 +15,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import dev4a.bets.Bet;
 import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 
@@ -142,7 +140,7 @@ public class SubscribersManager {
 		/* the results are here */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* a container for them all */
-		Map<String,Subscriber> subs = new HashMap<>();
+		Map<String,Subscriber> subs = new LinkedHashMap<>();
 		/* refference for temp subscriber */
 		Subscriber sub = null;
 		int count = 0;

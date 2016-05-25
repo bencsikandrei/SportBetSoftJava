@@ -1,14 +1,13 @@
 package dev4a.competition;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev4a.competitor.*;
-import dev4a.subscriber.Subscriber;
-import dev4a.bets.*;
+import dev4a.bets.Bet;
+import dev4a.competitor.Competitor;
 /**
  * 
  * @author Group 4A
@@ -47,11 +46,11 @@ public class Competition {
 	/* the competitors of this competition
 	 * 
 	 */
-	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
+	private Map<Integer, Competitor> allCompetitors = new LinkedHashMap<>();
 	/* the winners of this competition
 	 * 
 	 */
-	private Map<Integer, Competitor> winners = new HashMap<>();
+	private Map<Integer, Competitor> winners = new LinkedHashMap<>();
 	/* the types of bets allowed of the competition 
 	 * UTF-8 string
 	 * possible values:

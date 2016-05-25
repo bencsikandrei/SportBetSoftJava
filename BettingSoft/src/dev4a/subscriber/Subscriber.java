@@ -50,7 +50,7 @@ public class Subscriber {
 	/* 
 	 * list of bets mapped by their ID
 	 */
-	private Map<Integer, Bet> bets = new HashMap<>();
+	private Map<Integer, Bet> bets = new LinkedHashMap<>();
 	
 	
 	/* Constructors of this class */
