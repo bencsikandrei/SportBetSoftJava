@@ -70,6 +70,7 @@ public class BettingSystem implements Betting {
 			this.allSubscribers = SubscribersManager.findAll();
 		} catch( SQLException sqlex) {
 			System.out.println("Error connecting to db");
+			sqlex.printStackTrace();
 			System.exit(-1);
 		}
 	}
@@ -1251,8 +1252,9 @@ public class BettingSystem implements Betting {
 	//	
 	//}
 	
-	public void printAllCompetitors() {
+	public void printAllCompetitors() throws SQLException {
 		
-		utility.printList(this.allCompetitors.values());
+		utility.printList(CompetitorsManager.findAll().values());
+		
 	}
 }
