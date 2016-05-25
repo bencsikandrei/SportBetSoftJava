@@ -1086,7 +1086,7 @@ public class BettingSystem implements Betting {
 		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
 			if(b.getType()==1){ // type winner
-				if(competition.getWinners()==b.getWinner()){
+				if(competition.getWinners().equals(b.getWinner())){
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
@@ -1097,9 +1097,9 @@ public class BettingSystem implements Betting {
 					b.setState(Bet.LOST);
 			}
 			else if(b.getType()==2){
-				if(competition.getWinners().get(0)==b.getWinner() && 
-						competition.getWinners().get(1)==b.getSecond() && 
-						competition.getWinners().get(2)==b.getThird()){
+				if(competition.getWinners().get(0).equals(b.getWinner()) && 
+						competition.getWinners().get(1).equals(b.getSecond()) && 
+						competition.getWinners().get(2).equals(b.getThird())){
 					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnPodium.add(b.getNumberOfTokens());
 					winningTokensOnPodium += b.getNumberOfTokens();
