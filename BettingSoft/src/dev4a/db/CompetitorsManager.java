@@ -114,7 +114,6 @@ public class CompetitorsManager {
 		PreparedStatement psSelect = conn.prepareStatement("SELECT * FROM competitor WHERE id=?");
 		/* the query value */
 		psSelect.setInt(1, id);
-		System.out.println("the id asked for is " + id);
 //		/* execute it */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* declare the competitor if we don't fine him, return a null */
@@ -147,7 +146,6 @@ public class CompetitorsManager {
 		psSelect.close();
 		conn.close();
 		/* return the found (or null) */
-		System.out.println("We are in findByID and we have found + " + competitor);
 		return competitor;
 	}
 
@@ -186,7 +184,6 @@ public class CompetitorsManager {
 			resultSet.close();
 			psSelect.close();
 			conn.close();
-			System.out.println("We found " + competitors.size());
 			/* return the map */
 			return competitors;
 		}
@@ -222,7 +219,6 @@ public class CompetitorsManager {
 			psSelect.close();
 			conn.close();
 			/* return all of them */
-			System.out.println("We found " + competitors.size());
 			return competitors;
 		}
 

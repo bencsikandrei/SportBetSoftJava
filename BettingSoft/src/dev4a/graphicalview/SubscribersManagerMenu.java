@@ -40,8 +40,7 @@ public class SubscribersManagerMenu extends Menu {
 
 		System.out.println("5. List subscribers");
 		
-		System.out.println("*. Go back");		
-		
+		System.out.println("*. Go back");			
 		
 		System.out.println("----------------------------");
 
@@ -72,7 +71,7 @@ public class SubscribersManagerMenu extends Menu {
 		case 1:
 			try {
 
-				System.out.println("Insert last name");
+				System.out.println("Insert last name"); 
 				String lastName = br.readLine();
 				System.out.println("Insert first name");
 				String firstName = br.readLine();
