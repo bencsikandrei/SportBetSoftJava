@@ -1086,7 +1086,8 @@ public class BettingSystem implements Betting {
 		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
 			if(b.getType()==1){ // type winner
-				if(((ArrayList<Competitor>)competition.getWinners().values()).get(0).equals(b.getWinner())){
+				List<Competitor> list = new ArrayList<Competitor> (competition.getWinners().values());
+				if(list.get(0).equals(b.getWinner())){
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
