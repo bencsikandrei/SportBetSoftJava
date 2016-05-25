@@ -756,8 +756,8 @@ public class BettingSystem implements Betting {
 		/* now we can set the winner */  
 		Map<Integer, Competitor> listOfWinners = new HashMap<>();
 		listOfWinners.put(new Integer(winner.getId()), winner);
-		listOfWinners.put(new Integer(second.getId()), winner);
-		listOfWinners.put(new Integer(third.getId()), winner);
+		listOfWinners.put(new Integer(second.getId()), second);
+		listOfWinners.put(new Integer(third.getId()), third);
 
 		myCompetition.setWinners(listOfWinners); 
 		this.allCompetitions.get(myCompetition.getName()).setWinners(listOfWinners);
