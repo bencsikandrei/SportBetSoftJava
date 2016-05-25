@@ -35,7 +35,7 @@ public class CLIBettingSoft {
 		/* to read the input */
 		br = new BufferedReader(new InputStreamReader(System.in));
 		/* ask for authentication as long as the user porovides a wrong pass */
-		while(!askForAuthentication1());
+		while(!askForAuthentication());
 		/* show the first menu */
 		this.currentMenu = new ManagerMenu(bettingSys, storedPassword);
 		/* while we still want to to stuff */
