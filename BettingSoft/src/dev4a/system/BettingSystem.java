@@ -332,6 +332,12 @@ public class BettingSystem implements Betting {
 		try {
 			/* get the competition */
 			temp = CompetitionsManager.findByName(competition);
+		} catch (SQLException sqlex) {
+			sqlex.printStackTrace();
+		}
+		if(temp == null) 
+			return null;
+		try {
 			/* set its competititors */
 			temp.setAllCompetitors(ParticipantsManager.findAllByCompetition(competition));
 			/* set its bets */
@@ -340,6 +346,8 @@ public class BettingSystem implements Betting {
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
+		
+		
 		return temp;
 	}
 
@@ -1198,6 +1206,7 @@ public class BettingSystem implements Betting {
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
+		System.out.println("we are in getCompetitorByID :" + tempComp);
 		return tempComp;
 	}
 

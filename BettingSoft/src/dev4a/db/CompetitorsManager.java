@@ -114,6 +114,7 @@ public class CompetitorsManager {
 		PreparedStatement psSelect = conn.prepareStatement("SELECT * FROM competitor WHERE id=?");
 		/* the query value */
 		psSelect.setInt(1, id);
+		System.out.println("the id asked for is " + id);
 //		/* execute it */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* declare the competitor if we don't fine him, return a null */
@@ -130,6 +131,7 @@ public class CompetitorsManager {
 						(resultSet.getDate("born_date")).toString(), 
 						resultSet.getInt("id_team")
 						);
+				
 			} 
 			else 
 				/* it's a team */
@@ -137,6 +139,7 @@ public class CompetitorsManager {
 					competitor = new Team(
 							resultSet.getString("team_name")
 							);
+					competitor.setId(id);
 				}
 		}
 		/* clean up */
@@ -144,6 +147,7 @@ public class CompetitorsManager {
 		psSelect.close();
 		conn.close();
 		/* return the found (or null) */
+		System.out.println("We are in findByID and we have found + " + competitor);
 		return competitor;
 	}
 

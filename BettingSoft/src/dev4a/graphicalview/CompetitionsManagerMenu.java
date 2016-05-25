@@ -105,11 +105,11 @@ public class CompetitionsManagerMenu extends Menu {
 				ArrayList<Competitor> competitors = new ArrayList<>();
 				do {
 					competitors.add(bettingSystem.getCompetitorById(compId));
+					System.out.println("got " + bettingSystem.getCompetitorById(compId));
 					System.out.println("Insert competitor id");
 				} while( (compId = Integer.parseInt(br.readLine())) != -1 );
 
-				if(this.bettingSystem != null)
-					this.bettingSystem.addCompetition(competition, cal, competitors, this.storedPass);
+				this.bettingSystem.addCompetition(competition, cal, competitors, this.storedPass);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();

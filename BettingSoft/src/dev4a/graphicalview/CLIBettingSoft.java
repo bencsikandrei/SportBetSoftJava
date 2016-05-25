@@ -19,7 +19,7 @@ public class CLIBettingSoft {
 	/* the choice */
 	private int selected;
 	/* the password we type when we try to authenticate */
-	private String storedPassword = "1234";
+	private String storedPassword = "1234567";
 	/* we read input from the keyboard */
 	private BufferedReader br;
 	/* the menu we are in at the moment, so we can keep track */
@@ -35,7 +35,7 @@ public class CLIBettingSoft {
 		/* to read the input */
 		br = new BufferedReader(new InputStreamReader(System.in));
 		/* ask for authentication as long as the user porovides a wrong pass */
-		while(!askForAuthentication());
+		while(!askForAuthentication1());
 		/* show the first menu */
 		this.currentMenu = new ManagerMenu(bettingSys, storedPassword);
 		/* while we still want to to stuff */

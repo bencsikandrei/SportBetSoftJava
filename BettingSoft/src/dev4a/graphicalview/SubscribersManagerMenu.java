@@ -102,6 +102,7 @@ public class SubscribersManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;
+			
 		case 3:
 			try {
 
@@ -137,6 +138,7 @@ public class SubscribersManagerMenu extends Menu {
 				ex.printStackTrace();
 			}
 			break;
+			
 		case 5:
 			try {
 
