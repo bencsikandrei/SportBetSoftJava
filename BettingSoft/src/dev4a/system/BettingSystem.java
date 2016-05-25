@@ -653,6 +653,20 @@ public class BettingSystem implements Betting {
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
 		}
+		/* Is it a team? */
+		//if(competitor.getType() == Competitor.TYPE_TEAM){
+		//	Map<Integer,IndividualCompetitor> indComps = null;
+		//	try{
+		//		indComps = CompetitorsManager.findAllIndividualCompetitors();
+		//	} catch(SQLException sqlex) {
+		//		sqlex.printStackTrace();
+		//	}
+		//	for(indComps.....)
+		//	if(indComps.values().){
+		//		
+		//	}		
+		//}
+
 		/* Deletes the competitors if needed because Mayte doesn't want Competitors without Competition */
 		boolean eliminates = true;
 		updateAllCompetitions();
