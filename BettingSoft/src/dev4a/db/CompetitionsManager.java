@@ -147,6 +147,7 @@ public class CompetitionsManager {
 		 */
 		Map<Integer, Competitor> tempComps = new LinkedHashMap<>();
 		int winner, second, third;
+		int status;
 		while(resultSet.next())
 		{	/* public Competition(String name, Calendar startDate, Calendar closingDate, 
 			String sport, Map<Integer, Competitor> allCompetitors, String betType) */
@@ -158,6 +159,7 @@ public class CompetitionsManager {
 			winner = resultSet.getInt("id_winner");
 			second = resultSet.getInt("id_second");
 			third = resultSet.getInt("id_third");
+			status = resultSet.getInt("status");
 			/* store them */
 			tempComps.put(new Integer(winner), CompetitorsManager.findById(winner));
 			tempComps.put(new Integer(second), CompetitorsManager.findById(second));
@@ -176,6 +178,7 @@ public class CompetitionsManager {
 					tempComps,
 					"pw"
 					);
+			tempCompetition.setStatus(status);
 
 		}
 
