@@ -172,7 +172,7 @@ public class Utils {
 		/* the pattern to be respected by the string */
 		String pattern = "^((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$";
 		/* */
-		if(regexpParser(pattern, date))
+		if(!regexpParser(pattern, date))
 			throw new BadParametersException();
 	}
 

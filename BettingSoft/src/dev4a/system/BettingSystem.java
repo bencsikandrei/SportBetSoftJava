@@ -496,6 +496,8 @@ public class BettingSystem implements Betting {
 			//if( !(myCompetition.getStatus() == Competition.STARTED) ) {
 			throw new CompetitionException();
 		}
+		if( !(myCompetition.getStatus() == Competition.STARTED) )
+			throw new CompetitionException();
 		/* check if the competitor is already in the competition */
 		if(myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
@@ -527,9 +529,16 @@ public class BettingSystem implements Betting {
 		/* Checks if the competitor already exists */
 		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
 		for(Competitor c: listAllCompetitors){
-			if(c.toString().equals(firstName + " " + lastName + " born " + borndate))
-				// It exists! Returned!
-				return c;
+			if(c instanceof IndividualCompetitor){
+				IndividualCompetitor indComp = (IndividualCompetitor) c;
+				if(indComp.getFirstName().equals(firstName) 
+						&& indComp.getLastName().equals(lastName)
+						&& indComp.getBornDate().equals(borndate)){
+					// It exists! Returned!
+					System.out.println("The competitor already exists!");
+					return c;
+				}
+			}
 		}
 		/* It does not exist so the competitor is created  */
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
@@ -554,9 +563,14 @@ public class BettingSystem implements Betting {
 		/* Checks if the competitor already exists */
 		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
 		for(Competitor c: listAllCompetitors){
-			if(c.toString().equals(name))
-				// It exists! Returned!
-				return c;
+			if (c instanceof Team){
+				Team team = (Team) c;
+				if (team.getName().equals(name)){
+					// It exists! Returned!
+					System.out.println("The team already exists!");
+					return c;
+				}
+			}
 		}
 		/* It does not exist so the competitor is created  */
 		Competitor tempCompetitor = new Team(name);
