@@ -21,6 +21,8 @@ public class CompetitorsManagerMenu extends Menu {
 	private static final int LISTCOMPETITORSINCOMPETITION = 6;
 	private static final int LISTALL = 7;
 	private static final int LISTCOMPETITIONS = 8;
+	private static final int DELETECOMPETITORFROMDB = 9;
+	
 	
 	/**
 	 * Initialize the menu and set up the parent
@@ -64,6 +66,8 @@ public class CompetitorsManagerMenu extends Menu {
 		System.out.println("7. List all competitors");
 		
 		System.out.println("8. List competitions");	
+		
+		System.out.println("9. Delete competitor from DB");	
 		
 		System.out.println("*. Go back");
 		
@@ -254,7 +258,28 @@ public class CompetitorsManagerMenu extends Menu {
 				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
-		
+			
+		case DELETECOMPETITORFROMDB:
+			try {
+				/* insert the data */
+				System.out.println("Insert competitor id");
+
+				int competitorId = Integer.parseInt(br.readLine());
+				
+				System.out.println("NOTE! This function is in BETA!");
+				
+				bettingSystem.deleteCompetitorFromDB(
+						bettingSystem.getCompetitorById(competitorId), 
+						this.storedPass);
+				
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
+			}
+			break;
 		default:
 			return -1;
 		}
