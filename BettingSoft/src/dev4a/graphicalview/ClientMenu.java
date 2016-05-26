@@ -1,8 +1,10 @@
 package dev4a.graphicalview;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import dev4a.exceptions.AuthenticationException;
 import dev4a.system.BettingSystem;
 
 public class ClientMenu extends Menu {
@@ -81,8 +83,12 @@ public class ClientMenu extends Menu {
 						this.storedPass
 						);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
@@ -113,8 +119,12 @@ public class ClientMenu extends Menu {
 						this.storedPass
 						);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
@@ -125,8 +135,12 @@ public class ClientMenu extends Menu {
 				
 				this.bettingSystem.infosSubscriber(username, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -140,8 +154,10 @@ public class ClientMenu extends Menu {
 				this.bettingSystem.consultResultsCompetition(competition);
 				
 				
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 		
@@ -155,8 +171,13 @@ public class ClientMenu extends Menu {
 				String newPassword = br.readLine();
 				/* change pass */
 				bettingSystem.changeSubsPwd(username, this.storedPass, newPassword);
+				
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception e) {
-				System.out.println("Something went wrong..");
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;	
 		case 6:
@@ -164,8 +185,8 @@ public class ClientMenu extends Menu {
 
 				this.bettingSystem.printCompetitions();
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 		case 7:
@@ -178,10 +199,13 @@ public class ClientMenu extends Menu {
 				/* print */
 				this.bettingSystem.printCompetitors(competition);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
+			
 		default:
 			return -1;
 		}

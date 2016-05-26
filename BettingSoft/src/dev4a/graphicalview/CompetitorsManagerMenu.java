@@ -1,8 +1,14 @@
 package dev4a.graphicalview;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import dev4a.competition.ExistingCompetitionException;
+import dev4a.competitor.ExistingCompetitorException;
+import dev4a.exceptions.AuthenticationException;
+import dev4a.exceptions.BadParametersException;
+import dev4a.subscriber.ExistingSubscriberException;
 import dev4a.system.BettingSystem;
 
 public class CompetitorsManagerMenu extends Menu {
@@ -99,8 +105,14 @@ public class CompetitorsManagerMenu extends Menu {
 				/* persist */
 				this.bettingSystem.createCompetitor(lastName, firstName, borndate, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (BadParametersException e) {
+				System.out.println("A wrong paramater was given.\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
@@ -114,8 +126,14 @@ public class CompetitorsManagerMenu extends Menu {
 				/* persist */
 				this.bettingSystem.createCompetitor(teamName, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (BadParametersException e) {
+				System.out.println("A wrong paramater was given.\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -132,8 +150,16 @@ public class CompetitorsManagerMenu extends Menu {
 				/* persist */
 				this.bettingSystem.deleteCompetitor(competition, bettingSystem.getCompetitorById(Integer.valueOf(id)), this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (ExistingCompetitionException e) {
+				System.out.println("Non existing competition.\nPlease try again.");
+			} catch (ExistingCompetitorException e) {
+				System.out.println("Competitor does not exist!.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -151,8 +177,16 @@ public class CompetitorsManagerMenu extends Menu {
 				
 				this.bettingSystem.addCompetitor(competition, bettingSystem.getCompetitorById(competitor), this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (ExistingCompetitionException e) {
+				System.out.println("Non existing competition.\nPlease try again.");
+			} catch (ExistingCompetitorException e) {
+				System.out.println("Competitor does not exist!.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -167,10 +201,19 @@ public class CompetitorsManagerMenu extends Menu {
 
 				int competitorId = Integer.parseInt(br.readLine());
 				
-				System.out.println("For the moment this does not work..");
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
+				System.out.println("NOTE! This function is in BETA!");
+				
+				bettingSystem.addCompetitiorToTeam(
+						bettingSystem.getCompetitorById(competitorId), 
+						bettingSystem.getCompetitorById(teamId), 
+						this.storedPass);
+				
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;	
 			
@@ -183,8 +226,10 @@ public class CompetitorsManagerMenu extends Menu {
 				/* print */
 				this.bettingSystem.printCompetitors(competition);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -193,8 +238,8 @@ public class CompetitorsManagerMenu extends Menu {
 				/* print */
 				this.bettingSystem.printAllCompetitors();
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -203,8 +248,8 @@ public class CompetitorsManagerMenu extends Menu {
 				/* print */
 				this.bettingSystem.printCompetitions();
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 		

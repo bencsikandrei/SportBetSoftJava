@@ -1,12 +1,15 @@
 package dev4a.graphicalview;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
 import dev4a.competitor.Competitor;
+import dev4a.exceptions.AuthenticationException;
 import dev4a.system.BettingSystem;
 
 public class CompetitionsManagerMenu extends Menu {
@@ -111,8 +114,12 @@ public class CompetitionsManagerMenu extends Menu {
 
 				this.bettingSystem.addCompetition(competition, cal, competitors, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
@@ -126,8 +133,12 @@ public class CompetitionsManagerMenu extends Menu {
 
 				this.bettingSystem.cancelCompetition(competition, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 		case DELETE:
@@ -139,8 +150,12 @@ public class CompetitionsManagerMenu extends Menu {
 
 				this.bettingSystem.deleteCompetition(competition, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -161,8 +176,12 @@ public class CompetitionsManagerMenu extends Menu {
 						bettingSystem.getCompetitorById(winner),						
 						this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 
@@ -197,8 +216,12 @@ public class CompetitionsManagerMenu extends Menu {
 						bettingSystem.getCompetitorById(third),
 						this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 
@@ -207,8 +230,10 @@ public class CompetitionsManagerMenu extends Menu {
 				/* print everybody */
 				this.bettingSystem.printSubscribers(this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -217,8 +242,8 @@ public class CompetitionsManagerMenu extends Menu {
 				/* all competitions */
 				this.bettingSystem.printCompetitions();
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			

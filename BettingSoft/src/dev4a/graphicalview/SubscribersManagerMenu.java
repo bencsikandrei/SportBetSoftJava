@@ -1,11 +1,24 @@
 package dev4a.graphicalview;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import dev4a.exceptions.AuthenticationException;
+import dev4a.exceptions.BadParametersException;
+import dev4a.subscriber.ExistingSubscriberException;
+import dev4a.subscriber.SubscriberException;
 import dev4a.system.BettingSystem;
 
 public class SubscribersManagerMenu extends Menu {
+	private static final int SUBSCRIBE = 1;
+	private static final int UNSUBSCRIBE = 2;
+	private static final int CREDIT = 3;
+	private static final int DEBIT = 4;
+	private static final int LIST = 5;
+
+	
+	
 	/**
 	 * Initialize the menu and set up the parent
 	 * @param bs
@@ -68,7 +81,7 @@ public class SubscribersManagerMenu extends Menu {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		switch (selected) {
-		case 1:
+		case SUBSCRIBE:
 			try {
 
 				System.out.println("Insert last name"); 
@@ -82,13 +95,23 @@ public class SubscribersManagerMenu extends Menu {
 				if(this.bettingSystem != null)
 					this.bettingSystem.subscribe(lastName, firstName, username, borndate, this.storedPass);
 
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (ExistingSubscriberException e) {
+				System.out.println("The subscriber already exists in the DB.\nPlease try another username.");
+			} catch (SubscriberException e) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (BadParametersException e) {
+				System.out.println("A wrong paramater was given.\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				System.out.println("Something went wrong.\nPlease try again!");
 			}
 
 			break;
 
-		case 2:
+		case UNSUBSCRIBE: 
 			try {
 
 				System.out.println("Insert username");
@@ -96,13 +119,17 @@ public class SubscribersManagerMenu extends Menu {
 				String username = br.readLine();
 				
 				this.bettingSystem.unsubscribe(username, this.storedPass);
-
+			} catch (AuthenticationException e) {
+				System.out.println("A wrong password was given.\nPlease try again.");
+			} catch (ExistingSubscriberException e) {
+				System.out.println("The subscriber does not exist.\nPlease try again");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				System.out.println("Something went wrong.\nPlease try again!");
 			}
-			break;
 			
-		case 3:
+		case CREDIT:
 			try {
 
 				System.out.println("Insert username");
@@ -114,13 +141,20 @@ public class SubscribersManagerMenu extends Menu {
 				long numberOfTokens = Long.parseLong(br.readLine());
 				
 				this.bettingSystem.creditSubscriber(username, numberOfTokens, this.storedPass);
-
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (ExistingSubscriberException e) {
+				System.out.println("The subscriber already exists in the DB.\nPlease try another username.");
+			} catch (BadParametersException e) {
+				System.out.println("A wrong paramater was given.\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				System.out.println("Something went wrong.\nPlease try again!");
 			}
 			break;
 			
-		case 4:
+		case DEBIT:
 			try {
 
 				System.out.println("Insert username");
@@ -133,20 +167,31 @@ public class SubscribersManagerMenu extends Menu {
 				
 				this.bettingSystem.debitSubscriber(username, numberOfTokens, this.storedPass);
 
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (ExistingSubscriberException e) {
+				System.out.println("The subscriber already exists in the DB.\nPlease try another username.");
+			} catch (BadParametersException e) {
+				System.out.println("A wrong paramater was given.\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				System.out.println("Something went wrong.\nPlease try again!");
 			}
 			break;
 			
-		case 5:
+		case LIST:
 			try {
 
 				this.bettingSystem.printSubscribers(this.storedPass);
-
+				
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
 			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+				System.out.println("Something went wrong.\nPlease try again!");
+			}		
 			break;
+			
 		default:
 			return -1;
 		}

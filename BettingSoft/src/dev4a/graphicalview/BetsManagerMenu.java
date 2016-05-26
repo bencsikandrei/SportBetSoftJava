@@ -1,8 +1,10 @@
 package dev4a.graphicalview;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import dev4a.exceptions.AuthenticationException;
 import dev4a.system.BettingSystem;
 
 public class BetsManagerMenu extends Menu {
@@ -79,11 +81,12 @@ public class BetsManagerMenu extends Menu {
 
 				System.out.println("Insert username");
 				String username = br.readLine();
-				
-				
+							
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
@@ -103,8 +106,10 @@ public class BetsManagerMenu extends Menu {
 
 				this.bettingSystem.printSubscribers(this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
@@ -113,8 +118,8 @@ public class BetsManagerMenu extends Menu {
 
 				this.bettingSystem.printCompetitions();
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
