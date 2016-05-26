@@ -515,7 +515,7 @@ public class BettingSystem implements Betting {
 		/* Checks if the competitor already exists */
 		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
 		for(Competitor c: listAllCompetitors){
-			if(c.toString() == firstName + " " + lastName + " born " + borndate)
+			if(c.toString().equals(firstName + " " + lastName + " born " + borndate))
 				// It exists! Returned!
 				return c;
 		}
@@ -542,7 +542,7 @@ public class BettingSystem implements Betting {
 		/* Checks if the competitor already exists */
 		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
 		for(Competitor c: listAllCompetitors){
-			if(c.toString() == name)
+			if(c.toString().equals(name))
 				// It exists! Returned!
 				return c;
 		}
@@ -751,7 +751,7 @@ public class BettingSystem implements Betting {
 				|| winner == null || second == null || third == null){
 			throw new CompetitionException();
 		}
-		if (winner==second || second==third || winner==third)
+		if (winner.equals(second) || second.equals(third) || winner.equals(third))
 			throw new CompetitionException();
 /*		winner = myCompetition.getAllCompetitors().get(winner.getId());
 		second = myCompetition.getAllCompetitors().get(second.getId());
@@ -954,7 +954,7 @@ public class BettingSystem implements Betting {
 		/* get the bets */
 		for ( Bet b : tempSubscriber.getBets().values() ) {
 			/* if it's the right competition */
-			if( b.getCompetition() == competition ){
+			if( b.getCompetition().equals(competition) ){
 				/* Returning money to subscriber... */
 				tempSubscriber.credit(b.getNumberOfTokens());
 				this.allSubscribers.get(tempSubscriber.getUserName()).credit(b.getNumberOfTokens());
