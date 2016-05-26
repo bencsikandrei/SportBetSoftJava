@@ -51,8 +51,8 @@ public class Main {
 		 * uncomment CLIBETTINGSOFT for a manager CLI (comment the other)
 		 * uncomment CLIENTBETTINGSOFT for a client CLI (comment the other)
 		 */
-		CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
-		//CLIClient cli = new CLIClient(bettingSystem);
+		//CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
+		CLIClient cli = new CLIClient(bettingSystem);
 	}
 	/* TESTS */
 	/*try {
