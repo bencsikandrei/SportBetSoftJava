@@ -47,13 +47,13 @@ public class Utils {
 		for (List<String> pList : printable ) {
 			System.out.print("Index " + count + " : ");
 			for ( String pString : pList ) {
-				System.out.format("%30s |", pString);
+				System.out.format("%20s |", pString);
 			}
 			++count;
 			System.out.println();
 		}
 	}
-
+	/* format and print */
 	public void printList(Collection<Competitor> listCompetitors) {
 		
 		int count = 0;

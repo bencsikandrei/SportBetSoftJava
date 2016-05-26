@@ -59,7 +59,9 @@ public class SubscribersManagerMenu extends Menu {
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-4");
+		System.out.println("Please select an option from 1-5");
+		
+		System.out.println("To go back use a number higher than the ones in the list.");
 
 		System.out.println("");
 
@@ -92,8 +94,8 @@ public class SubscribersManagerMenu extends Menu {
 				String username = br.readLine();
 				System.out.println("Insert born date");
 				String borndate = br.readLine();
-				if(this.bettingSystem != null)
-					this.bettingSystem.subscribe(lastName, firstName, username, borndate, this.storedPass);
+				
+				this.bettingSystem.subscribe(lastName, firstName, username, borndate, this.storedPass);
 
 			} catch (AuthenticationException ex) {
 				System.out.println("Authentication error!\nPlease try again.");

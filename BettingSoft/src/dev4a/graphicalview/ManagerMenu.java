@@ -54,7 +54,9 @@ public class ManagerMenu extends Menu {
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-7");
+		System.out.println("Please select an option from 1-7");
+		
+		System.out.println("To go back use a number higher than the ones in the list.");
 
 		System.out.println("");
 
@@ -87,6 +89,10 @@ public class ManagerMenu extends Menu {
 				System.out.println("Something went wrong.\nPlease try again!");
 			}
 			this.storedPass = newPassword;
+			
+			for (Menu menu : this.possibleMenus) {
+				menu.setPassword(this.storedPass);
+			}
 			break;	
 		case 6:
 			try {

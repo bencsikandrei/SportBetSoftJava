@@ -69,7 +69,9 @@ public class CompetitionsManagerMenu extends Menu {
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-7");
+		System.out.println("Please select an option from 1-7");
+		
+		System.out.println("To go back use a number higher than the ones in the list.");
 
 		System.out.println("");
 

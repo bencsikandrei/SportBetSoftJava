@@ -6,13 +6,16 @@ import dev4a.bets.Bet;
 /**
  * 
  * 
- * @author Group 4A
+ * @author Group 4A Ahmed and Andrei
  * @version 0.1 (BETA)
  * 
  * POJO !
  * This class serves the purpose of modeling
  * subscribers in the BETTINGSOFT application
  * for the Fil Rouge project (Spring 2016)
+ * 
+ * Contains all the manipulations tied to Subscriber
+ * Debit, Credit, Change pass, Number of tokens details
  * 
  */
 public class Subscriber {
@@ -95,8 +98,16 @@ public class Subscriber {
 		/* check if we are respecting constraints */
 		if (amount > 0 && amount <= this.numberOfTokens ) 
 			this.numberOfTokens -= amount;
-		
+		/* just a check to see if the correct number was drawn */
 		return this.numberOfTokens;
+	}
+	
+	/* cancel a bet */
+	public long cancelBet(Bet betToCancel) {
+		/* find the bet we want to cancel */
+		this.bets.remove(betToCancel.getIdentifier());
+		/* show the amount we get back */
+		return betToCancel.getNumberOfTokens();
 	}
 	
 	/* password management */
@@ -106,6 +117,7 @@ public class Subscriber {
 			return false;
 		/* now set the new one */
 		setPassword(newPassword);
+		/* modify pass and return a confirmation */
 		return true;
 	}
 	
@@ -177,13 +189,7 @@ public class Subscriber {
 		this.bets.put(bet.getIdentifier(), bet);
 		
 	}
-	/* cancel a bet */
-	public long cancelBet(Bet betToCancel) {
-		/* find the bet we want to cancel */
-		this.bets.remove(betToCancel.getIdentifier());
-		/* show the amount we get back */
-		return betToCancel.getNumberOfTokens();
-	}
+	
 	/**
 	 * The unique identifier for the subscriber is the 
 	 * username

@@ -15,7 +15,7 @@ public class CLIClient {
 	/* the choice */
 	private int selected;
 	/* the password we type when we try to authenticate */
-	private String storedPassword = "1234";
+	private String storedPassword = "";
 	/* we read input from the keyboard */
 	private BufferedReader br;
 	/* the menu we are in at the moment, so we can keep track */
@@ -41,7 +41,7 @@ public class CLIClient {
 		/* ask for authentication as long as the user porovides a wrong pass */
 		while(!askForAuthentication(username));
 		/* show the first menu */
-		this.currentMenu = new ClientMenu(bettingSys, storedPassword);
+		this.currentMenu = new ClientMenu(bettingSys, storedPassword, username);
 		/* while we still want to to stuff */
 		while(true) {
 			/* show the instructions for the menu in a list fashion */

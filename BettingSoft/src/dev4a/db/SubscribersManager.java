@@ -188,6 +188,31 @@ public class SubscribersManager {
 		psUpdate.close();
 		conn.close();
 	}
+	
+	/**
+	 * This method updates the subscriber in the db
+	 * @param sub
+	 * @param newPassword
+	 * @throws SQLException
+	 */
+	public static void updatePassword(Subscriber sub, String oldPassword, String newPassword) throws SQLException {
+		/* open the connection */
+		Connection conn = DatabaseConnection.getConnection();
+		/* create the update query */
+		PreparedStatement psUpdate = conn
+				.prepareStatement("UPDATE subscriber SET password=? WHERE username LIKE ?");
+		/* update all necessary fields */
+		psUpdate.setString(2, sub.getUserName());
+		
+		psUpdate.setString(1, newPassword);
+		
+		sub.changePassword(oldPassword, newPassword);
+		/* execute the query */
+		psUpdate.executeUpdate();
+		/* clean up */
+		psUpdate.close();
+		conn.close();
+	}
 	/**
 	 * This method does the delete
 	 * @param sub

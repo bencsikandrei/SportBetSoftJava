@@ -37,4 +37,8 @@ public class Menu {
 	protected Menu getParent() {
 		return this.parentMenu;
 	}
+	
+	protected void setPassword(String newPassword) {
+		this.storedPass = newPassword;
+	}
 }

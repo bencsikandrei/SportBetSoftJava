@@ -87,7 +87,7 @@ public class CompetitorsManager {
 				/* if something occured do not commit anything and rollback !*/
 				conn.rollback();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				System.out.println("Error conencting to DB.");
 			}
 			/* reset the state to the default */
 			conn.setAutoCommit(true);

@@ -18,8 +18,9 @@ import dev4a.system.BettingSystem;
 import dev4a.utils.DatabaseConnection;
 
 public class Main {
-	
+	/* the managers pass */
 	private static String managerPass;
+	/* just a defautl password */
 	private static String tempPass = "1234";
 	
 	public static void main(String[] args) {
@@ -30,9 +31,11 @@ public class Main {
 			System.out.println("Could not connect to DB!");
 		}
 		if( managerPass == null) {
-			System.out.println("New system! Welcome, default pass is 1234. Please change it!");
+			/* is it a new system , a fresh DB ? */
+			System.out.println("New system! Welcome, default pass is 1234. Please change it!\nDatabase was truncated");
 			managerPass = "1234";
 			try {
+				initializeDatabase();
 				/* persist the first pass */
 				RootManager.persist(managerPass);
 			} catch (SQLException e) {
@@ -43,6 +46,11 @@ public class Main {
 		final BettingSystem bettingSystem = new BettingSystem(managerPass);
 		
 		/* fire up the CLI */
+		/* it being a prototype, we have only one main and a single program
+		 * to launch the two CLIs we just swap out one of them with the other
+		 * uncomment CLIBETTINGSOFT for a manager CLI (comment the other)
+		 * uncomment CLIENTBETTINGSOFT for a client CLI (comment the other)
+		 */
 		//CLIBettingSoft cli = new CLIBettingSoft(bettingSystem);
 		CLIClient cli = new CLIClient(bettingSystem);
 	}

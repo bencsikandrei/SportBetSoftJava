@@ -84,12 +84,21 @@ public class BettingSystem implements Betting {
 		/* now persist */
 		RootManager.update(newPassword);
 	}
-
+	private String getManagerPassword() {
+		String  tempPass = "";
+		try {
+			tempPass = RootManager.getPassword();
+		} catch (SQLException e) {
+			System.out.println("Error connecting to DB");
+		}
+		return tempPass;
+	}
 	@Override
 	public void authenticateMngr(String managerPwd) throws AuthenticationException {
 		/* get the password from the DB and then compare it 
 		 * TODO
 		 */
+		this.mgrPassword = this.getManagerPassword();
 		if ( !this.mgrPassword.equals(managerPwd) ) {
 			throw new AuthenticationException();
 		}
@@ -98,10 +107,10 @@ public class BettingSystem implements Betting {
 	public Subscriber authenticateSub(String username, String subPwd) throws AuthenticationException , SubscriberException {
 		/* get him and verify pass */
 		Subscriber tempSub = getSubscriberByUserName(username);
-
+		
 		if(tempSub == null)
 			throw new SubscriberException();
-
+		
 		boolean correct = tempSub.checkPassword(subPwd);
 
 		if( correct == false ) 
@@ -892,7 +901,7 @@ public class BettingSystem implements Betting {
 		tempSubscriber.changePassword(currentPwd, newPwd);
 
 		try {
-			SubscribersManager.update(tempSubscriber);
+			SubscribersManager.updatePassword(tempSubscriber, currentPwd, newPwd);
 		} catch (SQLException sqlex) {
 			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
@@ -1199,7 +1208,7 @@ public class BettingSystem implements Betting {
 		} catch (SQLException sqlex) {
 			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
-		System.out.println("we are in getCompetitorByID :" + tempComp);
+		//System.out.println("we are in getCompetitorByID :" + tempComp);
 		return tempComp;
 	}
 

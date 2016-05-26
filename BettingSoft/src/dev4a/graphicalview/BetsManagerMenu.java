@@ -8,7 +8,7 @@ import dev4a.exceptions.AuthenticationException;
 import dev4a.system.BettingSystem;
 
 public class BetsManagerMenu extends Menu {
-	
+	/* statics for SWITCH statements */
 	private static final int LISTBETSSUB = 1;
 	private static final int LISTALL = 2;
 	private static final int LISTSUBS = 3;
@@ -36,7 +36,7 @@ public class BetsManagerMenu extends Menu {
 		
 		System.out.println("");
 
-		System.out.println("Main Menu");
+		System.out.println("Bets Menu (BETA)");
 
 		System.out.println("---------------------------");
 
@@ -54,7 +54,9 @@ public class BetsManagerMenu extends Menu {
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-4");
+		System.out.println("Please select an option from 1-4");
+		
+		System.out.println("To go back use a number higher than the ones in the list.");
 
 		System.out.println("");
 
@@ -78,7 +80,7 @@ public class BetsManagerMenu extends Menu {
 		switch (selected) {
 		case LISTBETSSUB:
 			try {
-
+				/* not for beta version */
 				System.out.println("Insert username");
 				String username = br.readLine();
 							
@@ -93,8 +95,7 @@ public class BetsManagerMenu extends Menu {
 
 		case LISTALL:
 			try {
-
-				
+				/* not for beta version */
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
