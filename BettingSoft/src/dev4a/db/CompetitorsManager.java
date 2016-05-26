@@ -244,7 +244,7 @@ public class CompetitorsManager {
 			/* create the update query */
 			PreparedStatement psUpdate = conn
 					.prepareStatement("UPDATE competitor "
-							+ "SET first_name=?, last_name=?, born_date=?, team_name=?, team_id=? "
+							+ "SET first_name=?, last_name=?, born_date=?, team_name=?, id_team=? "
 							+ "WHERE id=?");
 			/* the two possible outcomes */
 			if (competitor.getType() == Competitor.TYPE_INDIVIDUAL) {
@@ -262,6 +262,7 @@ public class CompetitorsManager {
 					psUpdate.setString(4, ((Team) competitor).getName());
 					psUpdate.setInt(5, -1); // 0 for null
 			}
+			psUpdate.setInt(6,competitor.getId());
 			/* execute the query */
 			psUpdate.executeUpdate();
 			/* clean up */
