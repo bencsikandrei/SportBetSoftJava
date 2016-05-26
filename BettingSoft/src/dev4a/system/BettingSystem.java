@@ -1093,7 +1093,7 @@ public class BettingSystem implements Betting {
 		/* search in every bet done on the competition */
 		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
-			if(b.getType()==1){ // type winner
+			if(b.getType() == Bet.TYPE_WINNER){ // type winner
 				List<Competitor> list = new ArrayList<Competitor> (competition.getWinners().values());
 				if(list.get(0).equals(b.getWinner())){
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
@@ -1127,14 +1127,20 @@ public class BettingSystem implements Betting {
 			}
 
 		}
-		/* pays to the winners */
+		/* pays to the winners that won on winner bet */
 		if(winningSubscribersOnWinner.size()!=0){
 			for (int i=0; i<winningSubscribersOnWinner.size();i++){
-				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
-				winningSubscribersOnWinner.get(i).credit(payMe);
+				payMe = competition.getTotalNumberOfTokens(Bet.TYPE_WINNER)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
+				Subscriber toCredit = null;
+				try {
+					toCredit = SubscribersManager.findSubscriberByUserName(winningSubscribersOnWinner.get(i).getUserName());
+				} catch (SQLException sqlex) {
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
+				}
+				toCredit.credit(payMe);
 				try {
 					/* update his account in the DB */
-					SubscribersManager.update(winningSubscribersOnWinner.get(i));
+					SubscribersManager.update(toCredit);
 				} catch (SQLException sqlex) {
 					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
@@ -1152,14 +1158,20 @@ public class BettingSystem implements Betting {
 				}
 			}
 		}
-		/* pays to the winners */
+		/* pays to the winners that won on podium bet */
 		if(winningSubscribersOnPodium.size()!=0){
 			for (int i=0; i<winningSubscribersOnPodium.size();i++){
-				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
-				winningSubscribersOnPodium.get(i).credit(payMe);
+				payMe = competition.getTotalNumberOfTokens(Bet.TYPE_PODIUM)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
+				Subscriber toCredit = null;
+				try {
+					toCredit = SubscribersManager.findSubscriberByUserName(winningSubscribersOnPodium.get(i).getUserName());
+				} catch (SQLException sqlex) {
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
+				}
+				toCredit.credit(payMe);
 				try {
 					/* update his account in the DB */
-					SubscribersManager.update(winningSubscribersOnPodium.get(i));
+					SubscribersManager.update(toCredit);
 				} catch (SQLException sqlex) {
 					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
