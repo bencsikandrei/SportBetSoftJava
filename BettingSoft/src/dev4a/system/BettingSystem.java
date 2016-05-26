@@ -356,7 +356,7 @@ public class BettingSystem implements Betting {
 			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 
-
+		System.out.println("algo " + temp.getWinners().size());
 		return temp;
 	}
 
@@ -1030,8 +1030,8 @@ public class BettingSystem implements Betting {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
 			String stringDate = formatter.format(comp.getClosingDate().getTime()); 
 			compDetails.add(stringDate);
-			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " bets.");
-			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " bets.");
+			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfBets(Bet.TYPE_WINNER) + " bets.");
+			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfBets(Bet.TYPE_PODIUM) + " bets.");
 			compDetails.addAll(consultCompetitors(comp));
 			//compDetails.add(String.valueOf(comp.getStatus()));
 			//compDetails.add( String.valueOf( comp.getStartDate().getTime() ) );
@@ -1101,7 +1101,9 @@ public class BettingSystem implements Betting {
 		if (tempCompetition == null )
 			throw new ExistingCompetitionException();
 		/* Can't throw CompetitionException because it's not in the interface. */
-		return new ArrayList<Competitor> (tempCompetition.getWinners().values());
+		ArrayList<Competitor> competitorsReturn = new ArrayList<Competitor>();
+		competitorsReturn.addAll(tempCompetition.getWinners().values());
+		return competitorsReturn;
 	}
 
 	/* distribution of tokens for a competition */
@@ -1309,8 +1311,9 @@ public class BettingSystem implements Betting {
 			}
 		}
 		/* Now we can delete the competitor */
+		Competitor competitorToDelete = this.getCompetitorById(competitor.getId());
 		try { 
-			CompetitorsManager.delete(competitor);
+			CompetitorsManager.delete(competitorToDelete);
 		} catch(SQLException sqlex) {
 			System.out.println("Error accessing the Database.\nPlease check your connection.");
 		}	
@@ -1335,6 +1338,16 @@ public class BettingSystem implements Betting {
 			CompetitorsManager.update(indComp);
 		} catch (SQLException e) {
 			System.out.println("Error connecting to Databse.\nPlease check your connection.");
+		}
+	}
+	public void printWinners(String competition) throws ExistingCompetitionException {
+		List<Competitor> winners = new ArrayList<Competitor>();
+		winners.addAll(consultResultsCompetition(competition));
+		
+		System.out.println("Quiero hacer el print Lista " + consultResultsCompetition(competition).size());
+		for (Competitor w : winners){
+			System.out.println("En el for:");
+			System.out.println(w.toString());
 		}
 	}
 

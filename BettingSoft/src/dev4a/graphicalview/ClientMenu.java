@@ -159,7 +159,8 @@ public class ClientMenu extends Menu {
 
 				String competition = br.readLine();
 				
-				this.bettingSystem.consultResultsCompetition(competition);
+				this.bettingSystem.printWinners(competition);
+				//this.bettingSystem.consultResultsCompetition(competition);
 				
 				
 			} catch (IOException e) {
