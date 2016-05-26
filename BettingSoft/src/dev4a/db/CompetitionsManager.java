@@ -235,7 +235,7 @@ public class CompetitionsManager {
 			comps.put(tempCompetition.getName(), tempCompetition);
 		}
 		
-		System.out.println("We found " + count + " competitions!");
+		//System.out.println("We found " + count + " competitions!");
 		
 		/* clean up */
 		resultSet.close();

@@ -156,7 +156,7 @@ public class SubscribersManager {
 					);
 			subs.put(sub.getUserName(), sub);
 		}
-		System.out.println("We found " + count + " subscribers!");
+		//System.out.println("We found " + count + " subscribers!");
 		/* clean up */
 		resultSet.close();
 		psSelect.close();
