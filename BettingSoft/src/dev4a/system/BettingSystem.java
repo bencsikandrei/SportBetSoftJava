@@ -423,8 +423,8 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
 		if(toBeRemoved.getStatus()!=Competition.CANCELED){
-			if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
-				throw new CompetitionException("Competition is still open!");
+			//if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
+			//	throw new CompetitionException("Competition is still open!");
 			if (toBeRemoved.getStatus()!=Competition.SOLDOUT)
 				throw new CompetitionException("First set winner(s)!");
 		}
@@ -1258,6 +1258,27 @@ public class BettingSystem implements Betting {
 		if (!competitions.isEmpty()){
 			new BadParametersException("This competitor still participates in competitions!");
 		}
+		/* Checks if the competitor is a team */
+		if (competitor instanceof Team){
+			Collection<Competitor> listIndComp = null;
+			try {
+				listIndComp = CompetitorsManager.findAllIndividualCompetitors().values();
+			} catch (SQLException sqlex) {
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
+			}
+			for (Competitor c : listIndComp){
+				IndividualCompetitor indComp = (IndividualCompetitor) c;
+				if (indComp.getIdTeam().equals(competitor.getId())){
+					indComp.setIdTeam(null);
+					try {
+						CompetitorsManager.update(indComp);
+					} catch (SQLException sqlex) {
+						System.out.println("Error connecting to Databse.\nPlease check your connection.");
+					}
+				}
+			}
+		}
+		/* Now we can delete the competitor */
 		try { 
 			CompetitorsManager.delete(competitor);
 		} catch(SQLException sqlex) {
