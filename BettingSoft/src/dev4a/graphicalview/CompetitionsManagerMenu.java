@@ -105,13 +105,13 @@ public class CompetitionsManagerMenu extends Menu {
 				Date date = sdf.parse(closingDate);
 				Calendar cal = sdf.getCalendar();
 
-				System.out.println("Insert competitor id");
+				System.out.println("Insert competitor id (-1 to stop adding)");
 				int compId = Integer.parseInt(br.readLine());
 				ArrayList<Competitor> competitors = new ArrayList<>();
 				do {
 					competitors.add(bettingSystem.getCompetitorById(compId));
 					System.out.println("got " + bettingSystem.getCompetitorById(compId));
-					System.out.println("Insert competitor id");
+					System.out.println("Insert competitor id (-1 to stop adding)");
 				} while( (compId = Integer.parseInt(br.readLine())) != -1 );
 
 				this.bettingSystem.addCompetition(competition, cal, competitors, this.storedPass);

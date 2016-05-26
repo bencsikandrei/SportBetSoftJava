@@ -92,7 +92,7 @@ public class SubscribersManagerMenu extends Menu {
 				String firstName = br.readLine();
 				System.out.println("Insert username");
 				String username = br.readLine();
-				System.out.println("Insert born date");
+				System.out.println("Insert born date (format yyyy-MM-dd)");
 				String borndate = br.readLine();
 				
 				this.bettingSystem.subscribe(lastName, firstName, username, borndate, this.storedPass);

@@ -321,7 +321,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 select competitions_for_competitor(8);
-
 /* insert some subscribers 
 ***************************************************************/
 select insert_subscriber('afbencsi','Andrei','Bencsik', '123456789', '1992-04-05');

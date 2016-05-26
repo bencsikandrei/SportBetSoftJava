@@ -102,7 +102,7 @@ public class CompetitorsManagerMenu extends Menu {
 				String lastName = br.readLine();
 				System.out.println("Insert first name");
 				String firstName = br.readLine();
-				System.out.println("Insert born date");
+				System.out.println("Insert born date (format yyyy-MM-dd)");
 				String borndate = br.readLine();
 				/* persist */
 				this.bettingSystem.createCompetitor(lastName, firstName, borndate, this.storedPass);
