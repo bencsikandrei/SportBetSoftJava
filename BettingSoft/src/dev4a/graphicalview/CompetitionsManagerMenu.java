@@ -10,7 +10,9 @@ import java.util.Date;
 
 import dev4a.competitor.Competitor;
 import dev4a.exceptions.AuthenticationException;
+import dev4a.exceptions.BadParametersException;
 import dev4a.system.BettingSystem;
+import dev4a.utils.Utils;
 
 public class CompetitionsManagerMenu extends Menu {
 	
@@ -22,6 +24,9 @@ public class CompetitionsManagerMenu extends Menu {
 	private static final int SETPODIUM = 5;
 	private static final int LISTALLSUBS = 6;
 	private static final int LISTALLCOMPETITIONS = 7;	
+	
+	/* the utilities */
+	Utils utility = new Utils();
 
 	/**
 	 * Initialize the menu and set up the parent
@@ -100,6 +105,7 @@ public class CompetitionsManagerMenu extends Menu {
 				String competition = br.readLine();
 				System.out.println("Insert closing date (format yyyy-MM-dd)");
 				String closingDate = br.readLine();
+				utility.checkValidDate2(closingDate);
 				/* to get the calendar from a string ..*/
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				Date date = sdf.parse(closingDate);
@@ -118,6 +124,8 @@ public class CompetitionsManagerMenu extends Menu {
 
 			} catch (AuthenticationException ex) {
 				System.out.println("Authentication error!\nPlease try again.");
+			} catch (BadParametersException ex){
+				System.out.println("Wrong date format.");
 			} catch (IOException e) {
 				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception e) {

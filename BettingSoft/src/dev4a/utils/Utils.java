@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.text.SimpleDateFormat;
 
 import dev4a.competitor.Competitor;
+import dev4a.exceptions.BadParametersException;
 
 public class Utils {
 	/* create a string with all alphanumerical chars and some symbols */
@@ -161,6 +162,18 @@ public class Utils {
 		/* */
 		return regexpParser(pattern, stringDate);
 	}
-
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public void checkValidDate2(String date)
+		throws BadParametersException{
+		/* the pattern to be respected by the string */
+		String pattern = "^((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$";
+		/* */
+		if(regexpParser(pattern, date))
+			throw new BadParametersException();
+	}
 
 }
