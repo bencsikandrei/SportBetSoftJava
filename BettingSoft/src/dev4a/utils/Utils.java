@@ -111,7 +111,7 @@ public class Utils {
 	 */
 	public boolean checkValidFirstLastName(String firstOrLastName) {
 		/* the pattern to be respected by the string */
-		String pattern = "^[A-Za-z-]{1,30}$";
+		String pattern = "^[A-Za-z_-]{1,30}$";
 		/* */
 		return regexpParser(pattern, firstOrLastName);
 	}
@@ -122,7 +122,7 @@ public class Utils {
 	 */
 	public boolean checkValidTeamName(String teamName) {
 		/* the pattern to be respected by the string */
-		String pattern = "^[A-Za-z-]{1,50}$";
+		String pattern = "^[A-Za-z_-]{1,50}$";
 		/* */
 		return regexpParser(pattern, teamName);
 	}
