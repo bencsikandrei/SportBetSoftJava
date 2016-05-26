@@ -1255,8 +1255,10 @@ public class BettingSystem implements Betting {
 
 	}
 
-	public void deleteCompetitorFromDB(Competitor competitor)
-			throws BadParametersException {
+	public void deleteCompetitorFromDB(Competitor competitor , String managerPwd)
+			throws AuthenticationException, BadParametersException {
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
 		/* Checks if the competitor doesn't participate in any competition */
 		Map<String,Competition> competitions = new LinkedHashMap<String,Competition>();
 		try { 
