@@ -256,7 +256,7 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* check if the date is correct, if the number of competitors is >2 and if there is no repeated competitors */
 		Set<Competitor> set = new HashSet<Competitor>(competitors);
-		if ( competitors.size() < 2
+		if ( closingDate.before(Calendar.getInstance()) || competitors.size() < 2
 				|| set.size() != competitors.size() ) {
 			throw new CompetitionException();
 		}
@@ -374,6 +374,9 @@ public class BettingSystem implements Betting {
 		/* checks closing date */
 		if (toBeCanceled.getClosingDate().before(Calendar.getInstance()))
 			throw new CompetitionException();
+		/* Checks it's not soldout */
+		if (toBeCanceled.getStatus() == Competition.SOLDOUT)
+			throw new CompetitionException();
 		/* take care of all the ongoing bets ! */
 		List<Bet> listBets = getBetsByCompetition(toBeCanceled);
 		for (int i = 0; i < listBets.size(); i++){
@@ -438,7 +441,7 @@ public class BettingSystem implements Betting {
 				throw new CompetitionException("First set winner(s)!");
 		}
 		/* clear relations between the competition and each of its competitors */
-		List<Competitor> myCompetitors = new ArrayList<Competitor> (toBeRemoved.getAllCompetitors().values()); 
+		List<Competitor> myCompetitors = new ArrayList<Competitor> (toBeRemoved.getAllCompetitors().values());
 		for(Competitor aCompetitor : myCompetitors){
 			try {
 				ParticipantsManager.delete(aCompetitor,toBeRemoved);
@@ -595,6 +598,8 @@ public class BettingSystem implements Betting {
 			// if((myCompetition.getStatus() != Competition.STARTED))
 			throw new CompetitionException();
 		}
+		if((myCompetition.getStatus() != Competition.STARTED))
+			throw new CompetitionException();
 		/* checks if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
