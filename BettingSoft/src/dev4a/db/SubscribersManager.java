@@ -15,11 +15,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import dev4a.bets.Bet;
 import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
 
@@ -142,7 +140,7 @@ public class SubscribersManager {
 		/* the results are here */
 		ResultSet resultSet = psSelect.executeQuery();
 		/* a container for them all */
-		Map<String,Subscriber> subs = new HashMap<>();
+		Map<String,Subscriber> subs = new LinkedHashMap<>();
 		/* refference for temp subscriber */
 		Subscriber sub = null;
 		int count = 0;
@@ -158,7 +156,7 @@ public class SubscribersManager {
 					);
 			subs.put(sub.getUserName(), sub);
 		}
-		System.out.println("We found " + count + " subscribers!");
+		//System.out.println("We found " + count + " subscribers!");
 		/* clean up */
 		resultSet.close();
 		psSelect.close();
@@ -184,6 +182,31 @@ public class SubscribersManager {
 		psUpdate.setString(2, sub.getLastName());		
 		psUpdate.setDate(3, java.sql.Date.valueOf(sub.getBornDate()));
 		psUpdate.setLong(4, sub.getNumberOfTokens());	
+		/* execute the query */
+		psUpdate.executeUpdate();
+		/* clean up */
+		psUpdate.close();
+		conn.close();
+	}
+	
+	/**
+	 * This method updates the subscriber in the db
+	 * @param sub
+	 * @param newPassword
+	 * @throws SQLException
+	 */
+	public static void updatePassword(Subscriber sub, String oldPassword, String newPassword) throws SQLException {
+		/* open the connection */
+		Connection conn = DatabaseConnection.getConnection();
+		/* create the update query */
+		PreparedStatement psUpdate = conn
+				.prepareStatement("UPDATE subscriber SET password=? WHERE username LIKE ?");
+		/* update all necessary fields */
+		psUpdate.setString(2, sub.getUserName());
+		
+		psUpdate.setString(1, newPassword);
+		
+		sub.changePassword(oldPassword, newPassword);
 		/* execute the query */
 		psUpdate.executeUpdate();
 		/* clean up */

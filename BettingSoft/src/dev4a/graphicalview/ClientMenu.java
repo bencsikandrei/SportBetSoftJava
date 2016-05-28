@@ -1,20 +1,36 @@
 package dev4a.graphicalview;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import dev4a.exceptions.AuthenticationException;
 import dev4a.system.BettingSystem;
 
 public class ClientMenu extends Menu {
+	/* statics for SWITCH */
+	private static final int BETWINNER = 1;
+	private static final int BETPODIUM = 2;
+	private static final int VIEWINFO = 3;
+	private static final int CONSULTWINNER = 4;
+	private static final int CHANGEPASS = 5;
+	private static final int LISTCOMPETITIONS = 6;
+	private static final int LISTCOMPETITORSINCOMPETITION = 7;
+	
+	
+	/* store the user name */
+	private String storedUserName = "";
 	/**
 	 * The main manu of the manager
 	 * @param bs
 	 * @param pass
 	 */
-	public ClientMenu (BettingSystem bs, String pass) {
+	public ClientMenu (BettingSystem bs, String pass, String username) {
 		super(bs, pass);
 		/* the parent */
 		this.parentMenu = this;
+		this.storedUserName = username;
+		this.storedPass = pass;
 	}
 
 	@Override
@@ -45,8 +61,10 @@ public class ClientMenu extends Menu {
 
 		System.out.println("");
 
-		System.out.print("Please select an option from 1-7");
-
+		System.out.println("Please select an option from 1-7");
+		
+		System.out.println("To go back use a number higher than the ones in the list.");
+		
 		System.out.println("");
 
 		System.out.println("");
@@ -61,10 +79,8 @@ public class ClientMenu extends Menu {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		switch (selected) {
-		case 1:
+		case BETWINNER:
 			try {
-				System.out.println("Insert username");
-				String username = br.readLine();
 				/* insert the winner bet data */
 				System.out.println("Insert number of tokens");
 				long numberTokens = Long.parseLong(br.readLine());
@@ -77,20 +93,22 @@ public class ClientMenu extends Menu {
 						numberTokens, 
 						competition, 
 						bettingSystem.getCompetitorById(winner), 
-						username, 
+						this.storedUserName, 
 						this.storedPass
 						);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
 
-		case 2:
+		case BETPODIUM:
 			try {
-				System.out.println("Insert username");
-				String username = br.readLine();
 				/* insert the winner bet data */
 				System.out.println("Insert number of tokens");
 				long numberTokens = Long.parseLong(br.readLine());
@@ -109,66 +127,77 @@ public class ClientMenu extends Menu {
 						bettingSystem.getCompetitorById(winner), 
 						bettingSystem.getCompetitorById(second), 
 						bettingSystem.getCompetitorById(third), 
-						username, 
+						this.storedUserName, 
 						this.storedPass
 						);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 
 			break;
-		case 3:
+		case VIEWINFO:
 			try {
-				System.out.println("Insert username");
-				String username = br.readLine();
 				
-				this.bettingSystem.infosSubscriber(username, this.storedPass);
+				this.bettingSystem.infosSubscriber(this.storedUserName, this.storedPass);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 			
-		case 4:
+		case CONSULTWINNER:
 			try {
 				/* insert the data */
 				System.out.println("Insert competition name");
 
 				String competition = br.readLine();
 				
-				this.bettingSystem.consultResultsCompetition(competition);
+				this.bettingSystem.printWinners(competition);
+				//this.bettingSystem.consultResultsCompetition(competition);
 				
 				
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
 		
-		case 5:
+		case CHANGEPASS:
 			try {
-				/* insert username */
-				System.out.println("Insert username");
-				String username = br.readLine();
 				/* the new pass */
 				System.out.println("Insert new password");
 				String newPassword = br.readLine();
 				/* change pass */
-				bettingSystem.changeSubsPwd(username, this.storedPass, newPassword);
+				System.out.println("this user name " + this.storedUserName + " his pass " + this.storedPass + " and the new pass " + newPassword);
+				bettingSystem.changeSubsPwd(this.storedUserName, newPassword, this.storedPass);
+				this.storedPass = newPassword;
+			} catch (AuthenticationException ex) {
+				System.out.println("Authentication error!\nPlease try again.");
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
 			} catch (Exception e) {
-				System.out.println("Something went wrong..");
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;	
-		case 6:
+			
+		case LISTCOMPETITIONS:
 			try {
 
 				this.bettingSystem.printCompetitions();
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
-		case 7:
+		case LISTCOMPETITORSINCOMPETITION:
 			try {
 
 				/* insert the data */
@@ -178,10 +207,13 @@ public class ClientMenu extends Menu {
 				/* print */
 				this.bettingSystem.printCompetitors(competition);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("Wrong input.\nPlease try again.");
+			} catch (Exception e) {
+				System.out.println("Something went wrong.\nPlease try again");
 			}
 			break;
+			
 		default:
 			return -1;
 		}

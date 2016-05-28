@@ -16,17 +16,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import dev4a.bets.Bet;
+import dev4a.competition.Competition;
 import dev4a.subscriber.Subscriber;
 import dev4a.utils.DatabaseConnection;
-import dev4a.bets.*;
-import dev4a.competition.Competition;
-import dev4a.competitor.Competitor;
 
 public class BetsManager {
 
@@ -215,7 +211,7 @@ public class BetsManager {
 
 		ResultSet resultSet = psSelect.executeQuery();
 
-		Map<Integer, Bet> bets = new HashMap<>();
+		Map<Integer, Bet> bets = new LinkedHashMap<>();
 
 		Bet bet = null;
 		while (resultSet.next()) {
@@ -249,9 +245,8 @@ public class BetsManager {
 
 			ResultSet resultSet = psSelect.executeQuery();
 
-			Map<Integer, Bet> bets = new HashMap<>();
-
-			Bet bet = null;
+			Map<Integer, Bet> bets = new LinkedHashMap<>();
+			
 			while (resultSet.next()) {
 				int tempId = resultSet.getInt("id");
 				
@@ -278,7 +273,7 @@ public class BetsManager {
 		
 		ResultSet resultSet = psSelect.executeQuery();
 		
-		Map<Integer, Bet> bets = new HashMap<Integer, Bet>();
+		Map<Integer, Bet> bets = new LinkedHashMap<Integer, Bet>();
 		
 		while (resultSet.next()) {
 			int tempId = resultSet.getInt("id");
@@ -309,13 +304,19 @@ public class BetsManager {
 							+ "id_second=?, id_third=?, nb_tokens=?, "
 							+ "status=?, earnings=?"
 						+ "WHERE id=?");
-		
+		psUpdate.setInt(10, bet.getIdentifier());
 		psUpdate.setString(1, bet.getUserName());
 		psUpdate.setString(2, bet.getCompetition());
 		psUpdate.setInt(3, bet.getType());
 		psUpdate.setInt(4, bet.getWinner().getId());
-		psUpdate.setInt(5, bet.getSecond().getId());
-		psUpdate.setInt(6, bet.getThird().getId());
+		if( bet.getType() == bet.TYPE_PODIUM ) {
+			psUpdate.setInt(5, bet.getSecond().getId());
+			psUpdate.setInt(6, bet.getThird().getId());
+		}
+		else {
+			psUpdate.setNull(5, Types.INTEGER);
+			psUpdate.setNull(6, Types.INTEGER);
+		}
 		psUpdate.setLong(7, bet.getNumberOfTokens());
 		psUpdate.setInt(8, bet.getState());
 		psUpdate.setLong(9, bet.getEarnings());

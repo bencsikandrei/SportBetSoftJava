@@ -1,14 +1,13 @@
 package dev4a.competition;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev4a.competitor.*;
-import dev4a.subscriber.Subscriber;
-import dev4a.bets.*;
+import dev4a.bets.Bet;
+import dev4a.competitor.Competitor;
 /**
  * 
  * @author Group 4A
@@ -47,11 +46,11 @@ public class Competition {
 	/* the competitors of this competition
 	 * 
 	 */
-	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
+	private Map<Integer, Competitor> allCompetitors = new LinkedHashMap<>();
 	/* the winners of this competition
 	 * 
 	 */
-	private Map<Integer, Competitor> winners = new HashMap<>();
+	private Map<Integer, Competitor> winners = new LinkedHashMap<>();
 	/* the types of bets allowed of the competition 
 	 * UTF-8 string
 	 * possible values:
@@ -183,20 +182,26 @@ public class Competition {
 	/* return the number of tokens of a given type bet on this competition */
 	public long getTotalNumberOfTokens(int betType) {
 		long sum = 0;
-		for(Bet b:this.bets){
-			if(b.getType()==betType)
+		for(Bet b:this.bets) {
+			System.out.println("in getTotalNumberOfTokens " + b.getNumberOfTokens());
+			if(b.getType() == betType) {
+				System.out.println("in the if");
 				sum += b.getNumberOfTokens();
+			}
 		}
+		System.out.println("In getTotalNumberOfTokens " + sum);
 		return sum;
 	}
 	
 	/* return the number of bets of a given type bet on this competition */
 	public int getTotalNumberOfBets(int betType) {
+		
 		int count = 0;
 		for(Bet b:this.bets){
 			if(b.getType()==betType)
 				count++;
 		}
+		System.out.println("In getTotalNumberOfbets " + count);
 		return count;
 	}
 	/*

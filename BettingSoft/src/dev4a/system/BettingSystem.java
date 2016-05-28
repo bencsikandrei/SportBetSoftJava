@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ import dev4a.db.RootManager;
 import dev4a.db.SubscribersManager;
 import dev4a.exceptions.AuthenticationException;
 import dev4a.exceptions.BadParametersException;
+import dev4a.graphicalview.CompetitionsManagerMenu;
 import dev4a.subscriber.ExistingSubscriberException;
 import dev4a.subscriber.Subscriber;
 import dev4a.subscriber.SubscriberException;
@@ -50,11 +51,11 @@ public class BettingSystem implements Betting {
 	/* the utilities */
 	Utils utility = new Utils();
 	/* the list of all competitors in the System */
-	private Map<Integer, Competitor> allCompetitors = new HashMap<>();
+	private Map<Integer, Competitor> allCompetitors = new LinkedHashMap<>();
 	/* all the competitions in the system */
-	private Map<String,Competition> allCompetitions = new HashMap<>();
+	private Map<String,Competition> allCompetitions = new LinkedHashMap<>();
 	/* all the subscribers in the System */
-	private Map<String,Subscriber> allSubscribers = new HashMap<>();
+	private Map<String,Subscriber> allSubscribers = new LinkedHashMap<>();
 
 	public String getPassword(){
 		return this.mgrPassword;
@@ -69,13 +70,9 @@ public class BettingSystem implements Betting {
 			updateAllCompetitions();
 			this.allSubscribers = SubscribersManager.findAll();
 		} catch( SQLException sqlex) {
-			System.out.println("Error connecting to db");
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			System.exit(-1);
 		}
-	}
-
-	private String getMgrPassword() {
-		return mgrPassword;
 	}
 
 	public void changeManagerPassword(String mgrPassword, String newPassword) throws AuthenticationException, SQLException {
@@ -87,12 +84,21 @@ public class BettingSystem implements Betting {
 		/* now persist */
 		RootManager.update(newPassword);
 	}
-
+	private String getManagerPassword() {
+		String  tempPass = "";
+		try {
+			tempPass = RootManager.getPassword();
+		} catch (SQLException e) {
+			System.out.println("Error connecting to DB");
+		}
+		return tempPass;
+	}
 	@Override
 	public void authenticateMngr(String managerPwd) throws AuthenticationException {
 		/* get the password from the DB and then compare it 
 		 * TODO
 		 */
+		this.mgrPassword = this.getManagerPassword();
 		if ( !this.mgrPassword.equals(managerPwd) ) {
 			throw new AuthenticationException();
 		}
@@ -101,10 +107,10 @@ public class BettingSystem implements Betting {
 	public Subscriber authenticateSub(String username, String subPwd) throws AuthenticationException , SubscriberException {
 		/* get him and verify pass */
 		Subscriber tempSub = getSubscriberByUserName(username);
-
+		
 		if(tempSub == null)
 			throw new SubscriberException();
-
+		
 		boolean correct = tempSub.checkPassword(subPwd);
 
 		if( correct == false ) 
@@ -144,7 +150,7 @@ public class BettingSystem implements Betting {
 		try {
 			SubscribersManager.persist(temporarySubscriber, password);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		this.allSubscribers.put(temporarySubscriber.getUserName(), temporarySubscriber);
 	}
@@ -155,7 +161,7 @@ public class BettingSystem implements Betting {
 		try {
 			sub = SubscribersManager.findSubscriberByUserName(username);
 		} catch(SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		return sub;
 	}
@@ -179,7 +185,7 @@ public class BettingSystem implements Betting {
 			}
 
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		/* remove him from the collection */
 		removeSubscriberFromList(toBeRemoved);
@@ -195,9 +201,9 @@ public class BettingSystem implements Betting {
 		try {
 			SubscribersManager.delete(toRemove);
 		} catch (SQLException sqlex ) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
-		
+
 		this.allSubscribers.remove(toRemove.getUserName());
 		java.lang.System.out.println("Removing " + toRemove.getUserName());
 	}
@@ -212,7 +218,7 @@ public class BettingSystem implements Betting {
 		try {
 			this.allSubscribers = SubscribersManager.findAll();
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		for( Subscriber sub : this.allSubscribers.values() ) {
 			/* store the details for each subscriber */
@@ -250,23 +256,28 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* check if the date is correct, if the number of competitors is >2 and if there is no repeated competitors */
 		Set<Competitor> set = new HashSet<Competitor>(competitors);
-		if ( competitors.size() < 2
+		if ( closingDate.before(Calendar.getInstance()) || competitors.size() < 2
 				|| set.size() != competitors.size() ) {
 			throw new CompetitionException();
 		}
+		/* Checks if all competitors have the same type */
+		int type = 0;
+		boolean sameType = true;
+		for (Competitor c : competitors){
+			if (type==0)
+				type = c.getType();
+			if (c.getType() != type){
+				sameType = false;
+				break;
+			}
+		}
+		if (!sameType){
+			throw new CompetitionException("Competitors have different types!");
+		}
 		/* create the Map */
-		Map<Integer, Competitor> tempCompetitors = new HashMap<>();
+		Map<Integer, Competitor> tempCompetitors = new LinkedHashMap<>();
 		for (Competitor c : competitors){
 			tempCompetitors.put(c.getId(), c);
-			/* Here, we add the competitor to the database if they are not yet*/
-			Competitor tempComp = null;
-			try {
-				tempComp = CompetitorsManager.findById(c.getId());
-			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
-			}
-			if (tempComp == null)
-				addCompetitorToList(c);
 		}
 		/* create it ! */
 		tempCompetition = new Competition(
@@ -279,12 +290,12 @@ public class BettingSystem implements Betting {
 				);
 		/* freshly created add it to our collection */
 		addCompetitionToList(tempCompetition);
-		
+
 		for (Competitor c : competitors){
 			try {
 				ParticipantsManager.persist(c, tempCompetition);
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			}
 		}
 		//TODO check BadParametresException
@@ -299,7 +310,7 @@ public class BettingSystem implements Betting {
 		try {
 			CompetitionsManager.persist(tempCompetition);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		this.allCompetitions.put(tempCompetition.getName(), tempCompetition);
 	}
@@ -314,9 +325,9 @@ public class BettingSystem implements Betting {
 		try {
 			CompetitionsManager.delete(competition);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
-		
+
 		this.allCompetitions.remove(competition.getName());
 	}
 	/**
@@ -330,14 +341,22 @@ public class BettingSystem implements Betting {
 		try {
 			/* get the competition */
 			temp = CompetitionsManager.findByName(competition);
+		} catch (SQLException sqlex) {
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
+		}
+		if(temp == null) 
+			return null;
+		try {
 			/* set its competititors */
 			temp.setAllCompetitors(ParticipantsManager.findAllByCompetition(competition));
 			/* set its bets */
-			Map<Integer,Bet> bets = new HashMap<Integer,Bet>(BetsManager.findByCompetition(temp));
+			Map<Integer,Bet> bets = new LinkedHashMap<Integer,Bet>(BetsManager.findByCompetition(temp));
 			temp.setBets(new ArrayList<Bet>(bets.values()));	
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
+
+		System.out.println("algo " + temp.getWinners().size());
 		return temp;
 	}
 
@@ -347,8 +366,6 @@ public class BettingSystem implements Betting {
 		/* first authenticate the manager */
 		authenticateMngr(managerPwd);
 		/* now checks if it exists */
-		//updateAllCompetitions(); // is it this line necessary?
-		//Competition toBeCanceled = this.allCompetitions.get(competition);
 		Competition toBeCanceled = getCompetitionByName(competition);
 		/* checks if it exists */
 		if( toBeCanceled == null )
@@ -356,6 +373,9 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* checks closing date */
 		if (toBeCanceled.getClosingDate().before(Calendar.getInstance()))
+			throw new CompetitionException();
+		/* Checks it's not soldout */
+		if (toBeCanceled.getStatus() == Competition.SOLDOUT)
 			throw new CompetitionException();
 		/* take care of all the ongoing bets ! */
 		List<Bet> listBets = getBetsByCompetition(toBeCanceled);
@@ -367,14 +387,14 @@ public class BettingSystem implements Betting {
 				/* update his account in the DB */
 				SubscribersManager.update(subscriber);
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			}
 			/* deletes the bets from subscriber */
 			subscriber.getBets().remove(listBets.get(i));
 			try {
 				BetsManager.delete(listBets.get(i));
 			} catch (SQLException sqlex ) {
-				sqlex.printStackTrace();
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			}
 		}
 		/* deletes the bets from Competition */
@@ -385,8 +405,9 @@ public class BettingSystem implements Betting {
 			/* update competition in the DB */
 			CompetitionsManager.update(toBeCanceled);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
+		this.allCompetitions.get(toBeCanceled.getName()).setStatus(Competition.CANCELED);
 	}
 
 	public List<Bet> getBetsByCompetition(Competition competition){
@@ -396,11 +417,11 @@ public class BettingSystem implements Betting {
 				bets.add(bet);
 			}
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		return bets;
 	}
-		
+
 	@Override
 	public void deleteCompetition(String competition, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
@@ -414,66 +435,50 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
 		if(toBeRemoved.getStatus()!=Competition.CANCELED){
-			if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
-				throw new CompetitionException("Competition is still open!");
+			//if (toBeRemoved.getClosingDate().after(Calendar.getInstance()))
+			//	throw new CompetitionException("Competition is still open!");
 			if (toBeRemoved.getStatus()!=Competition.SOLDOUT)
 				throw new CompetitionException("First set winner(s)!");
 		}
 		/* clear relations between the competition and each of its competitors */
-		List<Competitor> myCompetitors = new ArrayList<Competitor> (toBeRemoved.getAllCompetitors().values()); 
+		List<Competitor> myCompetitors = new ArrayList<Competitor> (toBeRemoved.getAllCompetitors().values());
 		for(Competitor aCompetitor : myCompetitors){
 			try {
 				ParticipantsManager.delete(aCompetitor,toBeRemoved);
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			}
-		}
-		/* Deletes the competitors if needed because Mayte doesn't want Competitors without Competition*/
-		List<Competitor> deletableCompetitors = myCompetitors; 
-		updateAllCompetitions();
-		for(Competition aCompetition : this.allCompetitions.values()){
-			for(Competitor oneCompetitor : aCompetition.getAllCompetitors().values()){
-				deletableCompetitors.remove(oneCompetitor);
-			}
-		}
-		for(Competitor toDelete : deletableCompetitors){
-			try {
-				CompetitorsManager.delete(toDelete);
-			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
-			}
-			allCompetitors.remove(toDelete.getId());
 		}
 		/* now we can safely delete */
 		removeCompetitionFromList(toBeRemoved);
 		System.out.println("Removed " + toBeRemoved);
 	}
-	
+
 	private void updateAllCompetitions(){
 		try {
 			this.allCompetitions = CompetitionsManager.findAll();
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		for (Competition comp : allCompetitions.values()){
 			try {
 				/* set its competitors */
-				Map<Integer,Competitor> competitors = new HashMap<Integer,Competitor>(ParticipantsManager.findAllByCompetition(comp.getName()));
+				Map<Integer,Competitor> competitors = new LinkedHashMap<Integer,Competitor>(ParticipantsManager.findAllByCompetition(comp.getName()));
 				this.allCompetitors.putAll(competitors);
 				comp.setAllCompetitors(competitors);			
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			}
 			try {
 				/* set its bets */
-				Map<Integer,Bet> bets = new HashMap<Integer,Bet>(BetsManager.findByCompetition(comp));
+				Map<Integer,Bet> bets = new LinkedHashMap<Integer,Bet>(BetsManager.findByCompetition(comp));
 				comp.setBets(new ArrayList<Bet>(bets.values()));			
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
 			}
 		}
 	} 
-	
+
 	@Override
 	public void addCompetitor(String competition, Competitor competitor, String managerPwd)
 			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
@@ -488,31 +493,29 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* check if the competition is in a proper state */
 		if( myCompetition.getClosingDate().before(Calendar.getInstance()) ){
-		//if( !(myCompetition.getStatus() == Competition.STARTED) ) {
+			//if( !(myCompetition.getStatus() == Competition.STARTED) ) {
 			throw new CompetitionException();
 		}
+		if( !(myCompetition.getStatus() == Competition.STARTED) )
+			throw new CompetitionException();
 		/* check if the competitor is already in the competition */
 		if(myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
 		}
+		/* Checks if the competitor has the same type */
+		List<Competitor> listOfCompetitors = new ArrayList<Competitor>(myCompetition.getAllCompetitors().values());
+		if (competitor.getType()!=listOfCompetitors.get(0).getType()){
+			throw new CompetitionException("Competitor type mismatch!");
+		}
 		/* now we can add the competitor */  
 		myCompetition.addCompetitor(competitor); 
-		Competitor tempComp = null;
-		try {
-			tempComp = CompetitorsManager.findById(competitor.getId());
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
-		}
-		if (tempComp == null)
-			addCompetitorToList(competitor);
 		try {
 			ParticipantsManager.persist(competitor, myCompetition);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		// TODO BadParametersExcaption
 	}
-
 
 	@Override
 	public Competitor createCompetitor(String lastName, String firstName, String borndate, String managerPwd)
@@ -526,16 +529,21 @@ public class BettingSystem implements Betting {
 		/* Checks if the competitor already exists */
 		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
 		for(Competitor c: listAllCompetitors){
-			if(c.toString() == firstName + " " + lastName + " born " + borndate)
-				// It exists! Returned!
-				return c;
+			if(c instanceof IndividualCompetitor){
+				IndividualCompetitor indComp = (IndividualCompetitor) c;
+				if(indComp.getFirstName().equals(firstName) 
+						&& indComp.getLastName().equals(lastName)
+						&& indComp.getBornDate().equals(borndate)){
+					// It exists! Returned!
+					System.out.println("The competitor already exists!");
+					return c;
+				}
+			}
 		}
 		/* It does not exist so the competitor is created  */
 		Competitor tempCompetitor = new IndividualCompetitor(firstName,lastName,borndate);
 		/* add him to the list */
-		this.allCompetitors.put(new Integer(tempCompetitor.getId()), tempCompetitor);
-		// WE DON'T HAVE TO DO IT HERE!
-		//addCompetitorToList(tempCompetitor);
+		addCompetitorToList(tempCompetitor);
 		/* return the object we created in memory */
 		System.out.println("Added " + tempCompetitor);
 		return tempCompetitor;
@@ -555,19 +563,22 @@ public class BettingSystem implements Betting {
 		/* Checks if the competitor already exists */
 		List<Competitor> listAllCompetitors = new ArrayList<Competitor>(allCompetitors.values());
 		for(Competitor c: listAllCompetitors){
-			if(c.toString() == name)
-				// It exists! Returned!
-				return c;
+			if (c instanceof Team){
+				Team team = (Team) c;
+				if (team.getName().equals(name)){
+					// It exists! Returned!
+					System.out.println("The team already exists!");
+					return c;
+				}
+			}
 		}
 		/* It does not exist so the competitor is created  */
 		Competitor tempCompetitor = new Team(name);
 		/* add him to the list */
-		this.allCompetitors.put(new Integer(tempCompetitor.getId()), tempCompetitor);
-		// WE DON'T HAVE TO DO IT HERE!
-		//addCompetitorToList(tempCompetitor);
+		addCompetitorToList(tempCompetitor);
 		System.out.println("Added " + tempCompetitor);
 		return tempCompetitor;
-		
+
 	}	
 	/**
 	 * 
@@ -575,13 +586,13 @@ public class BettingSystem implements Betting {
 	 */
 	private void addCompetitorToList(Competitor competitor) {
 		/* hide implementation */
-		
+
 		try {
 			CompetitorsManager.persist(competitor);
 		} catch( SQLException sqlex ) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
-		//this.allCompetitors.put(competitor.getId(), competitor);
+		this.allCompetitors.put(competitor.getId(), competitor);
 	}
 
 	@Override
@@ -598,9 +609,11 @@ public class BettingSystem implements Betting {
 			throw new ExistingCompetitionException();
 		/* checks if the competition is in a proper state */
 		if( myCompetition.getClosingDate().before(Calendar.getInstance()) || myCompetition.getAllCompetitors().size() == 2) {
-		// if((myCompetition.getStatus() != Competition.STARTED))
+			// if((myCompetition.getStatus() != Competition.STARTED))
 			throw new CompetitionException();
 		}
+		if((myCompetition.getStatus() != Competition.STARTED))
+			throw new CompetitionException();
 		/* checks if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(competitor)){
 			throw new ExistingCompetitorException();
@@ -617,7 +630,7 @@ public class BettingSystem implements Betting {
 					/* update his account in the DB */
 					SubscribersManager.update(subscriber);
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 				System.out.println("To eliminate the competitor, " + subscriber + " is credited with " + listBets.get(i).getNumberOfTokens());
 				/* deletes the bet from subscriber */
@@ -628,7 +641,7 @@ public class BettingSystem implements Betting {
 				try {
 					BetsManager.delete(listBets.get(i));
 				} catch (SQLException sqlex ) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 			}
 		}
@@ -636,27 +649,11 @@ public class BettingSystem implements Betting {
 		try {
 			ParticipantsManager.delete(competitor,myCompetition);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
-		}
-		/* Deletes the competitors if needed because Mayte doesn't want Competitors without Competition */
-		boolean eliminates = true;
-		updateAllCompetitions();
-		for(Competition aCompetition : this.allCompetitions.values()){
-			if (aCompetition.getAllCompetitors().values().contains(competitor)){
-				eliminates = false;
-				break;
-			}
-		}
-		if (eliminates){
-			try {
-				CompetitorsManager.delete(competitor);
-			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
-			}
-			allCompetitors.remove(competitor.getId());
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		/* now we can delete the competitor */  
-		myCompetition.removeCompetitor(competitor); 
+		//myCompetition.removeCompetitor(competitor); 
+		this.allCompetitions.get(myCompetition.getName()).removeCompetitor(competitor);
 		System.out.println("Removed " + competitor);
 	}
 
@@ -683,7 +680,7 @@ public class BettingSystem implements Betting {
 			/* update his account in the DB */
 			SubscribersManager.update(tempSubscriber);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		System.out.println("Credited " + tempSubscriber + " with " + numberTokens);
 	}
@@ -711,7 +708,7 @@ public class BettingSystem implements Betting {
 			/* update his account in the DB */
 			SubscribersManager.update(tempSubscriber);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		System.out.println("Debited " + tempSubscriber + " for " + numberTokens);
 	}
@@ -728,31 +725,37 @@ public class BettingSystem implements Betting {
 			/* does not exist */
 			throw new ExistingCompetitionException();
 		/* checks if the competition is in a proper state */
-		if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//if( myCompetition.getStatus() != Competition.FINISHED)  {
+		//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
+		if(myCompetition.getStatus() == (Competition.SOLDOUT)){
 			throw new CompetitionException();
 		}
-		
+		/* Check if the competition has more than 2 competitors */
+		if(myCompetition.getAllCompetitors().size() > 2){
+			throw new CompetitionException("You should try settling podium!");
+		}
 		/* check if the competitor is in the competition */
 		if(!myCompetition.hasCompetitor(winner) || winner == null){
 			throw new CompetitionException();
 		}
 		winner = myCompetition.getAllCompetitors().get(winner.getId());
 		/* now we can set the winner */  
-		Map<Integer, Competitor> listOfWinners = new HashMap<>();
+		Map<Integer, Competitor> listOfWinners = new LinkedHashMap<>();
 		listOfWinners.put(new Integer(winner.getId()), winner);
-		myCompetition.setWinners(listOfWinners); 
+		myCompetition.setWinners(listOfWinners);
+		this.allCompetitions.get(myCompetition.getName()).setWinners(listOfWinners);
+
 		// TODO check type of competition? in this case the type of bet should be w
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
+		this.allCompetitions.put(myCompetition.getName(), myCompetition);
 		try {
 			/* update competition in the DB */
 			CompetitionsManager.update(myCompetition);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		/* Deletes the competition */
-		deleteCompetition(competition, managerPwd);
+		//deleteCompetition(competition, managerPwd);
 	}
 
 	@Override
@@ -765,10 +768,10 @@ public class BettingSystem implements Betting {
 		/* check if it exists */
 		if( myCompetition == null )
 			/* does not exist */
-			throw new ExistingCompetitionException();
+			throw new ExistingCompetitionException(); 
 		/* check if the competition is in a proper state */
-		if(myCompetition.getClosingDate().after(Calendar.getInstance())){
-		//if(myCompetition.getStatus() != (Competition.FINISHED)) {
+		if(myCompetition.getStatus() == (Competition.SOLDOUT)){
+			//if(myCompetition.getClosingDate().after(Calendar.getInstance())){
 			throw new CompetitionException();
 		}
 		/* check if the competitor is in the competition */
@@ -776,29 +779,36 @@ public class BettingSystem implements Betting {
 				|| winner == null || second == null || third == null){
 			throw new CompetitionException();
 		}
-		if (winner==second || second==third || winner==third)
+		if (winner.equals(second) || second.equals(third) || winner.equals(third))
 			throw new CompetitionException();
-		winner = myCompetition.getAllCompetitors().get(winner.getId());
+		/*		winner = myCompetition.getAllCompetitors().get(winner.getId());
 		second = myCompetition.getAllCompetitors().get(second.getId());
-		third = myCompetition.getAllCompetitors().get(third.getId());
+		third = myCompetition.getAllCompetitors().get(third.getId());*/
 		/* now we can set the winner */  
-		Map<Integer, Competitor> listOfWinners = new HashMap<>();
+		Map<Integer, Competitor> listOfWinners = new LinkedHashMap<>();
+
 		listOfWinners.put(new Integer(winner.getId()), winner);
-		listOfWinners.put(new Integer(second.getId()), winner);
-		listOfWinners.put(new Integer(third.getId()), winner);
+		listOfWinners.put(new Integer(second.getId()), second);
+		listOfWinners.put(new Integer(third.getId()), third);
+
+		for (Competitor comp : listOfWinners.values()) {
+			System.out.println(" Settle " + comp);
+		}
 
 		myCompetition.setWinners(listOfWinners); 
+		this.allCompetitions.get(myCompetition.getName()).setWinners(listOfWinners);
 		// TODO check type of competition?
 		pay(myCompetition);
 		myCompetition.setStatus(Competition.SOLDOUT);
+		this.allCompetitions.put(myCompetition.getName(), myCompetition);
 		try {
 			/* update competition in the DB */
 			CompetitionsManager.update(myCompetition);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		/* Deletes the competition */
-		deleteCompetition(competition, managerPwd);
+		//deleteCompetition(competition, managerPwd);
 	}
 
 	@Override
@@ -823,23 +833,23 @@ public class BettingSystem implements Betting {
 
 		Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 		String betDate = formatter.format(currentTime);
-	
+
 		/* place the bet */
-		
+
 		Bet tempBet = new Bet(numberTokens, competition, winner, username, betDate);
 		/* add it to the player */
 		tempSubscriber.placeBet( tempBet );
-		
+
 		/* debit the money */
 		tempSubscriber.debit(numberTokens);
 		try {
 			/* update his account in the DB */
 			SubscribersManager.update(tempSubscriber);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		System.out.println("Debited " + tempSubscriber + " for " + numberTokens);
-		
+
 		/* add to the system bet list */
 		this.addBetToList(tempBet);
 	}
@@ -848,7 +858,7 @@ public class BettingSystem implements Betting {
 		try {
 			BetsManager.persist(bet);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 
 	}
@@ -880,17 +890,17 @@ public class BettingSystem implements Betting {
 		Bet tempBet = new Bet(numberTokens, competition, winner, second, third, username, betDate);
 		/* add it to the player */
 		tempSubscriber.placeBet( tempBet );
-		
+
 		/* debit the money */
 		tempSubscriber.debit(numberTokens);
 		try {
 			/* update his account in the DB */
 			SubscribersManager.update(tempSubscriber);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		System.out.println("Debited " + tempSubscriber + " for " + numberTokens);
-		
+
 		/* add it to our lists  */
 		this.addBetToList(tempBet);
 
@@ -910,12 +920,12 @@ public class BettingSystem implements Betting {
 		tempSubscriber.changePassword(currentPwd, newPwd);
 
 		try {
-			SubscribersManager.update(tempSubscriber);
+			SubscribersManager.updatePassword(tempSubscriber, currentPwd, newPwd);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 	}
-	
+
 	@Override
 	public ArrayList<String> infosSubscriber(String username, String pwdSubs) throws AuthenticationException {
 		/* first authenticate the subscriber */
@@ -927,19 +937,19 @@ public class BettingSystem implements Betting {
 		}
 		/* then get the info */
 		ArrayList<String> tempList = new ArrayList<>();
-		
+
 		tempList.add(tempSubscriber.getUserName());
 		tempList.add(tempSubscriber.getLastName());
 		tempList.add(tempSubscriber.getFirstName());
 		tempList.add(tempSubscriber.getBornDate());
 		tempList.add(String.valueOf(tempSubscriber.getNumberOfTokens()));
-		
+
 		/* make it printable */
 		List<List<String>> printable = new ArrayList<>();
 		printable.add(tempList);
 		/* print it as a side effect */
 		utility.printList(printable);
-		
+
 		return tempList;
 	}
 
@@ -953,31 +963,42 @@ public class BettingSystem implements Betting {
 		} catch(SubscriberException subex){
 			subex.printStackTrace();
 		}
-		Map<Integer, Bet> bets = new HashMap<Integer,Bet>();
+		Map<Integer, Bet> bets = new LinkedHashMap<Integer,Bet>();
 		try {
 			bets = BetsManager.findBySubscriber(tempSubscriber);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
 		tempSubscriber.setBets(bets);
+		/* get the competition with that name */
+		Competition tempCompetition = getCompetitionByName(competition);
+		/* check if competition exists */
+		if ( tempCompetition == null ) {
+			throw new ExistingCompetitionException();
+		}
+		/* Checks if the competition is closed */
+		if (tempCompetition.getClosingDate().before(Calendar.getInstance()))
+			throw new CompetitionException();
 		/* get the bets */
 		for ( Bet b : tempSubscriber.getBets().values() ) {
 			/* if it's the right competition */
-			if( b.getCompetition() == competition ){
+			if( b.getCompetition().equals(competition) ){
 				/* Returning money to subscriber... */
 				tempSubscriber.credit(b.getNumberOfTokens());
+				this.allSubscribers.get(tempSubscriber.getUserName()).credit(b.getNumberOfTokens());
 				try {
 					/* update his account in the DB */
 					SubscribersManager.update(tempSubscriber);
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 				/* Now we can eliminate the bet */
 				try {
 					BetsManager.delete(b);
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
+				this.allSubscribers.get(tempSubscriber.getUserName()).getBets().remove(b.getIdentifier());
 			}
 		}
 	}
@@ -985,7 +1006,7 @@ public class BettingSystem implements Betting {
 	public void printCompetitions() {
 		this.utility.printList(this.listCompetitions());
 	}
-	
+
 	private List<String> consultCompetitors(Competition competition){
 		List<String> competitors = new ArrayList<String>();
 		List<Competitor> listCompetitors = new ArrayList<Competitor> (competition.getAllCompetitors().values());
@@ -993,7 +1014,7 @@ public class BettingSystem implements Betting {
 			competitors.add(c.toString());
 		return competitors;
 	}
-	
+
 	@Override
 	public List<List<String>> listCompetitions() {
 		/* iterate the container and get all names and attributes */
@@ -1007,10 +1028,10 @@ public class BettingSystem implements Betting {
 			compDetails.add(comp.getName());
 			//compDetails.add(comp.getSport());
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
-			String stringDate = formatter.format(comp.getClosingDate()); 
+			String stringDate = formatter.format(comp.getClosingDate().getTime()); 
 			compDetails.add(stringDate);
-			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " bets.");
-			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " bets.");
+			compDetails.add("For winner bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_WINNER) + " tokens in " + comp.getTotalNumberOfBets(Bet.TYPE_WINNER) + " bets.");
+			compDetails.add("For podium bets: " + comp.getTotalNumberOfTokens(Bet.TYPE_PODIUM) + " tokens in " + comp.getTotalNumberOfBets(Bet.TYPE_PODIUM) + " bets.");
 			compDetails.addAll(consultCompetitors(comp));
 			//compDetails.add(String.valueOf(comp.getStatus()));
 			//compDetails.add( String.valueOf( comp.getStartDate().getTime() ) );
@@ -1080,7 +1101,9 @@ public class BettingSystem implements Betting {
 		if (tempCompetition == null )
 			throw new ExistingCompetitionException();
 		/* Can't throw CompetitionException because it's not in the interface. */
-		return new ArrayList<Competitor> (tempCompetition.getWinners().values());
+		ArrayList<Competitor> competitorsReturn = new ArrayList<Competitor>();
+		competitorsReturn.addAll(tempCompetition.getWinners().values());
+		return competitorsReturn;
 	}
 
 	/* distribution of tokens for a competition */
@@ -1089,50 +1112,67 @@ public class BettingSystem implements Betting {
 		/* list of subscribers that bet on winner and won */
 		List<Subscriber> winningSubscribersOnWinner = new ArrayList<Subscriber>();
 		/* list of tokens that the winning subscribers bet on winner */
-		List<Long> tokensBetOnWinner = new ArrayList();
+		List<Long> tokensBetOnWinner = new ArrayList<>();
 		/* list of subscribers that bet on podium and won */
 		List<Subscriber> winningSubscribersOnPodium = new ArrayList<Subscriber>();
 		/* list of tokens that the winning subscribers bet on podium */
-		List<Long> tokensBetOnPodium = new ArrayList();
+		List<Long> tokensBetOnPodium = new ArrayList<>();
 		long winningTokensOnWinner=0;
 		long winningTokensOnPodium=0;
 		long payMe;
 		/* search in every bet done on the competition */
 		/* this will work no matter what type of bets the competition accepts*/
 		for (Bet b:listOfBets){
-			if(b.getType()==1){ // type winner
-				if(competition.getWinners()==b.getWinner()){
+			if(b.getType() == Bet.TYPE_WINNER){ // type winner
+				List<Competitor> list = new ArrayList<Competitor> (competition.getWinners().values());
+				if(list.get(0).equals(b.getWinner())){
 					winningSubscribersOnWinner.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnWinner.add(b.getNumberOfTokens());
 					winningTokensOnWinner += b.getNumberOfTokens();
-					b.setState(b.WON);
+					b.setState(Bet.WON);
+
 				}
 				else
-					b.setState(b.LOST);
+					b.setState(Bet.LOST);
 			}
-			else if(b.getType()==2){
-				if(competition.getWinners().get(0)==b.getWinner() && 
-						competition.getWinners().get(1)==b.getSecond() && 
-						competition.getWinners().get(2)==b.getThird()){
+			else if(b.getType()==2){ // type podium
+				List<Competitor> list = new ArrayList<Competitor> (competition.getWinners().values());
+				if(list.get(0).equals(b.getWinner()) && 
+						list.get(1).equals(b.getSecond()) && 
+						list.get(2).equals(b.getThird())){
 					winningSubscribersOnPodium.add(getSubscriberByUserName(b.getUserName()));
 					tokensBetOnPodium.add(b.getNumberOfTokens());
 					winningTokensOnPodium += b.getNumberOfTokens();
-					b.setState(b.WON);
+					b.setState(Bet.WON);
 				}
 				else
-					b.setState(b.LOST);
+					b.setState(Bet.LOST);
 			}
+			try {
+				/* update bet in the DB */
+				System.out.println("we are in pay and we have a bet " + b);
+				BetsManager.update(b);
+			} catch (SQLException sqlex) {
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
+			}
+
 		}
-		/* pays to the winners */
+		/* pays to the winners that won on winner bet */
 		if(winningSubscribersOnWinner.size()!=0){
 			for (int i=0; i<winningSubscribersOnWinner.size();i++){
-				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
-				winningSubscribersOnWinner.get(i).credit(payMe);
+				payMe = competition.getTotalNumberOfTokens(Bet.TYPE_WINNER)*tokensBetOnWinner.get(i)/winningTokensOnWinner;  
+				Subscriber toCredit = null;
+				try {
+					toCredit = SubscribersManager.findSubscriberByUserName(winningSubscribersOnWinner.get(i).getUserName());
+				} catch (SQLException sqlex) {
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
+				}
+				toCredit.credit(payMe);
 				try {
 					/* update his account in the DB */
-					SubscribersManager.update(winningSubscribersOnWinner.get(i));
+					SubscribersManager.update(toCredit);
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 			}
 		}
@@ -1144,20 +1184,26 @@ public class BettingSystem implements Betting {
 					/* update his account in the DB */
 					SubscribersManager.update(getSubscriberByUserName(b.getUserName()));
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 			}
 		}
-		/* pays to the winners */
+		/* pays to the winners that won on podium bet */
 		if(winningSubscribersOnPodium.size()!=0){
 			for (int i=0; i<winningSubscribersOnPodium.size();i++){
-				payMe = competition.getTotalNumberOfTokens(1)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
-				winningSubscribersOnPodium.get(i).credit(payMe);
+				payMe = competition.getTotalNumberOfTokens(Bet.TYPE_PODIUM)*tokensBetOnPodium.get(i)/winningTokensOnPodium;  
+				Subscriber toCredit = null;
+				try {
+					toCredit = SubscribersManager.findSubscriberByUserName(winningSubscribersOnPodium.get(i).getUserName());
+				} catch (SQLException sqlex) {
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
+				}
+				toCredit.credit(payMe);
 				try {
 					/* update his account in the DB */
-					SubscribersManager.update(winningSubscribersOnPodium.get(i));
+					SubscribersManager.update(toCredit);
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 			}
 		}
@@ -1169,24 +1215,26 @@ public class BettingSystem implements Betting {
 					/* update his account in the DB */
 					SubscribersManager.update(getSubscriberByUserName(b.getUserName()));
 				} catch (SQLException sqlex) {
-					sqlex.printStackTrace();
+					System.out.println("Error connecting to Databse.\nPlease check your connection.");
 				}
 			}
 		}
 	}
-	
+
+
 	public Competitor getCompetitorById(Integer id) {
 		Competitor tempComp = null;
 		try {
 			tempComp = CompetitorsManager.findById(id);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
 		}
+		//System.out.println("we are in getCompetitorByID :" + tempComp);
 		return tempComp;
 	}
 
 	/* THE FOLLOWING FUNCTION DOES THE SAME AS settleWinner AND settlePodium, PLEASE TRY TO USE THOSE, AS THEY ARE IN THE INTERFACE */
-	
+
 	//public void setWinnersForCompetition(String competition, Competitor winner, Competitor second, Competitor third, String mgrPass) 
 	//		throws ExistingCompetitionException, AuthenticationException, CompetitionException {	
 	//	/* first authenticate the manager */
@@ -1203,7 +1251,7 @@ public class BettingSystem implements Betting {
 	//		throw new CompetitionException();
 	//	}
 	//	
-	//	Map<Integer, Competitor> winners = new HashMap<>();
+	//	Map<Integer, Competitor> winners = new LinkedHashMap<>();
 	//	try {
 	//		winners.put(winner.getId(), getCompetitorById(winner.getId()));
 	//		winners.put(second.getId(), getCompetitorById(second.getId()));
@@ -1221,8 +1269,87 @@ public class BettingSystem implements Betting {
 	//	}
 	//	
 	//}
-	
-	public void printAllCompetitors() {
-		utility.printList(this.allCompetitors.values());
+
+	public void printAllCompetitors() throws SQLException {
+
+		utility.printList(CompetitorsManager.findAll().values());
+
 	}
+
+	public void deleteCompetitorFromDB(Competitor competitor , String managerPwd)
+			throws AuthenticationException, BadParametersException {
+		/* first authenticate the manager */
+		authenticateMngr(managerPwd);
+		/* Checks if the competitor doesn't participate in any competition */
+		Map<String,Competition> competitions = new LinkedHashMap<String,Competition>();
+		try { 
+			competitions = ParticipantsManager.findAllByCompetitor(competitor.getId());
+		} catch(SQLException sqlex) {
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
+		}
+		if (!competitions.isEmpty()){
+			new BadParametersException("This competitor still participates in competitions!");
+		}
+		/* Checks if the competitor is a team */
+		if (competitor instanceof Team){
+			Collection<Competitor> listIndComp = null;
+			try {
+				listIndComp = CompetitorsManager.findAllIndividualCompetitors().values();
+			} catch (SQLException sqlex) {
+				System.out.println("Error connecting to Databse.\nPlease check your connection.");
+			}
+			for (Competitor c : listIndComp){
+				IndividualCompetitor indComp = (IndividualCompetitor) c;
+				if (indComp.getIdTeam().equals(competitor.getId())){
+					indComp.setIdTeam(null);
+					try {
+						CompetitorsManager.update(indComp);
+					} catch (SQLException sqlex) {
+						System.out.println("Error connecting to Databse.\nPlease check your connection.");
+					}
+				}
+			}
+		}
+		/* Now we can delete the competitor */
+		Competitor competitorToDelete = this.getCompetitorById(competitor.getId());
+		try { 
+			CompetitorsManager.delete(competitorToDelete);
+		} catch(SQLException sqlex) {
+			System.out.println("Error accessing the Database.\nPlease check your connection.");
+		}	
+	}
+
+	public void addCompetitiorToTeam(Competitor indComp, Competitor team, String managerPwd) 
+			throws AuthenticationException {
+
+		/* first authenticate the manager */
+
+		authenticateMngr(managerPwd);
+
+		/* do some tests before starting */
+		if ( !(indComp instanceof IndividualCompetitor) || !(team instanceof Team) ) {
+			System.out.println("Wrong IDs. These competitors do not fit the required action.");
+			return;
+		}
+		/* now do the action */
+		((IndividualCompetitor)indComp).setIdTeam(((Team)team).getId());
+		/* update */
+		try {
+			CompetitorsManager.update(indComp);
+		} catch (SQLException e) {
+			System.out.println("Error connecting to Databse.\nPlease check your connection.");
+		}
+	}
+	public void printWinners(String competition) throws ExistingCompetitionException {
+		List<Competitor> winners = new ArrayList<Competitor>();
+		winners.addAll(consultResultsCompetition(competition));
+		
+		System.out.println("Quiero hacer el print Lista " + consultResultsCompetition(competition).size());
+		for (Competitor w : winners){
+			System.out.println("En el for:");
+			System.out.println(w.toString());
+		}
+	}
+
+
 }
