@@ -6,7 +6,7 @@ import dev4a.bets.Bet;
 /**
  * 
  * 
- * @author Group 4A Ahmed and Andrei
+ * @author Group 4AB Ahmed and Andrei
  * @version 0.1 (BETA)
  * 
  * POJO !

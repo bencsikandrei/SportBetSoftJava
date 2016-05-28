@@ -3,10 +3,10 @@ package dev4a.db;
  * DAO class (<i>Data Access Object</i>) for the {@link Subscriber} class. This class
  * provides the CRUD functionalities :<br>
  * <ul>
- * <li><b>C</b>: create a new bet in the database.
- * <li><b>R</b>: retrieve (or read) a (list of)bet(s) from the database.
- * <li><b>U</b>: update the values stored in the database for a bet.
- * <li><b>D</b>: delete a bet in the database.
+ * <li><b>C</b>: create a new subscriber in the database.
+ * <li><b>R</b>: retrieve (or read) a (list of)subscriber(s) from the database.
+ * <li><b>U</b>: update the values stored in the database for a subscriber.
+ * <li><b>D</b>: delete a subscriber in the database.
  * </ul>
  * 
  * @author dev4a
@@ -40,17 +40,10 @@ public class SubscribersManager {
 		try {
 			/* we need to leave the system in a stable state so we turn off autocommit */
 			conn.setAutoCommit(false);
-			/* the insert statement for the subscriber 
-			 *     	username varchar(30) primary key,
-				    first_name varchar(30) NOT NULL,
-				    last_name varchar(30) NOT NULL,
-				    password varchar(30) NOT NULL,
-				    born_date date NOT NULL,
-				    credit integer NOT NULL
-			 * */
+			/* the insert statement for the subscriber */
 			/* this statement prepares all the values to insert into the subscriber table 
 			 * the structure of this table is up above for easier access
-			 * */
+			 */
 			PreparedStatement psPersist = conn
 					.prepareStatement("INSERT INTO subscriber(username, first_name, "
 							+ "last_name,"
