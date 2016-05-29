@@ -6,7 +6,7 @@ All rights reserved.
 Developped by Dev4a (Telecom Bretagne)
 
 
-!NOTE! For any problems in the software please report to one of the members of the team. We are prepared to help and support you.
+¡NOTE! For any problems in the software please report to one of the members of the team. We are prepared to help and support you.
 
 e-mails:
 bich.luc@telecom-bretagne.eu
@@ -145,6 +145,7 @@ COMMENTS ON THE USE OF THE INTERFACE
 When adding competitors to a competition, -1 stops the procedure.
 
 SOME SCENARIOS TO TEST THE SYSTEM
+
 Simple competition creation and betting
             As the MANAGER
 Manage competitors
@@ -162,7 +163,8 @@ Set results (place the one you bet on as the winner :] )
 Check account of the user (should have won, obviously)
 Check on the database, bets are set as WON.
 Try to set the results again
-        Let’s go a little further
+
+Let’s go a little further
             As the MANAGER
 Create one extra team competitor
 Create a new competition with the three competitors that you have created
@@ -173,5 +175,17 @@ Place a bet on podium (set the winner as the first for the podium
 Try to set the winner, you are not able
 Set the podium (let you win on podium)
 Check the user, should have got his money back because he won. Check in the database, the bets are set as WON.(check the comments on the tables to see what the integers mean)
+
+Playing alone is quite boring
+            As the MANAGER
+Try to create a competition with only one competitor
+Create a competition with some competitors
+Try to delete competitors, when there are only two left, you will not be able to delete anymore.
+If there are only two left (3.) add again some competitors to be able to bet on podium.
+You can repeat 3. and 4. as many times as you want to convince yourself.
+            As many different SUBSCRIBERS
+Place different bets
+            As the MANAGER
+Set the podium and see what happens with the subscribers, their tokens and the state of the bets in the database
 
 
